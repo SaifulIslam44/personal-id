@@ -319,7 +319,7 @@ export default function ProfilePage() {
   const handleShare = () => {
     const baseDomain = "https://base.app/app/mints.personalids.xyz"; 
     const farcasterMiniAppUrl =
-      "https://farcaster.xyz/miniapps/offLcGmhl94_/personal-id-mint";
+      "https://farcaster.xyz/miniapps/ihTYq4bv7zgI/personal-id-mint";
     const isFarcaster = /warpcast|farcaster/i.test(navigator.userAgent);
     const text =
   "🔥 I just checked in today! Mint your Personal Onchain ID and earn DEGEN rewards 🚀 Daily check-in = 1 Point, 1 Point = 1 DEGEN 👇";
