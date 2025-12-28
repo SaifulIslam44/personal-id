@@ -22,7 +22,7 @@
 //     tagline: "Mint your onchain identity",
 //     ogTitle: "Personal ID Mint",
 //     ogDescription: "Mint a unique onchain ID on Base with daily check-in streaks.",
-//     ogImageUrl: `${ROOT_URL}/og.png`,
+    // ogImageUrl: `${ROOT_URL}/og.png`,
 //     noindex: false,
 
 //     capabilities: {
@@ -77,7 +77,12 @@
 // import type { MiniAppManifest } from "@coinbase/onchainkit/minikit";
 
 
-const ROOT_URL = "https://mints.personalids.xyz";
+const ROOT_URL = (
+  process.env.NEXT_PUBLIC_URL ||
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3000")
+).trim();
 
 
 export const minikitConfig = {
@@ -91,7 +96,7 @@ accountAssociation: {
   miniapp: {
     version: "1",
     name: "Personal ID Mint",
-    subtitle: "Onchain ID Mint",
+    subtitle: "Mint Your Onchain ID",
     description:
       "Mint a unique Onchain ID on Base. Features Daily Check-in to earn rewards and share progress on social media.",
     screenshotUrls: [`${ROOT_URL}/screenshot-portrait.png`],
@@ -108,4 +113,4 @@ accountAssociation: {
     ogDescription: "Mint a unique onchain ID on Base with daily check-in Rewards",
     ogImageUrl: `${ROOT_URL}/og.png`,
   },
-} as const;
+} as const; 
