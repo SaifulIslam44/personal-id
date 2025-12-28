@@ -58,3 +58,28 @@
     }
   }
 }
+
+/* ===== App Layout (Global Footer Support) ===== */
+
+.app-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-content {
+  flex: 1;
+}
+
+.app-footer {
+  text-align: center;
+  font-size: 12px;
+  padding: 12px 0;
+  opacity: 0.6;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+

@@ -1,0 +1,594 @@
+/* .container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 24px;
+  background-color: #4e9afd42;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.title {
+  position: relative;
+  width: 100%;
+  margin: 10px 10px;
+  padding: 25px 12px;
+
+
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 0px 0px;
+
+  text-align: center;
+  font-size: 26px;
+  font-weight: 900;
+
+  
+  
+}
+
+
+.title::after {
+  content: "Daily Check-in";
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  font-size: inherit;
+  font-weight: inherit;
+  border: 5px solid #5086f1;
+
+  background: linear-gradient(
+    90deg,
+    #71d7ff,
+    #3e8dce,
+    #3df1ace3
+  );
+  background-size: 300% auto;
+
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+
+  animation: textMove 3s linear infinite;
+}
+
+@keyframes textMove {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+
+
+
+
+.streakCard {
+  background: #ffffff;
+  border: 5px solid #5086f1;
+  border-radius: 10px;
+  padding: 50px 40px;
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.04);
+  margin-top: 10px;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.dateDisplay {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0077ff;
+  margin-top: 15px;
+}
+
+.streakLabel {
+  font-size: 15px;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 600;
+}
+
+.statusBox {
+  background-color: #f9fafb;
+  padding: 16px 24px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  border: 5px solid #5086f1;
+}
+
+.statusBox p {
+  margin: 0;
+  font-size: 15px;
+  color: #4b5563;
+  font-weight: 500;
+}
+
+.checkInButton {
+  width: 100%;
+  max-width: 360px;
+  padding: 18px;
+  border-radius: 20px;
+  border: none;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 6px 20px rgba(0, 82, 255, 0.15);
+  background-color: #0052FF;
+  color: white;
+}
+
+.message {
+  margin-top: 5px;
+  font-size: 14px;
+  color: #0052ff;
+  font-weight: 600;
+  background: #eff6ff;
+  padding: 3px 6px;
+  border-radius: 100px;
+}
+
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f4f6;
+  border-top: 4px solid #0052ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-top: 100px;
+}
+
+.loadingText {
+  color: #6b7280;
+  margin-top: 15px;
+  font-weight: 500;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+
+.loadingWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-top: 100px;
+}
+
+.loadingSpinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f4f6;
+  border-top: 5px solid #0052ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 24px;
+}
+
+.loadingText {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.loadingSubText {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+
+
+
+.actionRow {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.shareButton {
+  flex: 1;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid #0052ff;
+  background: #ffffff;
+  color: #0052ff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.shareButton:hover {
+  background: #eff6ff;
+}
+
+.rewardButton {
+  flex: 1;
+  padding: 14px;
+  border-radius: 16px;
+  border: none;
+  background: #f3f4f6;
+  color: #9ca3af;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: not-allowed;
+} */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* মেইন কন্টেইনার */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 24px;
+  background-color: #4e9afd42;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* লোডিং এর মেইন বক্স */
+.loadingWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin-top: 100px;
+}
+
+/* গোল স্পিনার অ্যানিমেশন */
+.loadingSpinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #afc9ff;
+  border-top: 5px solid #0052ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 24px;
+}
+
+/* বড় টেক্সট (Wallet Connection Required) */
+.loadingText {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fca2a2;
+  margin-bottom: 8px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* নিচের ছোট টেক্সট */
+.loadingSubText {
+  font-size: 14px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+/* স্পিনার ঘোরার জন্য Keyframes */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* টেক্সট লাফালাফি বা Pulse করার জন্য Keyframes */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* checkin.module.css */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 10px;
+  min-height: 100vh;
+  background-color: #000000;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+/* ১. পারফেক্ট সেন্টারড ৩ডি আরজিবি টাইটেল */
+.title {
+  width: 100%;
+  max-width: 350px;
+  text-align: center;
+  font-size: 26px; /* টাইটেল সেন্টার রাখতে সাইজ কিছুটা কমানো হয়েছে */
+  font-weight: 900;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  line-height: 1.2;
+  background: linear-gradient(
+    to right, 
+    #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff, #ff0000
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: rgbShift 3s linear infinite;
+  filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.8));
+}
+
+@keyframes rgbShift {
+  to { background-position: 200% center; }
+}
+
+/* ২. সাপ্লাই ডিসপ্লে বার */
+.supplyHeader {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px 8px;
+  border-radius: 5px;
+  font-size: 12px;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #888;
+}
+
+.supplyDot {
+  width: 8px;
+  height: 8px;
+  background-color: #00ff80;
+  border-radius: 5%;
+  box-shadow: 0 0 10px rgba(0, 255, 128, 0.6);
+}
+
+/* ৩. পয়েন্ট কার্ড ডিজাইন (আগের চেয়ে ছোট এবং ক্লিন) */
+.pointsDisplay {
+  width: 100%;
+  max-width: 280px; /* উইডথ কমানো হয়েছে */
+  background: linear-gradient(145deg, #0f0f0f, #050505);
+  padding: 18px 10px; /* প্যাডিং কমানো হয়েছে */
+  border-radius: 20px;
+  text-align: center;
+  margin-bottom: 10px;
+  border: 1px solid #1a1a1a;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+}
+
+.pointsTitle {
+  color: #666;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 2px;
+}
+
+.pointsValue {
+  font-size: 10px; /* ফন্ট সাইজ ৫৬ থেকে কমিয়ে ৪৮ করা হয়েছে */
+  font-weight: 500;
+  color: #ffffff;
+  line-height: 1;
+  margin: 5px 0;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+.pointsLabel {
+  color: #444;
+  font-size: 10px;
+  font-weight: 500;
+  margin-top: 5px;
+  line-height: 1.4;
+}
+
+/* ৪. লাস্ট চেক-ইন ইনফো */
+.streakCard {
+  width: 100%;
+  max-width: 320px;
+  padding: 12px;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 15px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid #111;
+}
+
+.streakLabel {
+  color: #333;
+  font-size: 10px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.dateDisplay {
+  font-size: 14px;
+  color: #999;
+}
+
+/* কমন স্ট্যাটাস বক্স */
+.statusBoxEligible, .statusBoxNotEligible {
+  width: 100%;
+  max-width: 320px;
+  padding: 10px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.statusBoxEligible {
+  background: rgba(0, 255, 128, 0.03);
+  border: 1px solid rgba(0, 255, 128, 0.15);
+  color: #00ff80;
+}
+
+.statusBoxNotEligible {
+  background: rgba(255, 68, 68, 0.03);
+  border: 1px solid rgba(255, 68, 68, 0.15);
+  color: #ff4444;
+}
+
+/* ৫. ক্লেইম স্ট্যাটাস বক্স */
+.statusBox {
+  width: 100%;
+  max-width: 320px;
+  padding: 8px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  color: #00ff80;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* ৬. চেক-ইন বাটন */
+.checkInButton {
+  width: 100%;
+  max-width: 320px;
+  padding: 16px;
+  border-radius: 14px;
+  border: none;
+  font-weight: 800;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #ffffff;
+  color: #000;
+  margin-bottom: 15px;
+}
+
+.checkInButton:disabled {
+  background: #111;
+  color: #444;
+  border: 1px solid #1a1a1a;
+  cursor: not-allowed;
+}
+
+/* ৭. অ্যাকশন বাটন রো */
+.actionRow {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.shareButton {
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  background: #000;
+  color: #fff;
+  border: 1px solid #222;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.rewardButton {
+  flex: 1.5;
+  padding: 12px;
+  border-radius: 12px;
+  background: #080808;
+  color: #333;
+  border: 1px solid #151515;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.claimActive {
+  flex: 1.5;
+  padding: 12px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ff8a65, #e64a19);
+  color: white;
+  border: none;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(230, 74, 25, 0.3);
+  animation: pulseButton 1.5s infinite;
+}
+
+@keyframes pulseButton {
+  0% { box-shadow: 0 0 0 0 rgba(230, 74, 25, 0.4); }
+  70% { box-shadow: 0 0 0 8px rgba(230, 74, 25, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(230, 74, 25, 0); }
+}
+
+.message {
+  font-size: 12px;
+  margin-top: 10px;
+  color: #666;
+  text-align: center;
+}
+
+/* মোবাইল রেসপন্সিভ */
+@media (max-width: 480px) {
+  .title { font-size: 24px; }
+  .pointsDisplay { max-width: 260px; }
+  .pointsValue { font-size: 42px; }
+}
