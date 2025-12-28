@@ -423,7 +423,7 @@ export default function CheckInPage() {
         onClick={handleCheckIn}
         disabled={loading || isPending || !canCheckIn()}
       >
-        {loading || isPending ? "Checking..." : canCheckIn() ? "CHECK IN (+1 POINT)" : "ALREADY CHECKED IN"}
+        {loading || isPending ? "Checking..." : canCheckIn() ? "CHECK IN (+2 POINT)" : "ALREADY CHECKED IN"}
       </button>
 
       {message && <p className={styles.message}>{message}</p>}
