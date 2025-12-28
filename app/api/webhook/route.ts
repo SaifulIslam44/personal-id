@@ -1,5 +1,14 @@
 import { NextResponse } from 'next/server';
 
+
+export async function GET() {
+  return NextResponse.json({ 
+    message: "Webhook is active and ready for Farcaster!",
+    status: "healthy"
+  });
+}
+
+
 export async function POST(request: Request) {
   try {
     const payload = await request.json();
@@ -7,9 +16,7 @@ export async function POST(request: Request) {
 
     switch (event) {
       case "miniapp_added":
-        
         console.log("User added app. Token:", notificationDetails?.token);
-        
         break;
 
       case "notifications_enabled":
@@ -19,6 +26,9 @@ export async function POST(request: Request) {
       case "miniapp_removed":
         console.log("User removed the app");
         break;
+      
+      default:
+        console.log("Other event received:", event);
     }
 
     return NextResponse.json({ status: 'ok' }, { status: 200 });
