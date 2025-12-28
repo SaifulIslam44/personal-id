@@ -81,18 +81,11 @@ const ROOT_URL = "https://mints.personalids.xyz";
 
 
 export const minikitConfig = {
-
-// accountAssociation: {
-//   header: "eyJmaWQiOjEwNTAyNjgsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhkM2U4MzhFQThmMjczYzdkMzlDNmViMzUxMDMwOGJGNUNkYUUyY2VFIn0",
-//   payload: "eyJkb21haW4iOiJwZXJzb25hbC1pZC1taW50LnZlcmNlbC5hcHAifQ",
-//   signature: "Me8SU+iA2CyeabLouS7E3Vlqr1r3NtOdQQd170oje8s8p7GqScfqxld6nVAu+qCwpbpujtAeRxbVTde9C0+oYRs="
-// },
-
-
-
-
-
-
+accountAssociation: {
+  header: "eyJmaWQiOjEwNTAyNjgsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhkM2U4MzhFQThmMjczYzdkMzlDNmViMzUxMDMwOGJGNUNkYUUyY2VFIn0",
+  payload: "eyJkb21haW4iOiJtaW50cy5wZXJzb25hbGlkcy54eXoifQ",
+  signature: "FRCTSc10z0F7+sw+n0dEV7+uP+zO7k1JYPkzMNpMA+sRuG9fYRRFj32F/ucEcQw7YK2JxsPwdij4iojdBxfsihw="
+},
 
 
   miniapp: {
