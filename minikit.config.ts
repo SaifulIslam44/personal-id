@@ -77,7 +77,7 @@
 // import type { MiniAppManifest } from "@coinbase/onchainkit/minikit";
 
 
-const ROOT_URL = "https://mint.personalids.xyz";
+const ROOT_URL = "https://mints.personalids.xyz";
 
 
 export const minikitConfig = {
@@ -92,11 +92,7 @@ export const minikitConfig = {
 
 
 
-  accountAssociation: {
-    header: "eyJmaWQiOjEwNTAyNjgsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhkM2U4MzhFQThmMjczYzdkMzlDNmViMzUxMDMwOGJGNUNkYUUyY2VFIn0",
-    payload: "eyJkb21haW4iOiJtaW50LnBlcnNvbmFsaWRzLnh5eiJ9",
-    signature: "sZBMFygdlbt5QDf2mGFW984Hek0qfWIOwjeYltVD3HogwvctWdu5IubQNZDf0A0Vinra0QJk1tCcHJb5ZJqrSxs=",
-  },
+
 
 
   miniapp: {
