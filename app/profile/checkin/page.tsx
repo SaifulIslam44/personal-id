@@ -339,7 +339,7 @@ export default function CheckInPage() {
   };
 
   const handleShare = () => {
-    const baseDomain = "https://mint.personalids.xyz"; 
+    const baseDomain = "https://mints.personalids.xyz"; 
     const farcasterMiniAppUrl = "https://farcaster.xyz/miniapps/offLcGmhl94_/personal-id-mint";
     const isFarcaster = /warpcast|farcaster/i.test(navigator.userAgent);
   const text =
