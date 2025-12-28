@@ -81,6 +81,14 @@ const ROOT_URL = "https://mint.personalids.xyz";
 
 
 export const minikitConfig: MiniAppManifest = {
+
+  accountAssociation: {
+    header: "eyJmaWQiOi0xLCJ0eXBlIjoiYXV0aCIsImtleSI6IjB4MTcyNzdiMjliZEQ4MGY0NEM5QkY1RjAzQUM4MzdjOTc2N0NmNjQzYSJ9",
+    payload: "eyJkb21haW4iOiJtaW50LnBlcnNvbmFsaWRzLnh5eiJ9",
+    signature: "AAAAAAAAAAAAAAAAyhG94Fl3s2MRZwKIYr4qFzl2yhEAAAAAA...ZJJkkg"
+  },
+
+
   // accountAssociation: {
   //   header: "eyJmaWQiOjEwNTAyNjgsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhkM2U4MzhFQThmMjczYzdkMzlDNmViMzUxMDMwOGJGNUNkYUUyY2VFIn0",
   //   payload: "eyJkb21haW4iOiJtaW50LnBlcnNvbmFsaWRzLnh5eiJ9",
