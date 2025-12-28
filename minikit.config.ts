@@ -82,21 +82,21 @@ const ROOT_URL = "https://mint.personalids.xyz";
 
 export const minikitConfig = {
 
-accountAssociation: {
-  header: "eyJmaWQiOjEwNTAyNjgsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhkM2U4MzhFQThmMjczYzdkMzlDNmViMzUxMDMwOGJGNUNkYUUyY2VFIn0",
-  payload: "eyJkb21haW4iOiJwZXJzb25hbC1pZC1taW50LnZlcmNlbC5hcHAifQ",
-  signature: "Me8SU+iA2CyeabLouS7E3Vlqr1r3NtOdQQd170oje8s8p7GqScfqxld6nVAu+qCwpbpujtAeRxbVTde9C0+oYRs="
-},
+// accountAssociation: {
+//   header: "eyJmaWQiOjEwNTAyNjgsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhkM2U4MzhFQThmMjczYzdkMzlDNmViMzUxMDMwOGJGNUNkYUUyY2VFIn0",
+//   payload: "eyJkb21haW4iOiJwZXJzb25hbC1pZC1taW50LnZlcmNlbC5hcHAifQ",
+//   signature: "Me8SU+iA2CyeabLouS7E3Vlqr1r3NtOdQQd170oje8s8p7GqScfqxld6nVAu+qCwpbpujtAeRxbVTde9C0+oYRs="
+// },
 
 
 
 
 
-  // accountAssociation: {
-  //   header: "eyJmaWQiOjEwNTAyNjgsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhkM2U4MzhFQThmMjczYzdkMzlDNmViMzUxMDMwOGJGNUNkYUUyY2VFIn0",
-  //   payload: "eyJkb21haW4iOiJtaW50LnBlcnNvbmFsaWRzLnh5eiJ9",
-  //   signature: "sZBMFygdlbt5QDf2mGFW984Hek0qfWIOwjeYltVD3HogwvctWdu5IubQNZDf0A0Vinra0QJk1tCcHJb5ZJqrSxs=",
-  // },
+  accountAssociation: {
+    header: "eyJmaWQiOjEwNTAyNjgsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhkM2U4MzhFQThmMjczYzdkMzlDNmViMzUxMDMwOGJGNUNkYUUyY2VFIn0",
+    payload: "eyJkb21haW4iOiJtaW50LnBlcnNvbmFsaWRzLnh5eiJ9",
+    signature: "sZBMFygdlbt5QDf2mGFW984Hek0qfWIOwjeYltVD3HogwvctWdu5IubQNZDf0A0Vinra0QJk1tCcHJb5ZJqrSxs=",
+  },
 
 
   miniapp: {
