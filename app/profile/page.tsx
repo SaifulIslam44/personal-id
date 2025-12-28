@@ -322,7 +322,7 @@ export default function ProfilePage() {
       "https://farcaster.xyz/miniapps/ihTYq4bv7zgI/personal-id-mint";
     const isFarcaster = /warpcast|farcaster/i.test(navigator.userAgent);
     const text =
-  "🔥 I just checked in today! Mint your Personal Onchain ID and earn DEGEN rewards 🚀 Daily check-in = 1 Point, 1 Point = 1 DEGEN 👇";
+  "🔥 I just checked in today! Mint your Personal Onchain ID and earn DEGEN rewards 🚀 Daily check-in = 2 Point, 1 Point = 1 DEGEN, Instant Claim 👇";
 
 
     if (isFarcaster) {
@@ -367,7 +367,7 @@ export default function ProfilePage() {
               abi: ABI,
               functionName: "mintID",
               args: [metadataURL],
-              value: parseEther("0.0000067"),
+              value: parseEther("0"),
             },
           ],
        

@@ -293,7 +293,7 @@ export default function CheckInPage() {
       onSuccess: () => {
         setJustCheckedIn(true);
        
-        setMessage("Success! You've earned 1 Point. 10 Points = 10 DEGEN.");
+        setMessage("Success! You've earned 2 Point. 10 Points = 10 DEGEN.");
         refetchTime();
         refetchPoints();
         setLoading(false);
@@ -343,7 +343,7 @@ export default function CheckInPage() {
     const farcasterMiniAppUrl = "https://farcaster.xyz/miniapps/ihTYq4bv7zgI/personal-id-mint";
     const isFarcaster = /warpcast|farcaster/i.test(navigator.userAgent);
   const text =
-  "🔥 I just checked in today! Mint your Personal Onchain ID and earn DEGEN rewards 🚀 Daily check-in = 1 Point, 1 Point = 1 DEGEN 👇";
+  "🔥 I just checked in today! Mint your Personal Onchain ID and earn DEGEN rewards 🚀 Daily check-in = 2 Point, 1 Point = 1 DEGEN, Instant Claim 👇";
 
 
     if (isFarcaster) {
@@ -390,7 +390,7 @@ export default function CheckInPage() {
   <div className={styles.pointsTitle}>MY POINTS</div> 
   <div className={styles.pointsValue}>{availablePoints}</div> 
   <div className={styles.pointsLabel}>(1 PT = 1 DEGEN)</div> 
-  <div className={styles.pointsLabel}>(Per day check-in you will receive 1 points)</div> 
+  <div className={styles.pointsLabel}>(Per day check-in you will receive 2 points)</div> 
 </div>
 
       <div className={styles.streakCard}>
