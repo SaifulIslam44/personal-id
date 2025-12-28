@@ -117,4 +117,4 @@ accountAssociation: {
     ogDescription: "Mint a unique onchain ID on Base with daily check-in Rewards",
     ogImageUrl: `${ROOT_URL}/og.png`,
   },
-};
+} as const;
