@@ -266,7 +266,7 @@ export default function CheckInPage() {
   const currentSupply = contractTokenBalance ? Math.floor(Number(formatEther(contractTokenBalance as bigint))) : 0;
   const availablePoints = userPoints ? Number(userPoints) : 0;
 
-  const MIN_POINTS_TO_CLAIM = 5;
+  const MIN_POINTS_TO_CLAIM = 2;
 
   const canCheckIn = () => {
     if (justCheckedIn) return false;
