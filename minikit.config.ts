@@ -72,26 +72,20 @@
 
 
 
-// :MiniAppManifest
-
-// import type { MiniAppManifest } from "@coinbase/onchainkit/minikit";
-
 
 const ROOT_URL = (
-  process.env.NEXT_PUBLIC_URL ||
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : "http://localhost:3000")
+  process.env.NEXT_PUBLIC_URL || 
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL 
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` 
+    : "https://mints.personalids.xyz") 
 ).trim();
 
-
 export const minikitConfig = {
-accountAssociation: {
-  header: "eyJmaWQiOjEwNTAyNjgsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhkM2U4MzhFQThmMjczYzdkMzlDNmViMzUxMDMwOGJGNUNkYUUyY2VFIn0",
-  payload: "eyJkb21haW4iOiJtaW50cy5wZXJzb25hbGlkcy54eXoifQ",
-  signature: "FRCTSc10z0F7+sw+n0dEV7+uP+zO7k1JYPkzMNpMA+sRuG9fYRRFj32F/ucEcQw7YK2JxsPwdij4iojdBxfsihw="
-},
-
+  accountAssociation: {
+    header: "eyJmaWQiOjEwNTAyNjgsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHhkM2U4MzhFQThmMjczYzdkMzlDNmViMzUxMDMwOGJGNUNkYUUyY2VFIn0",
+    payload: "eyJkb21haW4iOiJtaW50cy5wZXJzb25hbGlkcy54eXoifQ",
+    signature: "FRCTSc10z0F7+sw+n0dEV7+uP+zO7k1JYPkzMNpMA+sRuG9fYRRFj32F/ucEcQw7YK2JxsPwdij4iojdBxfsihw="
+  },
 
   miniapp: {
     version: "1",
@@ -113,4 +107,4 @@ accountAssociation: {
     ogDescription: "Mint a unique onchain ID on Base with daily check-in Rewards",
     ogImageUrl: `${ROOT_URL}/og.png`,
   },
-} as const; 
+} as const;
