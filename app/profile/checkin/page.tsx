@@ -664,13 +664,13 @@ export default function CheckInPage() {
 
   // ইমেজ এবং ডিফল্ট পজিশন অনুযায়ী ডিগ্রি (0.008 = 0deg)
   const wheelSlices = [
-    { val: "0.008", centerDeg: 0 }, 
-    { val: "0.002", centerDeg: 51.43 }, 
-    { val: "0.005", centerDeg: 102.86 }, 
-    { val: "0.01",   centerDeg: 154.29 }, 
+    { val: "0.02", centerDeg: 0 }, 
+    { val: "0.006", centerDeg: 51.43 }, 
+    { val: "0.01", centerDeg: 102.86 }, 
+    { val: "0.03",   centerDeg: 154.29 }, 
     { val: "0.05",   centerDeg: 205.71 }, 
     { val: "0.1",    centerDeg: 257.14 }, 
-    { val: "0.004", centerDeg: 308.57 }
+    { val: "0.008", centerDeg: 308.57 }
   ];
 
   useEffect(() => {
@@ -777,7 +777,7 @@ const handleCheckIn = async () => {
     setMessage("Please confirm in your wallet...");
 
     sendCalls({
-      calls: [{ to: CONTRACT_ADDRESS as `0x${string}`, abi: ABI, functionName: "spinWheel", args: [] }],
+      calls: [{ to: CONTRACT_ADDRESS as `0x${string}`, abi: ABI, functionName: "spinWheel", args: [], gas:250000n } as any],
     }, {
       onSuccess: async () => {
         setSpinLoading(false); // কনফার্মেশন সফল হলে লোডিং বন্ধ
@@ -821,11 +821,11 @@ const handleCheckIn = async () => {
             }
           } 
           // যদি ৩০ সেকেন্ড পার হয়ে যায় (attempts >= 30)
-          else if (attempts >= 10) {
+          else if (attempts >= 20) {
             clearInterval(checkInterval);
             setIsSpinning(false);
             setSpinLoading(false);
-            setMessage("Network busy. Please try again few min later.");
+            setMessage("Base network gas now high. Please try again later.");
           }
         }, 1000);
       },
