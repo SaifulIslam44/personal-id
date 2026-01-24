@@ -768,8 +768,8 @@ const handleCheckIn = async () => {
     });
   };
 
-  const handleSpin = async () => {
-    if (availablePoints < 100 || isSpinning || spinLoading) return;
+const handleSpin = async () => {
+    if (availablePoints < 100 || isSpinning || spinLoading || cooldown > 0) return;
     const currentRewards = pendingSpinRewards ? (pendingSpinRewards as bigint) : BigInt(0);
     setOldRewardsRaw(currentRewards);
     
@@ -777,62 +777,79 @@ const handleCheckIn = async () => {
     setMessage("Please confirm in your wallet...");
 
     sendCalls({
-      calls: [{ to: CONTRACT_ADDRESS as `0x${string}`, abi: ABI, functionName: "spinWheel", args: [], gas:250000n } as any],
+      calls: [{ 
+        to: CONTRACT_ADDRESS as `0x${string}`, 
+        abi: ABI, 
+        functionName: "spinWheel", 
+        args: [], 
+        // ট্রানজ্যাকশন সাকসেস নিশ্চিত করতে গ্যাস লিমিট বাড়ানো হলো
+        gas: 400000n 
+      } as any],
     }, {
       onSuccess: async () => {
         setSpinLoading(false); // কনফার্মেশন সফল হলে লোডিং বন্ধ
         setMessage("Spinning... Good Luck!");
 
         let attempts = 0;
+        // দ্রুত রেসপন্স পাওয়ার জন্য ইন্টারভাল ১০০০ms থেকে কমিয়ে ৫০০ms করা হলো
         const checkInterval = setInterval(async () => {
           const { data: newData } = await refetchSpinRewards();
           const totalNewRewards = newData ? (newData as bigint) : BigInt(0);
           const winAmountRaw = totalNewRewards - currentRewards;
           attempts++;
 
-          if (winAmountRaw > BigInt(0) || attempts >= 15) {
-    clearInterval(checkInterval);
-    setIsSpinning(true);
-    
-    const winAmountStr = formatUnits(winAmountRaw, 6);
-    // সরাসরি রিফেচ করা ডাটা দেখানোর বদলে সাময়িকভাবে সেভ করুন
-    setTempRewards(formatUnits(totalNewRewards, 6)); 
-
-    const slice = wheelSlices.find(s => Math.abs(parseFloat(s.val) - parseFloat(winAmountStr)) < 0.0001);
-
-    if (slice) {
-        const currentOffset = rotation % 360; 
-        const finalRotation = rotation + 3600 + (360 - currentOffset) + (360 - slice.centerDeg); 
-        setRotation(finalRotation);
-
-        setTimeout(() => {
-            setIsSpinning(false);
-            // অ্যানিমেশন শেষ হওয়ার পর ক্লেইমএবল ব্যালেন্স আপডেট করুন
-            refetchSpinRewards(); 
-            setTempRewards(null); // টেম্পোরারি ডাটা ক্লিয়ার করুন
+          // attempts >= 60 মানে ৩০ সেকেন্ড (যেহেতু ইন্টারভাল ৫০০ms)
+          if (winAmountRaw > BigInt(0) || attempts >= 60) {
+            clearInterval(checkInterval);
+            setIsSpinning(true);
             
-            setMessage(`Congratulations! You won ${winAmountStr} USDC`);
-            refetchPoints(); refetchSupply();
-            setCooldown(20);
-        }, 8000); // চাকা ঘোরার সময় (৮ সেকেন্ড)
-    } else {
+            const winAmountStr = formatUnits(winAmountRaw, 6);
+            // সরাসরি রিফেচ করা ডাটা দেখানোর বদলে সাময়িকভাবে সেভ করুন
+            setTempRewards(formatUnits(totalNewRewards, 6)); 
+
+            const slice = wheelSlices.find(s => Math.abs(parseFloat(s.val) - parseFloat(winAmountStr)) < 0.0001);
+
+            if (slice) {
+                const currentOffset = rotation % 360; 
+                const finalRotation = rotation + 3600 + (360 - currentOffset) + (360 - slice.centerDeg); 
+                setRotation(finalRotation);
+
+                setTimeout(() => {
+                    setIsSpinning(false);
+                    // অ্যানিমেশন শেষ হওয়ার পর ক্লেইমএবল ব্যালেন্স আপডেট করুন
+                    refetchSpinRewards(); 
+                    setTempRewards(null); // টেম্পোরারি ডাটা ক্লিয়ার করুন
+                    
+                    setMessage(`Congratulations! You won ${winAmountStr} USDC`);
+                    refetchPoints(); refetchSupply();
+                    // কুলডাউন ২০ থেকে বাড়িয়ে ৩০ করা হলো স্প্যাম রোধে
+                    setCooldown(30);
+                }, 8000); // চাকা ঘোরার সময় (৮ সেকেন্ড)
+            } else {
               setIsSpinning(false);
               setMessage(`Win: ${winAmountStr} USDC`);
             }
           } 
-          // যদি ৩০ সেকেন্ড পার হয়ে যায় (attempts >= 30)
-          else if (attempts >= 20) {
+          // ৩০ সেকেন্ড পার হয়ে গেলে ইউজারকে রিফ্রেশ করতে বলা হবে
+          else if (attempts >= 60) {
             clearInterval(checkInterval);
             setIsSpinning(false);
             setSpinLoading(false);
-            setMessage("Base network gas now high. Please try again later.");
+            setMessage("Network is slow. Please refresh the page to see your rewards.");
           }
-        }, 1000);
+        }, 500); // ৫০০ms ইন্টারভাল ডাটা দ্রুত সিঙ্ক করার জন্য
       },
-      onError: () => { setSpinLoading(false); setIsSpinning(false); setMessage("Spin failed."); }
+      onError: (err) => { 
+        console.error("Spin error:", err);
+        setSpinLoading(false); 
+        setIsSpinning(false); 
+        setMessage("Spin failed. Check balance or try again."); 
+      }
     });
   };
 
+
+  
   const handleClaimReward = async () => {
     if (Number(spinRewards) <= 0) return;
     setClaimLoading(true);
