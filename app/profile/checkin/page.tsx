@@ -781,7 +781,8 @@ const handleCheckIn = async () => {
     }, {
       onSuccess: async () => {
         setSpinLoading(false); // কনফার্মেশন সফল হলে লোডিং বন্ধ
-        setMessage("Spinning... Good Luck!");
+        // setMessage("Spinning... Good Luck!");
+        setMessage("Wait Checking Blockchain Confimation. Good Luck!");
 
         let attempts = 0;
         const checkInterval = setInterval(async () => {
@@ -790,7 +791,7 @@ const handleCheckIn = async () => {
           const winAmountRaw = totalNewRewards - currentRewards;
           attempts++;
 
-          if (winAmountRaw > BigInt(0) || attempts >= 30) {
+          if (winAmountRaw > BigInt(0) || attempts >= 20) {
     clearInterval(checkInterval);
     setIsSpinning(true);
     
@@ -825,9 +826,9 @@ const handleCheckIn = async () => {
             clearInterval(checkInterval);
             setIsSpinning(false);
             setSpinLoading(false);
-            setMessage("Base network gas now high. Please try again later.");
+            setMessage("Blockchain Confirmation Failed. Please try again.");
           }
-        }, 5000);
+        }, 4000);
       },
       onError: () => { setSpinLoading(false); setIsSpinning(false); setMessage("Spin failed."); }
     });
