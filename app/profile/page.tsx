@@ -283,7 +283,7 @@ export default function ProfilePage() {
   const [isFollowed, setIsFollowed] = useState(false);
   const [manualStatus, setManualStatus] = useState("");
   const [loading, setLoading] = useState(false);
-  const [_hasShared, _setHasShared] = useState(false);
+  const [hasShared, setHasShared] = useState(false);
  
   const { sendCalls, isPending } = useSendCalls();
 
@@ -324,36 +324,36 @@ useEffect(() => {
 
 
 
-  // const handleShare = () => {
-  //   // const baseDomain = "https://base.app/app/mints.personalids.xyz"; 
-  //   const baseDomain = "https://farcaster.xyz/miniapps/ihTYq4bv7zgI/personal-id-mint"; 
-  //   const farcasterMiniAppUrl =
-  //     "https://farcaster.xyz/miniapps/ihTYq4bv7zgI/personal-id-mint";
-  //   const isFarcaster = /warpcast|farcaster/i.test(navigator.userAgent);
-  //   const text =
-  // "🔥 Mint your Personal Onchain ID & claim +50 PIM rewards instantly! 🚀 Use your PIM to spin for USDC rewards (100 PIM per spin, tokens burn after use). Don't miss out! 👇";
+  const handleShare = () => {
+    // const baseDomain = "https://base.app/app/mints.personalids.xyz"; 
+    const baseDomain = "https://farcaster.xyz/miniapps/ihTYq4bv7zgI/personal-id-mint"; 
+    const farcasterMiniAppUrl =
+      "https://farcaster.xyz/miniapps/ihTYq4bv7zgI/personal-id-mint";
+    const isFarcaster = /warpcast|farcaster/i.test(navigator.userAgent);
+    const text =
+  "🔥 Mint your Personal Onchain ID & claim +50 PIM rewards instantly! 🚀 Use your PIM to spin for USDC rewards (100 PIM per spin, tokens burn after use). Don't miss out! 👇";
 
 
-  //   if (isFarcaster) {
-  //     const shareUrl =
-  //       "https://warpcast.com/~/compose?" +
-  //       "text=" +
-  //       encodeURIComponent(text) +
-  //       "&embeds[]=" +
-  //       encodeURIComponent(farcasterMiniAppUrl);
-  //     window.open(shareUrl, "_blank");
-  //   } else {
-  //     const shareUrl =
-  //       "https://warpcast.com/~/compose?text=" +
-  //       encodeURIComponent(text) +
-  //       "&embeds[]=" +
-  //       encodeURIComponent(baseDomain);
-  //     window.open(shareUrl, "_blank");
-  //   }
+    if (isFarcaster) {
+      const shareUrl =
+        "https://warpcast.com/~/compose?" +
+        "text=" +
+        encodeURIComponent(text) +
+        "&embeds[]=" +
+        encodeURIComponent(farcasterMiniAppUrl);
+      window.open(shareUrl, "_blank");
+    } else {
+      const shareUrl =
+        "https://warpcast.com/~/compose?text=" +
+        encodeURIComponent(text) +
+        "&embeds[]=" +
+        encodeURIComponent(baseDomain);
+      window.open(shareUrl, "_blank");
+    }
 
 
-  //   setHasShared(true);
-  // };
+    setHasShared(true);
+  };
 
 
 // ✅ Handle Mint using SendCalls
@@ -476,8 +476,8 @@ const savedRef = localStorage.getItem("referrer_address");
         </div>
       </div>
 
-         {/* {(!isFollowed || !hasShared) && ( */}
-          {(!isFollowed) && (
+          {(!isFollowed || !hasShared) && ( 
+          // {(!isFollowed) && (
         <div className={styles.taskBox}>
           <h4>Task Required</h4>
           <p>Follow The Developer Profile and Share To Unlock Mint</p>
@@ -499,19 +499,19 @@ const savedRef = localStorage.getItem("referrer_address");
           >
             Follow on Farcaster
           </a>
-          {/* <div className={styles.orText}>AND</div>
+           <div className={styles.orText}>AND</div>
            <button
             className={styles.followBtn}
             onClick={handleShare}
             style={{ marginBottom: "10px", display: "block" }}
           >
             Share on Base or Farcaster
-          </button> */}
+          </button> 
         </div>
       )}
 
-      {/* {isFollowed && hasShared && ( */}
-        {isFollowed && (
+       {isFollowed && hasShared && ( 
+        // {isFollowed && (
         <div className={styles.mintWrapper}>
           <button
             className={styles.mintButton}
