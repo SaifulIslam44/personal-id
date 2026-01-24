@@ -827,7 +827,7 @@ const handleCheckIn = async () => {
             setSpinLoading(false);
             setMessage("Base network gas now high. Please try again later.");
           }
-        }, 3000);
+        }, 5000);
       },
       onError: () => { setSpinLoading(false); setIsSpinning(false); setMessage("Spin failed."); }
     });
