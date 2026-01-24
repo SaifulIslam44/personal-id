@@ -640,7 +640,7 @@ import { formatUnits } from "viem";
 import { CONTRACT_ADDRESS, ABI } from "@/lib/contract";
 import styles from "./checkin.module.css";
 import { useConnect } from "wagmi";
-import { useWriteContract } from "wagmi";
+
 
 const USDC_TOKEN_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 
@@ -657,7 +657,6 @@ export default function CheckInPage() {
   const [tempRewards, setTempRewards] = useState<string | null>(null);
   const [oldRewardsRaw, setOldRewardsRaw] = useState<bigint>(BigInt(0));
   const [cooldown, setCooldown] = useState(0); 
-  const { writeContractAsync } = useWriteContract();
   const { sendCalls } = useSendCalls(); 
   const { connect, connectors } = useConnect();
 
