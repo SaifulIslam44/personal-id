@@ -1,0 +1,353 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* পুরো স্ক্রিন কভার করার জন্য */
+  padding: 15px;
+  background-color: #000000; /* ডিফল্ট ডার্ক ব্যাকগ্রাউন্ড */
+  color: #ffffff;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ⚪ লাইট মোড অ্যাডজাস্টমেন্ট */
+.lightMode {
+  background-color: #f5f5f5; /* হালকা সাদা ব্যাকগ্রাউন্ড */
+  color: #000000;
+}
+
+/* User Header Styling */
+.userHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding-bottom: 40px;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pfp {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.lightMode .pfp {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.userName {
+  font-size: 18px;
+  font-weight: 700;
+  color: inherit; /* মোড অনুযায়ী অটো কালার নিবে */
+}
+
+.themeBtn {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 5px;
+}
+
+/* Content Area */
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.header {
+  margin-bottom: 35px;
+}
+
+
+
+
+
+
+
+.title {
+  font-size: 25px;
+  font-weight: 900;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  
+  /* White & Silver Glossy Gradient */
+  background: linear-gradient(
+    to right, 
+    #ffffff 20%, 
+    #a0a0a0 40%, 
+    #ffffff 50%, 
+    #a0a0a0 60%, 
+    #ffffff 80%
+  );
+  background-size: 200% auto;
+  
+  /* টেক্সটের ভেতরে গ্রেডিয়েন্ট দেখানোর জন্য */
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  
+  /* ধীরগতির গ্লসি সুইপ অ্যানিমেশন */
+  animation: whiteGlossy 5s linear infinite;
+}
+
+/* সাদা আভাটি ধীরগতিতে প্রবাহিত হওয়ার লজিক */
+@keyframes whiteGlossy {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* ডার্ক মোডে গ্লো ইফেক্ট */
+.container:not(.lightMode) .title {
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+}
+
+/* লাইট মোডে অ্যাডজাস্টমেন্ট */
+.lightMode .title {
+  background: linear-gradient(
+    to right, 
+    #000000 20%, 
+    #555555 40%, 
+    #000000 50%, 
+    #555555 60%, 
+    #000000 80%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+
+
+
+
+
+
+
+
+.subtitle {
+  font-size: 16px;
+  color: #a0a0a0;
+  line-height: 1.4;
+}
+
+.lightMode .subtitle {
+  color: #555555;
+}
+
+.subtitle strong {
+  color: #0052ff; /* গ্লোবাল ব্লু হাইলাইট */
+}
+
+.actionSection {
+  width: 100%;
+  max-width: 350px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.shareButton {
+  background-color: #0052ff;
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.copyButton {
+  background-color: #212634;
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+/* লাইট মোডে কপি বাটনের স্টাইল */
+.lightMode .copyButton {
+  background-color: #e2e8f0;
+  color: #000000;
+}
+
+.statusSection {
+  margin-top: 50px;
+}
+
+.statusText {
+  color: #888;
+  font-size: 16px;
+}
+
+.lightMode .statusText {
+  color: #444444;
+}
+
+.counterBox {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 15px 30px;
+  border-radius: 15px;
+}
+
+.lightMode .counterBox {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.countNumber {
+  font-size: 32px;
+  font-weight: 800;
+  color: #0052ff;
+  margin: 0;
+}
+
+/* কপি করার পর বাটনের স্টাইল */
+.copiedActive {
+  border: 1px solid #4ade80 !important; /* Green border */
+  transition: all 0.3s ease;
+}
+
+/* ৩ সেকেন্ডের ট্রানজিশন ইফেক্ট */
+.copyButton span {
+  transition: color 0.3s ease;
+}
+
+
+
+.listHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 700;
+  margin-top: 10px;
+}
+
+.iconBlue {
+  color: #0052ff;
+}
+
+.statusText {
+  color: #888;
+  font-size: 14px;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.lightMode .statusText {
+  color: #555;
+}
+
+/* Copied Active Border */
+.copiedActive {
+  border: 1px solid #4ade80 !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+.statusSection {
+  margin-top: 30px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+}
+
+.labelBlock {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 17px;
+  font-weight: 600;
+  color: #efeff1;
+}
+
+.iconBlue {
+  color: #3b82f6;
+}
+
+
+.countBlock {
+  background: rgba(59, 130, 246, 0.1); 
+  border: 1.5px solid #3b82f6;
+  min-width: 55px; /* নূন্যতম সাইজ */
+  min-height: 55px;
+  padding: 10px; /* ভেতরের খালি জায়গা যাতে সংখ্যা গায়ে লেগে না যায় */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 999px; /* সংখ্যা বড় হলেও এটি গোল/পিল আকারে সুন্দর থাকবে */
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+}
+
+.countValue {
+  font-size: 22px; /* বড় সংখ্যার জন্য কিছুটা ছোট ফন্ট যা মানানসই */
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+}
+.statusText {
+  color: #71717a;
+  font-size: 13px;
+  margin: 0;
+}
+
+/* Light Mode Support */
+:global(.light-mode) .statusSection {
+  background: rgba(0, 0, 0, 0.03);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+:global(.light-mode) .labelBlock {
+  color: #1e293b;
+}
+
+:global(.light-mode) .countBlock {
+  background: #f1f5f9;
+}
+
+:global(.light-mode) .countValue {
+  color: #1e293b;
+}

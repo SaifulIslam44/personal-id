@@ -259,12 +259,17 @@ import { useMiniKit } from "@coinbase/onchainkit/minikit";
 import { useRouter } from "next/navigation";
 import { useAccount, useReadContract } from "wagmi";
 import { useSendCalls } from "wagmi";
-import { parseEther } from "viem";
-import sdk from "@farcaster/frame-sdk";
+import { getAddress, isAddress, parseEther } from "viem";
+import miniApp from "@farcaster/miniapp-sdk";
+import Image from "next/image";
+
 import styles from "./profile.module.css";
 import { CONTRACT_ADDRESS, ABI } from "@/lib/contract";
 
-/* eslint-disable @next/next/no-img-element */
+
+
+
+
 
 export default function ProfilePage() {
   const { context } = useMiniKit();
@@ -272,25 +277,28 @@ export default function ProfilePage() {
   const router = useRouter();
   const { address, isConnected } = useAccount();
 
+         
+
   // ✅ States
   const [isFollowed, setIsFollowed] = useState(false);
   const [manualStatus, setManualStatus] = useState("");
   const [loading, setLoading] = useState(false);
-  const [hasShared, setHasShared] = useState(false);
+  const [_hasShared, _setHasShared] = useState(false);
  
   const { sendCalls, isPending } = useSendCalls();
 
-  useEffect(() => {
-    const loadFarcaster = async () => {
-      try {
-        const ctx = await sdk.context;
-        setFrameContext(ctx);
-      } catch (err) {
-        console.error("Farcaster error:", err);
-      }
-    };
-    loadFarcaster();
-  }, []);
+useEffect(() => {
+  const loadContext = async () => {
+    try {
+      const ctx = await miniApp.context;
+      setFrameContext(ctx);
+    } catch (err) {
+      console.error("MiniApp context error:", err);
+    }
+  };
+
+  loadContext();
+}, []);
 
   const user = {
     fid: context?.user?.fid || frameContext?.user?.fid,
@@ -316,35 +324,36 @@ export default function ProfilePage() {
 
 
 
-  const handleShare = () => {
-    const baseDomain = "https://base.app/app/mints.personalids.xyz"; 
-    const farcasterMiniAppUrl =
-      "https://farcaster.xyz/miniapps/ihTYq4bv7zgI/personal-id-mint";
-    const isFarcaster = /warpcast|farcaster/i.test(navigator.userAgent);
-    const text =
-  "🔥 I just checked in today! Mint your Personal Onchain ID and earn DEGEN rewards 🚀 Daily check-in = 2 Point, 1 Point = 1 DEGEN, Instant Claim 👇";
+  // const handleShare = () => {
+  //   // const baseDomain = "https://base.app/app/mints.personalids.xyz"; 
+  //   const baseDomain = "https://farcaster.xyz/miniapps/ihTYq4bv7zgI/personal-id-mint"; 
+  //   const farcasterMiniAppUrl =
+  //     "https://farcaster.xyz/miniapps/ihTYq4bv7zgI/personal-id-mint";
+  //   const isFarcaster = /warpcast|farcaster/i.test(navigator.userAgent);
+  //   const text =
+  // "🔥 Mint your Personal Onchain ID & claim +50 PIM rewards instantly! 🚀 Use your PIM to spin for USDC rewards (100 PIM per spin, tokens burn after use). Don't miss out! 👇";
 
 
-    if (isFarcaster) {
-      const shareUrl =
-        "https://warpcast.com/~/compose?" +
-        "text=" +
-        encodeURIComponent(text) +
-        "&embeds[]=" +
-        encodeURIComponent(farcasterMiniAppUrl);
-      window.open(shareUrl, "_blank");
-    } else {
-      const shareUrl =
-        "https://warpcast.com/~/compose?text=" +
-        encodeURIComponent(text) +
-        "&embeds[]=" +
-        encodeURIComponent(baseDomain);
-      window.open(shareUrl, "_blank");
-    }
+  //   if (isFarcaster) {
+  //     const shareUrl =
+  //       "https://warpcast.com/~/compose?" +
+  //       "text=" +
+  //       encodeURIComponent(text) +
+  //       "&embeds[]=" +
+  //       encodeURIComponent(farcasterMiniAppUrl);
+  //     window.open(shareUrl, "_blank");
+  //   } else {
+  //     const shareUrl =
+  //       "https://warpcast.com/~/compose?text=" +
+  //       encodeURIComponent(text) +
+  //       "&embeds[]=" +
+  //       encodeURIComponent(baseDomain);
+  //     window.open(shareUrl, "_blank");
+  //   }
 
-    // ✅ share হলে mint unlock-এর জন্য flag true
-    setHasShared(true);
-  };
+
+  //   setHasShared(true);
+  // };
 
 
 // ✅ Handle Mint using SendCalls
@@ -354,11 +363,33 @@ export default function ProfilePage() {
     setManualStatus("Transaction in Progress...");
     setLoading(true);
 
-    try {
-      const baseUrl = typeof window !== "undefined" ? window.location.origin : "";
-      const metadataURL = `${baseUrl}/api/metadata/${user.fid}`;
+const savedRef = localStorage.getItem("referrer_address");
+  let finalReferrer: `0x${string}` = "0x0000000000000000000000000000000000000000";
 
-      
+  if (savedRef && isAddress(savedRef)) {
+    const formattedRef = getAddress(savedRef);
+    if (formattedRef.toLowerCase() !== address.toLowerCase()) {
+      finalReferrer = formattedRef;
+    }
+  }
+
+  // --- নতুন স্ট্যাটাস মেসেজ লজিক ---
+  if (finalReferrer !== "0x0000000000000000000000000000000000000000") {
+    // setManualStatus(`✅ Referral Active: ${finalReferrer.slice(0, 6)}... (Ref count will be added)`);
+  } else {
+    // setManualStatus("ℹ️ Minting Profile (Direct)");
+  }
+
+  console.log("🚀 Minting with Referrer:", finalReferrer);
+
+  try {
+    const metadataURL = `${window.location.origin}/api/metadata/${user.fid}`;
+
+
+
+// setManualStatus(`Checking Ref: ${referrerAddress.slice(0, 6)}...`);
+
+
       sendCalls(
         {
           calls: [
@@ -366,7 +397,8 @@ export default function ProfilePage() {
               to: CONTRACT_ADDRESS as `0x${string}`,
               abi: ABI,
               functionName: "mintID",
-              args: [metadataURL],
+              // args: [metadataURL],
+              args: [metadataURL, finalReferrer, BigInt(user.fid)],
               value: parseEther("0"),
             },
           ],
@@ -425,11 +457,14 @@ export default function ProfilePage() {
 
       <div className={styles.card}>
         <div className={styles.avatarWrapper}>
-          <img
-            src={profileImage || "/default-avatar.png"}
-            alt="User"
-            className={styles.avatar}
-          />
+          <Image
+  src={profileImage || "/default-avatar.png"}
+  alt="User"
+  className={styles.avatar}
+  width={80} 
+  height={80}
+  unoptimized 
+/>
         </div>
         <div className={styles.info}>
           <h3>{user?.displayName || "Base User"}</h3>
@@ -441,7 +476,8 @@ export default function ProfilePage() {
         </div>
       </div>
 
-         {(!isFollowed || !hasShared) && (
+         {/* {(!isFollowed || !hasShared) && ( */}
+          {(!isFollowed) && (
         <div className={styles.taskBox}>
           <h4>Task Required</h4>
           <p>Follow The Developer Profile and Share To Unlock Mint</p>
@@ -463,18 +499,19 @@ export default function ProfilePage() {
           >
             Follow on Farcaster
           </a>
-          <div className={styles.orText}>AND</div>
+          {/* <div className={styles.orText}>AND</div>
            <button
             className={styles.followBtn}
             onClick={handleShare}
             style={{ marginBottom: "10px", display: "block" }}
           >
             Share on Base or Farcaster
-          </button>
+          </button> */}
         </div>
       )}
 
-      {isFollowed && hasShared && (
+      {/* {isFollowed && hasShared && ( */}
+        {isFollowed && (
         <div className={styles.mintWrapper}>
           <button
             className={styles.mintButton}

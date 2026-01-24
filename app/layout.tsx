@@ -6,7 +6,7 @@ import { SafeArea } from "@coinbase/onchainkit/minikit";
 import { minikitConfig } from "../minikit.config";
 import { RootProvider } from "./rootProvider";
 import "./globals.css";
-
+import ConditionalFooter from "./components/ConditionalFooter";
 
 import { Providers as WalletProviders } from "./providers"; 
 
@@ -46,6 +46,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+
+
   return (
     
     <html lang="en">
@@ -55,9 +58,7 @@ export default function RootLayout({
             <SafeArea>
               {children}
             </SafeArea>
-            <footer className="app-footer">
-              Developed by ST Lifestyle
-            </footer>
+             <ConditionalFooter />
           </WalletProviders>
         </RootProvider>
       </body>

@@ -1,0 +1,245 @@
+.wrapper {
+  padding: 16px;
+  min-height: 100vh; /* পুরো স্ক্রিন সাদা বা কালো রাখার জন্য */
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #000000; /* ডিফল্ট ডার্ক মোড */
+  transition: background-color 0.3s ease;
+}
+
+/* ☀️ Light Mode: ডাইনামিক লাইট মোড সাপোর্ট */
+.lightMode {
+  background-color: #f5f5f5 !important;
+}
+
+/* 🆕 User Header: প্রোফাইল পিকচার এবং নামের জন্য */
+.userHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding-bottom: 25px;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pfp {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.userName {
+  font-size: 17px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.themeBtn {
+  background: none;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+/* 🔹 TITLE CENTER + PREMIUM LOOK */
+.header {
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+
+
+
+
+
+
+.title {
+  font-size: 16px;
+  font-weight: 900;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  
+  /* White & Silver Glossy Gradient */
+  background: linear-gradient(
+    to right, 
+    #ffffff 20%, 
+    #a0a0a0 40%, 
+    #ffffff 50%, 
+    #a0a0a0 60%, 
+    #ffffff 80%
+  );
+  background-size: 200% auto;
+  
+  /* টেক্সটের ভেতরে গ্রেডিয়েন্ট দেখানোর জন্য */
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  
+  /* ধীরগতির গ্লসি সুইপ অ্যানিমেশন */
+  animation: whiteGlossy 5s linear infinite;
+}
+
+/* সাদা আভাটি ধীরগতিতে প্রবাহিত হওয়ার লজিক */
+@keyframes whiteGlossy {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* ডার্ক মোডে গ্লো ইফেক্ট */
+.container:not(.lightMode) .title {
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+}
+
+/* লাইট মোডে অ্যাডজাস্টমেন্ট */
+.lightMode .title {
+  background: linear-gradient(
+    to right, 
+    #000000 20%, 
+    #555555 40%, 
+    #000000 50%, 
+    #555555 60%, 
+    #000000 80%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+
+
+
+
+
+
+
+
+
+
+.subtitle {
+  font-size: 13px;
+  color: #9a9a9a;
+  margin-top: 6px;
+}
+
+/* CARD */
+.taskCard {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(180deg, #0f0f0f, #0a0a0a);
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid #1f1f1f;
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+}
+
+/* LEFT ICON */
+.left {
+  margin-right: 14px;
+}
+
+.icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: radial-gradient(circle at top, #1f1f1f, #111);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+/* CENTER */
+.center {
+  flex: 1;
+}
+
+.center h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.desc {
+  font-size: 13px;
+  color: #9a9a9a;
+  margin-top: 4px;
+  margin-bottom: 10px;
+}
+
+/* BUTTONS */
+.verifyBtn, .claimBtn {
+  background: #00ff9c;
+  color: #000;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+}
+
+.retryBtn {
+  background: #ff4d4f;
+  color: #000;
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  border: none;
+}
+
+/* RIGHT REWARD */
+.right {
+  margin-left: 12px;
+  align-self: flex-start;
+}
+
+.reward, .done {
+  font-size: 13px;
+  color: #00ff9c;
+  font-weight: 700;
+}
+
+/* ☀️ Light Mode Elements Adjustment */
+.lightMode .userName, 
+.lightMode .themeBtn, 
+.lightMode .title, 
+.lightMode .center h3 {
+  color: #000000 !important;
+}
+
+.lightMode .taskCard {
+  background: #ffffff !important;
+  border: 1px solid #e0e0e0 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.lightMode .pfp {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.lightMode .icon {
+  background: #eeeeee !important;
+}
+
+.lightMode .subtitle, .lightMode .desc {
+  color: #666666;
+}

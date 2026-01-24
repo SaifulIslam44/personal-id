@@ -153,6 +153,7 @@ export async function GET(
     const userName = user.displayName || "Base User";
     const userHandle = user.username ? `@${user.username}` : "";
     const pfpUrl = user.pfp.url || "https://wrpcd.xyz/pfp/default.png";
+    // const pfpUrl = user.pfp?.url || "https://i.imgur.com/8RK9Zf3.png";
 
     const isJson = url.pathname.endsWith('.json') || req.headers.get('accept')?.includes('json');
 
@@ -266,7 +267,7 @@ export async function GET(
                 letterSpacing: '2px',
               }}
             >
-              Base App User
+              VERIFIED PIM USER
             </span>
           </div>
         </div>

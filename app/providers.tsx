@@ -18,6 +18,7 @@ export const config = createConfig({
   connectors: [
     farcasterMiniApp(), // এটিই Farcaster Wallet-এর সাথে কানেক্ট করে
   ],
+
 });
 
 export function Providers({ children }: { children: React.ReactNode }) {

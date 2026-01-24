@@ -259,65 +259,6 @@
 
 
 
-/* মেইন কন্টেইনার */
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
-  padding: 24px;
-  background-color: #4e9afd42;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-/* লোডিং এর মেইন বক্স */
-.loadingWrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  margin-top: 100px;
-}
-
-/* গোল স্পিনার অ্যানিমেশন */
-.loadingSpinner {
-  width: 50px;
-  height: 50px;
-  border: 5px solid #afc9ff;
-  border-top: 5px solid #0052ff;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 24px;
-}
-
-/* বড় টেক্সট (Wallet Connection Required) */
-.loadingText {
-  font-size: 20px;
-  font-weight: 700;
-  color: #fca2a2;
-  margin-bottom: 8px;
-  animation: pulse 1.5s ease-in-out infinite;
-}
-
-/* নিচের ছোট টেক্সট */
-.loadingSubText {
-  font-size: 14px;
-  color: #6b7280;
-  font-weight: 500;
-}
-
-/* স্পিনার ঘোরার জন্য Keyframes */
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* টেক্সট লাফালাফি বা Pulse করার জন্য Keyframes */
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
-}
 
 
 
@@ -337,258 +278,332 @@
 
 
 
-
-
-
-
-
-
-
-
-
-/* checkin.module.css */
 
 .container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px 10px;
+  padding: 10px;
   min-height: 100vh;
-  background-color: #000000;
-  color: #ffffff;
+  background-color: #000;
+  color: #fff;
   font-family: 'Inter', sans-serif;
   overflow-x: hidden;
 }
 
-/* ১. পারফেক্ট সেন্টারড ৩ডি আরজিবি টাইটেল */
 .title {
-  width: 100%;
-  max-width: 350px;
-  text-align: center;
-  font-size: 26px; /* টাইটেল সেন্টার রাখতে সাইজ কিছুটা কমানো হয়েছে */
+  font-size: 20px;
   font-weight: 900;
-  margin-top: 10px;
   margin-bottom: 10px;
   text-transform: uppercase;
-  line-height: 1.2;
+  letter-spacing: 1px;
+  
+  /* White & Silver Glossy Gradient */
   background: linear-gradient(
     to right, 
-    #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff, #ff0000
+    #ffffff 20%, 
+    #a0a0a0 40%, 
+    #ffffff 50%, 
+    #a0a0a0 60%, 
+    #ffffff 80%
+  );
+  background-size: 200% auto;
+  
+  /* টেক্সটের ভেতরে গ্রেডিয়েন্ট দেখানোর জন্য */
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  
+  /* ধীরগতির গ্লসি সুইপ অ্যানিমেশন */
+  animation: whiteGlossy 5s linear infinite;
+}
+
+/* সাদা আভাটি ধীরগতিতে প্রবাহিত হওয়ার লজিক */
+@keyframes whiteGlossy {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* ডার্ক মোডে গ্লো ইফেক্ট */
+.container:not(.lightMode) .title {
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+}
+
+/* লাইট মোডে অ্যাডজাস্টমেন্ট */
+.lightMode .title {
+  background: linear-gradient(
+    to right, 
+    #000000 20%, 
+    #555555 40%, 
+    #000000 50%, 
+    #555555 60%, 
+    #000000 80%
   );
   background-size: 200% auto;
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
-  animation: rgbShift 3s linear infinite;
-  filter: drop-shadow(0px 4px 10px rgba(0, 0, 0, 0.8));
 }
 
-@keyframes rgbShift {
-  to { background-position: 200% center; }
-}
 
-/* ২. সাপ্লাই ডিসপ্লে বার */
 .supplyHeader {
   background: rgba(255, 255, 255, 0.05);
-  padding: 4px 8px;
-  border-radius: 5px;
+  padding: 6px 12px;
+  border-radius: 8px;
   font-size: 12px;
   margin-bottom: 5px;
   display: flex;
   align-items: center;
   gap: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
   color: #888;
 }
 
-.supplyDot {
-  width: 8px;
-  height: 8px;
-  background-color: #00ff80;
-  border-radius: 5%;
-  box-shadow: 0 0 10px rgba(0, 255, 128, 0.6);
+.supplyDot { 
+  width: 8px; 
+  height: 8px; 
+  background: #00ff80; 
+  border-radius: 50%; 
+  box-shadow: 0 0 10px #00ff80; 
 }
 
-/* ৩. পয়েন্ট কার্ড ডিজাইন (আগের চেয়ে ছোট এবং ক্লিন) */
-.pointsDisplay {
+.spinSection { 
+  position: relative; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  margin-bottom: 20px; 
+}
+
+.spinSection::before { 
+  content: '▼'; 
+  position: absolute; 
+  top: -10px; 
+  color: #ff0000; 
+  font-size: 24px; 
+  z-index: 20; 
+}
+
+.wheelContainer { 
+  position: relative; 
+  width: 210px; 
+  height: 210px; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+}
+
+.wheel {
   width: 100%;
-  max-width: 280px; /* উইডথ কমানো হয়েছে */
-  background: linear-gradient(145deg, #0f0f0f, #050505);
-  padding: 18px 10px; /* প্যাডিং কমানো হয়েছে */
-  border-radius: 20px;
-  text-align: center;
-  margin-bottom: 10px;
-  border: 1px solid #1a1a1a;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+  height: 100%;
+  border-radius: 50%;
+  border: 6px solid #1a1a1a;
+  position: relative;
+  overflow: hidden;
+  /* ০.০০৮ কে অ্যারোর নিচে সোজা রাখতে ২৫.৭ ডিগ্রি বামে ঘুরিয়ে শুরু করা হয়েছে */
+  background: conic-gradient(
+    from -25.7deg,
+    #857a7a 0deg 51.4deg,
+    #94857f 51.4deg 102.8deg,
+    #837e7e 102.8deg 154.2deg,
+    #a17f7f 154.2deg 205.6deg,
+    #9c928e 205.6deg 257deg,
+    #82837e 257deg 308.4deg,
+    #b69385 308.4deg 360deg
+  );
+  transition: transform 8s cubic-bezier(0.15, 0, 0.1, 1);
 }
 
-.pointsTitle {
-  color: #666;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  margin-bottom: 2px;
+.segment { 
+  position: absolute; 
+  width: 100%; 
+  height: 100%; 
+  transform-origin: 50% 50%; 
+  display: flex; 
+  justify-content: center; 
 }
 
-.pointsValue {
-  font-size: 10px; /* ফন্ট সাইজ ৫৬ থেকে কমিয়ে ৪৮ করা হয়েছে */
-  font-weight: 500;
-  color: #ffffff;
-  line-height: 1;
-  margin: 5px 0;
-  text-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+.rewardBox { 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  margin-top: 12px; 
 }
 
-.pointsLabel {
+.rewardValue { 
+  font-size: 9px; 
+  font-weight: 900; 
+  color: #fff; 
+  line-height: 1; 
+}
+
+.tokenLogoLarge { 
+  width: 22px; 
+  height: 22px; 
+  margin-top: 6px; 
+  border-radius: 50%; 
+  background: #fff; 
+  padding: 1px; 
+}
+
+/* স্লাইসের টেক্সট পজিশন নিখুঁত করা হয়েছে */
+.s1 { transform: rotate(0deg); }   
+.s2 { transform: rotate(51.4deg); }   
+.s3 { transform: rotate(102.8deg); }  
+.s4 { transform: rotate(154.2deg); }  
+.s5 { transform: rotate(205.6deg); }  
+.s6 { transform: rotate(257deg); }    
+.s7 { transform: rotate(308.4deg); }  
+
+.wheelInner { 
+  position: absolute; 
+  width: 60px; 
+  height: 60px; 
+  background: #000; 
+  border-radius: 50%; 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
+  font-size: 24px; 
+  border: 4px solid #1a1a1a; 
+  z-index: 15; 
+}
+
+.spinButtonLocked {
+  margin-top: 15px;
+  padding: 10px 35px;
+  background: #1a1a1a;
   color: #444;
+  border-radius: 25px;
+  font-weight: 900;
+  border: 1px solid #333;
   font-size: 10px;
-  font-weight: 500;
-  margin-top: 5px;
-  line-height: 1.4;
-}
-
-/* ৪. লাস্ট চেক-ইন ইনফো */
-.streakCard {
-  width: 100%;
-  max-width: 320px;
-  padding: 12px;
-  border-radius: 12px;
-  text-align: center;
-  margin-bottom: 15px;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid #111;
-}
-
-.streakLabel {
-  color: #333;
-  font-size: 10px;
-  text-transform: uppercase;
-  margin-bottom: 4px;
-}
-
-.dateDisplay {
-  font-size: 14px;
-  color: #999;
-}
-
-/* কমন স্ট্যাটাস বক্স */
-.statusBoxEligible, .statusBoxNotEligible {
-  width: 100%;
-  max-width: 320px;
-  padding: 10px;
-  border-radius: 12px;
-  margin-bottom: 8px;
-  font-size: 13px;
-  font-weight: 500;
-  text-align: center;
-}
-
-.statusBoxEligible {
-  background: rgba(0, 255, 128, 0.03);
-  border: 1px solid rgba(0, 255, 128, 0.15);
-  color: #00ff80;
-}
-
-.statusBoxNotEligible {
-  background: rgba(255, 68, 68, 0.03);
-  border: 1px solid rgba(255, 68, 68, 0.15);
-  color: #ff4444;
-}
-
-/* ৫. ক্লেইম স্ট্যাটাস বক্স */
-.statusBox {
-  width: 100%;
-  max-width: 320px;
-  padding: 8px;
-  border-radius: 10px;
-  margin-bottom: 20px;
-  color: #00ff80;
-  font-size: 13px;
-  text-align: center;
-}
-
-/* ৬. চেক-ইন বাটন */
-.checkInButton {
-  width: 100%;
-  max-width: 320px;
-  padding: 16px;
-  border-radius: 14px;
-  border: none;
-  font-weight: 800;
-  font-size: 15px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  background: #ffffff;
-  color: #000;
-  margin-bottom: 15px;
-}
-
-.checkInButton:disabled {
-  background: #111;
-  color: #444;
-  border: 1px solid #1a1a1a;
   cursor: not-allowed;
+  opacity: 0.7;
 }
 
-/* ৭. অ্যাকশন বাটন রো */
-.actionRow {
-  display: flex;
-  gap: 12px;
-  width: 100%;
-  max-width: 320px;
-}
-
-.shareButton {
-  flex: 1;
-  padding: 12px;
-  border-radius: 12px;
-  background: #000;
+.spinButton {
+  margin-top: 15px;
+  font-size: 10px;
+  padding: 10px 35px;
+  background: #ff4a00;
   color: #fff;
-  border: 1px solid #222;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.rewardButton {
-  flex: 1.5;
-  padding: 12px;
-  border-radius: 12px;
-  background: #080808;
-  color: #333;
-  border: 1px solid #151515;
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.claimActive {
-  flex: 1.5;
-  padding: 12px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #ff8a65, #e64a19);
-  color: white;
+  border-radius: 25px;
+  font-weight: 900;
   border: none;
-  font-size: 13px;
-  font-weight: 700;
-  box-shadow: 0 4px 15px rgba(230, 74, 25, 0.3);
-  animation: pulseButton 1.5s infinite;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(255, 74, 0, 0.4);
 }
 
-@keyframes pulseButton {
-  0% { box-shadow: 0 0 0 0 rgba(230, 74, 25, 0.4); }
-  70% { box-shadow: 0 0 0 8px rgba(230, 74, 25, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(230, 74, 25, 0); }
+.pointsDisplayCompact {
+  width: 100%; 
+  max-width: 320px; 
+  background: #0a0a0a; 
+  padding: 12px; 
+  border-radius: 14px;
+  text-align: center; 
+  border: 1px solid #1a1a1a; 
+  margin-bottom: 12px;
 }
 
-.message {
-  font-size: 12px;
-  margin-top: 10px;
-  color: #666;
+.pointsTitle { color: #888; font-size: 12px; font-weight: 700; }
+.pointsValueSmall { color: #888; font-size: 14px; font-weight: 900; margin-left: 5px; }
+.pointsLabelSmall { color: #444; font-size: 9px; margin-top: 4px; }
+
+.streakCard { font-size: 11px; color: #555; margin-bottom: 10px; }
+.dateText { color: #00ff80; }
+
+.statusBoxEligible, .statusBoxNotEligible {
+  width: 100%; 
+  max-width: 320px; 
+  padding: 8px; 
+  border-radius: 10px; 
+  font-size: 12px; 
+  text-align: center; 
+  margin-bottom: 10px;
+}
+.statusBoxEligible { 
+  background: rgba(0, 255, 128, 0.05); 
+  color: #00ff80; 
+  border: 1px solid rgba(0, 255, 128, 0.1); 
+}
+.statusBoxNotEligible { 
+  background: rgba(255, 68, 68, 0.05); 
+  color: #ff4444; 
+  border: 1px solid rgba(255, 68, 68, 0.1); 
+}
+
+.messageBox { 
+  width: 100%; 
+  max-width: 320px; 
+  padding: 8px; 
+  color: #ffaa00; 
+  font-size: 11px; 
+  text-align: center; 
+}
+
+.actionRow { 
+  display: flex; 
+  gap: 10px; 
+  width: 100%; 
+  max-width: 340px; 
+  margin-top: 10px; 
+}
+
+.checkInButtonActive, .checkInButtonDisabled, .claimActive, .rewardButton {
+  flex: 1; 
+  padding: 16px 5px; 
+  border-radius: 14px; 
+  font-size: 13px; 
+  font-weight: 900; 
+  border: none; 
+  cursor: pointer; 
   text-align: center;
 }
 
-/* মোবাইল রেসপন্সিভ */
-@media (max-width: 480px) {
-  .title { font-size: 24px; }
-  .pointsDisplay { max-width: 260px; }
-  .pointsValue { font-size: 42px; }
+.checkInButtonActive { background: #fff; color: #000; }
+.checkInButtonDisabled { background: #111; color: #444; border: 1px solid #222; cursor: not-allowed; }
+
+.claimActive { 
+  background: linear-gradient(45deg, #00ff80, #00c853); 
+  color: #000; 
+  animation: pulse 1.5s infinite; 
+}
+
+.rewardButton { 
+  background: #0a0a0a; 
+  color: #444; 
+  border: 1px solid #1a1a1a; 
+  cursor: not-allowed; 
+}
+
+@keyframes pulse { 
+  0% { opacity: 1; } 
+  50% { opacity: 0.7; } 
+  100% { opacity: 1; } 
+}
+
+.loadingWrapper { 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  margin-top: 100px; 
+}
+
+.loadingSpinner { 
+  width: 40px; 
+  height: 40px; 
+  border: 4px solid #111; 
+  border-top: 4px solid #fff; 
+  border-radius: 50%; 
+  animation: spin 1s linear infinite; 
+}
+
+.loadingText { font-size: 18px; margin-top: 15px; }
+
+@keyframes spin { 
+  to { transform: rotate(360deg); } 
 }

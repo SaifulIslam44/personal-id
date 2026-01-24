@@ -1,0 +1,394 @@
+.headerTitle {
+  font-size: 25px;
+  font-weight: 900;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center;
+  position: relative;
+  
+  /* White & Silver Glossy Gradient */
+  background: linear-gradient(
+    to right, 
+    #ffffff 20%, 
+    #a0a0a0 40%, 
+    #ffffff 50%, 
+    #a0a0a0 60%, 
+    #ffffff 80%
+  );
+  background-size: 200% auto;
+  
+  /* টেক্সটের ভেতরে গ্রেডিয়েন্ট দেখানোর জন্য */
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  
+  /* ধীরগতির গ্লসি সুইপ অ্যানিমেশন */
+  animation: whiteGlossy 5s linear infinite;
+}
+
+/* সাদা আভাটি ধীরগতিতে প্রবাহিত হওয়ার লজিক */
+@keyframes whiteGlossy {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* হোভার করলে অ্যানিমেশন কিছুটা ফাস্ট হবে */
+.headerTitle:hover {
+  animation: whiteGlossy 2s linear infinite;
+}
+
+/* ডার্ক মোডে গ্লো ইফেক্ট (আপনার wrapper এ dark mode থাকলে) */
+.wrapper:not(.lightMode) .headerTitle {
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+}
+
+/* লাইট মোডে টেক্সট কালার অ্যাডজাস্টমেন্ট */
+.lightMode .headerTitle {
+  background: linear-gradient(
+    to right, 
+    #000000 20%, 
+    #555555 40%, 
+    #000000 50%, 
+    #555555 60%, 
+    #000000 80%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: none;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  min-height: 80vh;
+}
+
+
+
+
+
+
+
+
+
+
+
+.idCardContainer {
+  width: 100%;
+  max-width: 380px;
+  background: #111;
+  border-radius: 24px;
+  border: 1px solid #222;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+}
+
+.cardMedia {
+  width: 100%;
+  border-bottom: 2px solid #0052ff;
+}
+
+.nftImage {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* আপনার বাকি CSS কোডগুলো নিচে অপরিবর্তিত থাকবে */
+.cardContent {
+  padding: 24px;
+}
+
+.userName {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  color: #fff;
+}
+
+.userDesc {
+  font-size: 14px;
+  color: #888;
+  margin-bottom: 25px;
+  line-height: 1.5;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.statBox {
+  background: #1a1a1a;
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid #222;
+  display: flex;
+  flex-direction: column;
+}
+
+.statLabel {
+  font-size: 10px;
+  color: #0052ff;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.statValue {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  margin-top: 4px;
+}
+
+.footerInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 15px;
+  border-top: 1px solid #222;
+}
+
+.ownerLabel {
+  font-size: 12px;
+  color: #555;
+}
+
+.ownerAddress {
+  font-size: 12px;
+  color: #0052ff;
+  font-family: monospace;
+}
+
+.loaderContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 50vh;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #111;
+  border-top: 4px solid #0052ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.noDataBox {
+  text-align: center;
+  padding: 40px;
+  background: #111;
+  border-radius: 20px;
+  color: #ff4444;
+}
+
+
+
+
+
+
+/* 🆕 User Header: প্রোফাইল পিকচার এবং নামের লেআউট */
+.userHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding-bottom: 25px;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pfp {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.userName {
+  font-size: 17px;
+  font-weight: 700;
+  color: #ffffff; /* ডার্ক মোডে সাদা */
+}
+
+.themeBtn {
+  background: none;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+/* ☀️ Light Mode: টগল করার পর কালার পরিবর্তনের জন্য */
+.lightMode {
+  background-color: #f5f5f5 !important;
+  min-height: 100vh;
+}
+
+.lightMode .userName, 
+.lightMode .themeBtn {
+  color: #000000 !important;
+}
+
+.lightMode .pfp {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+
+
+
+
+
+
+
+/* Credits Container */
+.creditsContainer {
+  width: 100%;
+  height: 150px; /* কতটুকু জায়গার মধ্যে স্ক্রল হবে */
+  overflow: hidden; /* বাইরের অংশ দেখা যাবে না */
+  position: relative;
+  margin-top: 30px;
+  mask-image: linear-gradient(transparent, black 20%, black 80%, transparent); /* মুভির মতো ফেইড ইফেক্ট */
+  -webkit-mask-image: linear-gradient(transparent, black 20%, black 80%, transparent);
+}
+
+.creditsScroll {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  animation: movieCredits 25s linear infinite; /* ১৫ সেকেন্ডে পুরো স্ক্রল হবে */
+}
+
+/* মুভির মতো স্ক্রলিং অ্যানিমেশন */
+@keyframes movieCredits {
+  0% {
+    top: 100%;
+  }
+  100% {
+    top: -400%;
+  }
+}
+
+.creditTitle {
+  font-size: 10px;
+  font-weight: 800;
+  color: #0052ff; /* আপনার প্রাইমারি কালার */
+  margin-bottom: 2px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.creditName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+
+.creditFooter {
+  font-size: 11px;
+  color: #555;
+  margin-top: 10px;
+}
+
+/* ☀️ Light Mode Adjustment */
+.lightMode .creditName {
+  color: #000000;
+}
+
+.lightMode .creditFooter {
+  color: #888;
+}
+
+
+
+
+
+
+
+
+
+
+.donationSection {
+  margin-top: 20px;
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+  padding-bottom: 30px;
+}
+
+.donateTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: #888;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+}
+
+.donateGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.donateGrid button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid #222;
+  color: #fff;
+  padding: 10px 0;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 13px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.donateGrid button:hover {
+  background: #0052ff;
+  border-color: #0052ff;
+  transform: translateY(-2px);
+}
+
+/* Light Mode Support */
+.lightMode .donateTitle {
+  color: #555;
+}
+
+.lightMode .donateGrid button {
+  background: #fff;
+  border: 1px solid #ddd;
+  color: #000;
+}
+
+.lightMode .donateGrid button:hover {
+  background: #0052ff;
+  color: #fff;
+}
