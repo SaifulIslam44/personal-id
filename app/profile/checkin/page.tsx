@@ -640,6 +640,7 @@ import { formatUnits } from "viem";
 import { CONTRACT_ADDRESS, ABI } from "@/lib/contract";
 import styles from "./checkin.module.css";
 import { useConnect } from "wagmi";
+import { useWriteContract } from "wagmi";
 
 const USDC_TOKEN_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 
@@ -656,7 +657,7 @@ export default function CheckInPage() {
   const [tempRewards, setTempRewards] = useState<string | null>(null);
   const [oldRewardsRaw, setOldRewardsRaw] = useState<bigint>(BigInt(0));
   const [cooldown, setCooldown] = useState(0); 
-
+  const { writeContractAsync } = useWriteContract();
   const { sendCalls } = useSendCalls(); 
   const { connect, connectors } = useConnect();
 
@@ -768,71 +769,151 @@ const handleCheckIn = async () => {
     });
   };
 
-  const handleSpin = async () => {
-    if (availablePoints < 100 || isSpinning || spinLoading) return;
-    const currentRewards = pendingSpinRewards ? (pendingSpinRewards as bigint) : BigInt(0);
-    setOldRewardsRaw(currentRewards);
+  // const handleSpin = async () => {
+  //   if (availablePoints < 100 || isSpinning || spinLoading) return;
+  //   const currentRewards = pendingSpinRewards ? (pendingSpinRewards as bigint) : BigInt(0);
+  //   setOldRewardsRaw(currentRewards);
     
-    setSpinLoading(true); // ওয়ালেট কনফার্মেশনের সময় বাটন টেক্সট বদলানোর জন্য
-    setMessage("Please confirm in your wallet...");
+  //   setSpinLoading(true); // ওয়ালেট কনফার্মেশনের সময় বাটন টেক্সট বদলানোর জন্য
+  //   setMessage("Please confirm in your wallet...");
 
-    sendCalls({
-      calls: [{ to: CONTRACT_ADDRESS as `0x${string}`, abi: ABI, functionName: "spinWheel", args: [] }],
-    }, {
-      onSuccess: async () => {
-        setSpinLoading(false); // কনফার্মেশন সফল হলে লোডিং বন্ধ
-        // setMessage("Spinning... Good Luck!");
-        setMessage("Wait Checking Blockchain Confimation. Good Luck!");
+  //   sendCalls({
+  //     calls: [{ to: CONTRACT_ADDRESS as `0x${string}`, abi: ABI, functionName: "spinWheel", args: [] }],
+  //   }, {
+  //     onSuccess: async () => {
+  //       setSpinLoading(false); // কনফার্মেশন সফল হলে লোডিং বন্ধ
+  //       // setMessage("Spinning... Good Luck!");
+  //       setMessage("Wait Checking Blockchain Confimation. Good Luck!");
 
-        let attempts = 0;
-        const checkInterval = setInterval(async () => {
-          const { data: newData } = await refetchSpinRewards();
-          const totalNewRewards = newData ? (newData as bigint) : BigInt(0);
-          const winAmountRaw = totalNewRewards - currentRewards;
-          attempts++;
+  //       let attempts = 0;
+  //       const checkInterval = setInterval(async () => {
+  //         const { data: newData } = await refetchSpinRewards();
+  //         const totalNewRewards = newData ? (newData as bigint) : BigInt(0);
+  //         const winAmountRaw = totalNewRewards - currentRewards;
+  //         attempts++;
 
-          if (winAmountRaw > BigInt(0) || attempts >= 20) {
-    clearInterval(checkInterval);
-    setIsSpinning(true);
+  //         if (winAmountRaw > BigInt(0) || attempts >= 20) {
+  //   clearInterval(checkInterval);
+  //   setIsSpinning(true);
     
-    const winAmountStr = formatUnits(winAmountRaw, 6);
-    // সরাসরি রিফেচ করা ডাটা দেখানোর বদলে সাময়িকভাবে সেভ করুন
-    setTempRewards(formatUnits(totalNewRewards, 6)); 
+  //   const winAmountStr = formatUnits(winAmountRaw, 6);
+  //   // সরাসরি রিফেচ করা ডাটা দেখানোর বদলে সাময়িকভাবে সেভ করুন
+  //   setTempRewards(formatUnits(totalNewRewards, 6)); 
 
-    const slice = wheelSlices.find(s => Math.abs(parseFloat(s.val) - parseFloat(winAmountStr)) < 0.0001);
+  //   const slice = wheelSlices.find(s => Math.abs(parseFloat(s.val) - parseFloat(winAmountStr)) < 0.0001);
 
-    if (slice) {
-        const currentOffset = rotation % 360; 
-        const finalRotation = rotation + 3600 + (360 - currentOffset) + (360 - slice.centerDeg); 
-        setRotation(finalRotation);
+  //   if (slice) {
+  //       const currentOffset = rotation % 360; 
+  //       const finalRotation = rotation + 3600 + (360 - currentOffset) + (360 - slice.centerDeg); 
+  //       setRotation(finalRotation);
 
-        setTimeout(() => {
-            setIsSpinning(false);
-            // অ্যানিমেশন শেষ হওয়ার পর ক্লেইমএবল ব্যালেন্স আপডেট করুন
-            refetchSpinRewards(); 
-            setTempRewards(null); // টেম্পোরারি ডাটা ক্লিয়ার করুন
+  //       setTimeout(() => {
+  //           setIsSpinning(false);
+  //           // অ্যানিমেশন শেষ হওয়ার পর ক্লেইমএবল ব্যালেন্স আপডেট করুন
+  //           refetchSpinRewards(); 
+  //           setTempRewards(null); // টেম্পোরারি ডাটা ক্লিয়ার করুন
             
-            setMessage(`Congratulations! You won ${winAmountStr} USDC`);
-            refetchPoints(); refetchSupply();
-            setCooldown(10);
-        }, 8000); // চাকা ঘোরার সময় (৮ সেকেন্ড)
-    } else {
-              // setIsSpinning(false);
-              // setMessage(`Win: ${winAmountStr} USDC`);
-            }
-          } 
-          // যদি ৩০ সেকেন্ড পার হয়ে যায় (attempts >= 30)
-          else if (attempts >= 15) {
-            clearInterval(checkInterval);
-            setIsSpinning(false);
-            setSpinLoading(false);
-            setMessage("Blockchain Confirmation Failed. Please try again.");
-          }
-        }, 4000);
-      },
-      onError: () => { setSpinLoading(false); setIsSpinning(false); setMessage("Spin failed."); }
+  //           setMessage(`Congratulations! You won ${winAmountStr} USDC`);
+  //           refetchPoints(); refetchSupply();
+  //           setCooldown(10);
+  //       }, 8000); // চাকা ঘোরার সময় (৮ সেকেন্ড)
+  //   } else {
+  //             // setIsSpinning(false);
+  //             // setMessage(`Win: ${winAmountStr} USDC`);
+  //           }
+  //         } 
+  //         // যদি ৩০ সেকেন্ড পার হয়ে যায় (attempts >= 30)
+  //         else if (attempts >= 15) {
+  //           clearInterval(checkInterval);
+  //           setIsSpinning(false);
+  //           setSpinLoading(false);
+  //           setMessage("Blockchain Confirmation Failed. Please try again.");
+  //         }
+  //       }, 4000);
+  //     },
+  //     onError: () => { setSpinLoading(false); setIsSpinning(false); setMessage("Spin failed."); }
+  //   });
+  // };
+
+
+
+
+
+
+const handleSpin = async () => {
+  if (availablePoints < 100 || isSpinning || spinLoading) return;
+  
+  const currentRewards = pendingSpinRewards ? (pendingSpinRewards as bigint) : BigInt(0);
+  setOldRewardsRaw(currentRewards);
+  setSpinLoading(true);
+  setMessage("Please confirm in your wallet...");
+
+  try {
+    // sendCalls এর বদলে writeContractAsync ব্যবহার
+    await writeContractAsync({
+      address: CONTRACT_ADDRESS as `0x${string}`,
+      abi: ABI,
+      functionName: "spinWheel",
+      args: [],
     });
-  };
+
+    // ট্রানজেকশন সেন্ড সফল হলে নিচের লজিক কাজ করবে
+    setSpinLoading(false);
+    setMessage("Wait Checking Blockchain Confirmation. Good Luck!");
+
+    let attempts = 0;
+    const checkInterval = setInterval(async () => {
+      const { data: newData } = await refetchSpinRewards();
+      const totalNewRewards = newData ? (newData as bigint) : BigInt(0);
+      const winAmountRaw = totalNewRewards - currentRewards;
+      attempts++;
+
+      if (winAmountRaw > BigInt(0) || attempts >= 20) {
+        clearInterval(checkInterval);
+        setIsSpinning(true);
+        
+        const winAmountStr = formatUnits(winAmountRaw, 6);
+        setTempRewards(formatUnits(totalNewRewards, 6)); 
+
+        const slice = wheelSlices.find(s => Math.abs(parseFloat(s.val) - parseFloat(winAmountStr)) < 0.0001);
+
+        if (slice) {
+          const currentOffset = rotation % 360; 
+          const finalRotation = rotation + 3600 + (360 - currentOffset) + (360 - slice.centerDeg); 
+          setRotation(finalRotation);
+
+          setTimeout(() => {
+            setIsSpinning(false);
+            refetchSpinRewards(); 
+            setTempRewards(null); 
+            setMessage(`Congratulations! You won ${winAmountStr} USDC`);
+            refetchPoints(); 
+            refetchSupply();
+            setCooldown(10);
+          }, 8000);
+        }
+      } else if (attempts >= 15) {
+        clearInterval(checkInterval);
+        setIsSpinning(false);
+        setSpinLoading(false);
+        setMessage("Blockchain Confirmation Failed. Please try again.");
+      }
+    }, 4000);
+
+  } catch (error) {
+    console.error(error);
+    setSpinLoading(false);
+    setIsSpinning(false);
+    setMessage("Spin failed.");
+  }
+};
+
+
+
+
+
+
+
 
   const handleClaimReward = async () => {
     if (Number(spinRewards) <= 0) return;
