@@ -54,8 +54,8 @@ const handleShare = () => {
     
     // প্ল্যাটফর্ম অনুযায়ী ডোমেইন সেট করা
     const domain = isBaseApp 
-      ? "https://farcaster.xyz/miniapps/ihTYq4bv7zgI/personal-id-mint" // Base App-এর জন্য
-      : "https://farcaster.xyz/miniapps/ihTYq4bv7zgI/personal-id-mint"; // Farcaster-এর জন্য
+      ? "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint" // Base App-এর জন্য
+      : "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint"; // Farcaster-এর জন্য
 
     const shareUrl =
       "https://warpcast.com/~/compose?" +

@@ -103,10 +103,10 @@ const getInviteLink = () => {
 
   if (isBaseApp) {
     // return `https://base.app/app/mints.personalids.xyz?fid=${fid}`;
-    return `https://farcaster.xyz/miniapps/ihTYq4bv7zgI/personal-id-mint=${fid}`;
+    return `https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint?fid=${fid}`;
   }
   
-  return `https://farcaster.xyz/miniapps/ihTYq4bv7zgI/personal-id-mint?fid=${fid}`;
+  return `https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint?fid=${fid}`;
 };
 
 const handleShare = async () => {

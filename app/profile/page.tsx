@@ -326,9 +326,9 @@ useEffect(() => {
 
   const handleShare = () => {
     // const baseDomain = "https://base.app/app/mints.personalids.xyz"; 
-    const baseDomain = "https://farcaster.xyz/miniapps/ihTYq4bv7zgI/personal-id-mint"; 
+    const baseDomain = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint"; 
     const farcasterMiniAppUrl =
-      "https://farcaster.xyz/miniapps/ihTYq4bv7zgI/personal-id-mint";
+      "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint";
     const isFarcaster = /warpcast|farcaster/i.test(navigator.userAgent);
     const text =
   "🔥 Mint your Personal Onchain ID & claim +50 PIM rewards instantly! 🚀 Use your PIM to spin for USDC rewards (100 PIM per spin, tokens burn after use). Don't miss out! 👇";
