@@ -822,7 +822,7 @@ const handleCheckIn = async () => {
             }
           } 
           // যদি ৩০ সেকেন্ড পার হয়ে যায় (attempts >= 30)
-          else if (attempts >= 15) {
+          else if (attempts >= 10) {
             clearInterval(checkInterval);
             setIsSpinning(false);
             setSpinLoading(false);
@@ -919,14 +919,19 @@ const handleCheckIn = async () => {
           <div className={styles.wheelInner}>{isSpinning ? "🌀" : "🎡"}</div>
         </div>
         <button 
-  className={(availablePoints >= 100 && cooldown === 0) ? styles.spinButton : styles.spinButtonLocked} 
-  onClick={handleSpin} 
-  disabled={isSpinning || spinLoading || availablePoints < 100 || cooldown > 0}
+    className={(availablePoints >= 100 && cooldown === 0 && !isSpinning && !spinLoading) 
+        ? styles.spinButton 
+        : styles.spinButtonLocked
+    } 
+    
+    onClick={handleSpin} 
+    
+    disabled={isSpinning || spinLoading || availablePoints < 100 || cooldown > 0}
 >
-  {spinLoading ? "Confirming..." : 
-   isSpinning ? "SPINNING..." : 
-   cooldown > 0 ? `Wait ${cooldown}s` : // কুলডাউন চললে সেকেন্ড দেখাবে
-   availablePoints >= 100 ? "SPIN (100 PIM)" : "Earn 100PIM to Unlocked"}
+    {spinLoading ? "Confirming..." : 
+     isSpinning ? "SPINNING..." : 
+     cooldown > 0 ? `Wait ${cooldown}s` : 
+     availablePoints >= 100 ? "SPIN (100 PIM)" : "Earn 100PIM to Unlocked"}
 </button>
       </div>
 
