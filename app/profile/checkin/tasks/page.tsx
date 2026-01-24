@@ -834,7 +834,7 @@ const isEligible2 = refCountNum >= 10;
                 ? "Claiming..."
                 : claimError
                 ? `Retry Claim (${retryTimer}s)`
-                : "Claim +50 PIM"}
+                : "Claim +250 PIM"}
             </button>
           ) : hasShared ? (
             <button
@@ -859,7 +859,7 @@ const isEligible2 = refCountNum >= 10;
         </div>
 
         <div className={styles.right}>
-          <span className={styles.reward}>+50 PIM</span>
+          <span className={styles.reward}>+250 PIM</span>
         </div>
       </div>
 
@@ -886,7 +886,7 @@ const isEligible2 = refCountNum >= 10;
           ? "Claiming..."
           : claimError2
           ? `Retry Claim (${retryTimer2}s)`
-          : "Claim +100 PIM"}
+          : "Claim +500 PIM"}
       </button>
     ) : hasShared2 ? (
       <button
@@ -909,7 +909,7 @@ const isEligible2 = refCountNum >= 10;
 
 
   <div className={styles.right}>
-    <span className={styles.reward}>+100 PIM</span>
+    <span className={styles.reward}>+500 PIM</span>
   </div>
 </div>
 

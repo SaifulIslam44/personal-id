@@ -117,7 +117,7 @@ const handleShare = () => {
           <span className={styles.done}>✅ Completed</span>
         ) : isEligible ? (
           <button className={claimError ? styles.retryBtn : styles.claimBtn} onClick={handleClaim} disabled={isClaiming || retryTimer > 0}>
-            {isClaiming ? "Claiming..." : claimError ? `Retry (${retryTimer}s)` : "Claim +1000 PIM"}
+            {isClaiming ? "Claiming..." : claimError ? `Retry (${retryTimer}s)` : "Claim +2000 PIM"}
           </button>
         ) : hasShared ? (
           <button className={verifyError ? styles.retryBtn : styles.verifyBtn} onClick={handleVerify} disabled={isVerifying || verifyTimer > 0}>
@@ -127,7 +127,7 @@ const handleShare = () => {
           <button className={styles.verifyBtn} onClick={handleShare}>Share Referral Link</button>
         )}
       </div>
-      <div className={styles.right}><span className={styles.reward}>+1000 PIM</span></div>
+      <div className={styles.right}><span className={styles.reward}>+2000 PIM</span></div>
     </div>
   );
 }
