@@ -99,6 +99,12 @@ export const minikitConfig = {
     splashBackgroundColor: "#000000",
     homeUrl: "https://mints.personalids.xyz",
     webhookUrl: "https://mints.personalids.xyz/api/webhook",
+    "contracts": [
+      {
+        "chainId": 8453,
+        "address": "0x8C8d41c66a059a62577Ab14F313f6ad13a6D8012"
+      }
+    ],
     primaryCategory: "utility",
     tags: ["identity", "mint", "onchain", "rewards"],
     heroImageUrl: "https://mints.personalids.xyz/hero.png",
