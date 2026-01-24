@@ -814,7 +814,7 @@ const handleCheckIn = async () => {
             setMessage(`Congratulations! You won ${winAmountStr} USDC`);
             refetchPoints(); refetchSupply();
             setCooldown(10);
-        }, 6000); // চাকা ঘোরার সময় (৮ সেকেন্ড)
+        }, 8000); // চাকা ঘোরার সময় (৮ সেকেন্ড)
     } else {
               // setIsSpinning(false);
               // setMessage(`Win: ${winAmountStr} USDC`);
