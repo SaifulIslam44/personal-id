@@ -13,7 +13,7 @@ const queryClient = new QueryClient();
 export const config = createConfig({
   chains: [base], // Farcaster Mini Apps সাধারণত Base chain-এ কাজ করে
   transports: {
-    [base.id]: http(),
+    [base.id]: http("https://base-mainnet.g.alchemy.com/v2/32tegXMoF5FiuVtoOrxzH"),
   },
   connectors: [
     farcasterMiniApp(), // এটিই Farcaster Wallet-এর সাথে কানেক্ট করে
