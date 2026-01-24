@@ -632,6 +632,439 @@
 
 
 
+// "use client";
+
+// import { useState, useEffect } from "react";
+// import { useAccount, useReadContract, useSendCalls } from "wagmi";
+// import { formatUnits } from "viem";
+// import { CONTRACT_ADDRESS, ABI } from "@/lib/contract";
+// import styles from "./checkin.module.css";
+// import { useConnect } from "wagmi";
+// import { useWriteContract } from "wagmi";
+
+// const USDC_TOKEN_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+
+// export default function CheckInPage() {
+//   const { address, isConnected, isReconnecting, isConnecting } = useAccount();
+//   const [message, setMessage] = useState("");
+//   const [justCheckedIn, setJustCheckedIn] = useState(false);
+//   const [loading, setLoading] = useState(false);
+//   const [spinLoading, setSpinLoading] = useState(false); // চেক-ইন বাটনের মতো কাজ করার জন্য নতুন স্টেট
+//   const [claimLoading, setClaimLoading] = useState(false);
+//   const [isSpinning, setIsSpinning] = useState(false);
+//   const [rotation, setRotation] = useState(0); 
+//   const [isMounted, setIsMounted] = useState(false);
+//   const [tempRewards, setTempRewards] = useState<string | null>(null);
+//   const [oldRewardsRaw, setOldRewardsRaw] = useState<bigint>(BigInt(0));
+//   const [cooldown, setCooldown] = useState(0); 
+//   const { writeContractAsync } = useWriteContract();
+//   const { sendCalls } = useSendCalls(); 
+//   const { connect, connectors } = useConnect();
+
+//   const USDC_LOGO = "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=032";
+
+//   // ইমেজ এবং ডিফল্ট পজিশন অনুযায়ী ডিগ্রি (0.008 = 0deg)
+//   const wheelSlices = [
+//     { val: "0.02", centerDeg: 0 }, 
+//     { val: "0.006", centerDeg: 51.43 }, 
+//     { val: "0.01", centerDeg: 102.86 }, 
+//     { val: "0.03",   centerDeg: 154.29 }, 
+//     { val: "0.05",   centerDeg: 205.71 }, 
+//     { val: "0.1",    centerDeg: 257.14 }, 
+//     { val: "0.008", centerDeg: 308.57 }
+//   ];
+
+//   useEffect(() => {
+//     setIsMounted(true);
+//     if (!isConnected && connectors.length > 0) {
+//       connect({ connector: connectors[0] });
+//     }
+//   }, [isConnected, connect, connectors]);
+
+//   useEffect(() => {
+//   if (cooldown > 0) {
+//     const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+//     return () => clearTimeout(timer);
+//   }
+// }, [cooldown]); // যখনই cooldown পরিবর্তন হবে এটি কাজ করবে
+
+//   // স্মার্ট কন্ট্রাক্ট রিড লজিক
+//   const { data: lastCheckInData, refetch: refetchTime } = useReadContract({
+//     address: CONTRACT_ADDRESS as `0x${string}`,
+//     abi: ABI,
+//     functionName: "lastCheckIn",
+//     args: [address as `0x${string}`],
+//     query: { enabled: !!address },
+//   });
+
+//   const { data: contractTokenBalance, refetch: refetchSupply } = useReadContract({
+//     address: USDC_TOKEN_ADDRESS as `0x${string}`,
+//     abi: [{ constant: true, inputs: [{ name: "_owner", type: "address" }], name: "balanceOf", outputs: [{ name: "balance", type: "uint256" }], type: "function" }],
+//     functionName: "balanceOf",
+//     args: [CONTRACT_ADDRESS as `0x${string}`],
+//   });
+
+//   const { data: userPoints, refetch: refetchPoints } = useReadContract({
+//     address: CONTRACT_ADDRESS as `0x${string}`,
+//     abi: ABI,
+//     functionName: "getUserPoints",
+//     args: [address as `0x${string}`],
+//     query: { enabled: !!address },
+//   });
+
+//   const { data: pendingSpinRewards, refetch: refetchSpinRewards } = useReadContract({
+//     address: CONTRACT_ADDRESS as `0x${string}`,
+//     abi: ABI,
+//     functionName: "getPendingRewards",
+//     args: [address as `0x${string}`],
+//     query: { enabled: !!address },
+//   });
+
+//   const lastCheckIn = lastCheckInData ? Number(lastCheckInData) : 0;
+//   // const currentSupply = contractTokenBalance ? Math.floor(Number(formatEther(contractTokenBalance as bigint))) : 0;
+//   // const currentSupply = contractTokenBalance ? Math.floor(Number(formatUnits(contractTokenBalance as bigint, 6))) : 0;
+// const currentSupply = contractTokenBalance ? parseFloat(formatUnits(contractTokenBalance as bigint, 6)).toFixed(2) : "0.00";
+
+//   const availablePoints = userPoints ? Number(userPoints) : 0;
+//   // const spinRewards = pendingSpinRewards ? formatUnits(pendingSpinRewards as bigint, 18) : "0";
+//   // const spinRewards = pendingSpinRewards ? formatUnits(pendingSpinRewards as bigint, 6) : "0";
+// //  const spinRewards = pendingSpinRewards ? formatUnits(pendingSpinRewards as bigint, 18) : "0";
+// // const spinRewards = pendingSpinRewards ? formatUnits(pendingSpinRewards as bigint, 6) : "0";
+// const spinRewards = (isSpinning && tempRewards) 
+//     ? formatUnits(oldRewardsRaw, 6) // স্পিন শেষ না হওয়া পর্যন্ত পুরাতন ব্যালেন্স দেখাবে
+//     : (pendingSpinRewards ? formatUnits(pendingSpinRewards as bigint, 6) : "0");
+  
+
+//   const canCheckIn = () => {
+//     if (!isMounted) return false;
+//     if (justCheckedIn) return false;
+//     if (lastCheckIn === 0) return true;
+//     const dayInSeconds = 24 * 60 * 60;
+//     const currentTime = Math.floor(Date.now() / 1000);
+//     return currentTime >= lastCheckIn + dayInSeconds;
+//   };
+
+// const handleCheckIn = async () => {
+//     if (!canCheckIn() || !address) return;
+//     setLoading(true);
+//     sendCalls({
+//       calls: [{ to: CONTRACT_ADDRESS as `0x${string}`, abi: ABI, functionName: "dailyCheckIn", args: [] }],
+//     }, {
+//       onSuccess: () => {
+//         setMessage("Success! Syncing points...");
+        
+        
+//         setTimeout(async () => {
+//           await refetchTime(); 
+//           await refetchPoints(); 
+//           setJustCheckedIn(true);
+//           setMessage("Success! +50 PIM earned.");
+//           setLoading(false);
+//         }, 5000); 
+//       },
+//       onError: () => { 
+//         setMessage("Check-in Failed."); 
+//         setLoading(false); 
+//       },
+//     });
+//   };
+
+//   const handleSpin = async () => {
+//     if (availablePoints < 100 || isSpinning || spinLoading) return;
+//     const currentRewards = pendingSpinRewards ? (pendingSpinRewards as bigint) : BigInt(0);
+//     setOldRewardsRaw(currentRewards);
+    
+//     setSpinLoading(true); // ওয়ালেট কনফার্মেশনের সময় বাটন টেক্সট বদলানোর জন্য
+//     setMessage("Please confirm in your wallet...");
+
+//     sendCalls({
+//       calls: [{ to: CONTRACT_ADDRESS as `0x${string}`, abi: ABI, functionName: "spinWheel", args: [] }],
+//     }, {
+//       onSuccess: async () => {
+//         setSpinLoading(false); // কনফার্মেশন সফল হলে লোডিং বন্ধ
+//         // setMessage("Spinning... Good Luck!");
+//         setMessage("Wait Checking Blockchain Confimation. Good Luck!");
+
+//         let attempts = 0;
+//         const checkInterval = setInterval(async () => {
+//           const { data: newData } = await refetchSpinRewards();
+//           const totalNewRewards = newData ? (newData as bigint) : BigInt(0);
+//           const winAmountRaw = totalNewRewards - currentRewards;
+//           attempts++;
+
+//           if (winAmountRaw > BigInt(0) || attempts >= 20) {
+//     clearInterval(checkInterval);
+//     setIsSpinning(true);
+    
+//     const winAmountStr = formatUnits(winAmountRaw, 6);
+//     // সরাসরি রিফেচ করা ডাটা দেখানোর বদলে সাময়িকভাবে সেভ করুন
+//     setTempRewards(formatUnits(totalNewRewards, 6)); 
+
+//     const slice = wheelSlices.find(s => Math.abs(parseFloat(s.val) - parseFloat(winAmountStr)) < 0.0001);
+
+//     if (slice) {
+//         const currentOffset = rotation % 360; 
+//         const finalRotation = rotation + 3600 + (360 - currentOffset) + (360 - slice.centerDeg); 
+//         setRotation(finalRotation);
+
+//         setTimeout(() => {
+//             setIsSpinning(false);
+//             // অ্যানিমেশন শেষ হওয়ার পর ক্লেইমএবল ব্যালেন্স আপডেট করুন
+//             refetchSpinRewards(); 
+//             setTempRewards(null); // টেম্পোরারি ডাটা ক্লিয়ার করুন
+            
+//             setMessage(`Congratulations! You won ${winAmountStr} USDC`);
+//             refetchPoints(); refetchSupply();
+//             setCooldown(10);
+//         }, 8000); // চাকা ঘোরার সময় (৮ সেকেন্ড)
+//     } else {
+//               // setIsSpinning(false);
+//               // setMessage(`Win: ${winAmountStr} USDC`);
+//             }
+//           } 
+//           // যদি ৩০ সেকেন্ড পার হয়ে যায় (attempts >= 30)
+//           else if (attempts >= 15) {
+//             clearInterval(checkInterval);
+//             setIsSpinning(false);
+//             setSpinLoading(false);
+//             setMessage("Blockchain Confirmation Failed. Please try again.");
+//           }
+//         }, 4000);
+//       },
+//       onError: () => { setSpinLoading(false); setIsSpinning(false); setMessage("Spin failed."); }
+//     });
+//   };
+
+
+
+
+
+
+//   const handleClaimReward = async () => {
+//     if (Number(spinRewards) <= 0) return;
+//     setClaimLoading(true);
+    
+//     sendCalls({
+//       calls: [{ to: CONTRACT_ADDRESS as `0x${string}`, abi: ABI, functionName: "claimSpinRewards", args: [] }],
+//     }, {
+//       onSuccess: async () => {
+//         setMessage(`Claim Successful! Syncing balance...`);
+        
+//         // ২ সেকেন্ড অপেক্ষা করা যাতে ব্লকচেইন ডাটা আপডেট করতে পারে
+//         setTimeout(async () => {
+//           await refetchSpinRewards();
+//           await refetchSupply();
+//           setMessage(`Claim Successful! Rewards sent to wallet.`);
+//           setClaimLoading(false);
+//         }, 5000); 
+//       },
+//       onError: () => { 
+//         setMessage("Claim failed."); 
+//         setClaimLoading(false); 
+//       },
+//     });
+//   };
+
+//   if (!isMounted) return null;
+
+//   const lastDateStr = (lastCheckIn > 0 || justCheckedIn)
+//     ? (justCheckedIn ? "Just Now" : new Date(lastCheckIn * 1000).toLocaleString()) 
+//     : "Never";
+
+//   if (isReconnecting || isConnecting) {
+//     return (
+//       <div className={styles.container}>
+//         <div className={styles.loadingWrapper}>
+//           <div className={styles.loadingSpinner}></div>
+//           <h2 className={styles.loadingText}>Syncing Wallet State...</h2>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className={styles.container}>
+//       <div className={styles.supplyHeader}>
+//         <span className={styles.supplyDot}></span>
+//         {/* Reward Pool: <strong>{currentSupply} DEGEN</strong> */}
+//         Reward Pool: <strong>{currentSupply} USDC</strong>
+//       </div>
+
+//       <h1 className={styles.title}>Check-in & Spin to Earn</h1>
+
+//       <div className={styles.spinSection}>
+//         <div className={styles.wheelContainer}>
+//           <div 
+//             className={styles.wheel} 
+//             style={{ 
+//               transform: `rotate(${rotation}deg)`, 
+//               transition: isSpinning ? 'transform 8s cubic-bezier(0.15, 0, 0.1, 1)' : 'none' 
+//             }}
+//           >
+//             {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+//               <div key={i} className={`${styles.segment} ${styles[`s${i}`]}`}>
+//                 <div className={styles.rewardBox}>
+//                   <span className={styles.rewardValue}>{wheelSlices[i-1].val}</span>
+//                   {/* eslint-disable-next-line @next/next/no-img-element */}
+// <img 
+//   src={USDC_LOGO} 
+//   alt="usdc" 
+//   width="24" 
+//   height="24" 
+//   className={styles.tokenLogoLarge} 
+// />
+//                 </div>
+//               </div>
+//             ))}
+//           </div>
+//           <div className={styles.wheelInner}>{isSpinning ? "🌀" : "🎡"}</div>
+//         </div>
+//         <button 
+//   className={(availablePoints >= 100 && cooldown === 0) ? styles.spinButton : styles.spinButtonLocked} 
+//   onClick={handleSpin} 
+//   disabled={isSpinning || spinLoading || availablePoints < 100 || cooldown > 0}
+// >
+//   {spinLoading ? "Confirming..." : 
+//    isSpinning ? "SPINNING..." : 
+//    cooldown > 0 ? `Wait ${cooldown}s` : // কুলডাউন চললে সেকেন্ড দেখাবে
+//    availablePoints >= 100 ? "SPIN (100 PIM)" : "Earn 100PIM to Unlocked"}
+// </button>
+//       </div>
+
+//       <div className={styles.pointsDisplayCompact}>
+//         <div className={styles.pointsTitle}>AVAILABLE: <span className={styles.pointsValueSmall}>{availablePoints} PIM</span></div>
+        
+//         <div className={styles.pointsTitle}>ClAIMABLE: <span className={styles.pointsValueSmall}>{spinRewards} $USDC</span></div>
+//         <div className={styles.pointsLabelSmall}>(Daily Check-in = +50 PIM | Spin = Burn 100 PIM)</div>
+//       </div>
+
+//       <div className={styles.streakCard}>
+//         <div className={styles.streakLabel}>Last Check-in: <span className={styles.dateText}>{lastDateStr}</span></div>
+//       </div>
+
+//       <div className={canCheckIn() ? styles.statusBoxEligible : styles.statusBoxNotEligible}>
+//         <p>{canCheckIn() ? "You are eligible for check-in!" : "Come back tomorrow for next check-in."}</p>
+//       </div>
+
+//       {message && <p className={styles.messageBox}>{message}</p>}
+
+//       <div className={styles.actionRow}>
+//         <button
+//           className={canCheckIn() ? styles.checkInButtonActive : styles.checkInButtonDisabled}
+//           onClick={handleCheckIn}
+//           disabled={loading || !canCheckIn()}
+//         >
+//           {loading ? "Checking..." : canCheckIn() ? "CHECK IN +50PIM" : "CHECKIN DONE"}
+//         </button>
+        
+//         <button 
+//           className={Number(spinRewards) > 0 ? styles.claimActive : styles.rewardButton} 
+//           onClick={handleClaimReward}
+//           disabled={claimLoading || Number(spinRewards) <= 0}
+//         >
+//           {claimLoading ? "Claiming..." : Number(spinRewards) > 0 ? "CLAIM" : "CLAIM LOCKED"}
+//         </button>
+//       </div>
+//     </div>
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -640,406 +1073,323 @@ import { formatUnits } from "viem";
 import { CONTRACT_ADDRESS, ABI } from "@/lib/contract";
 import styles from "./checkin.module.css";
 import { useConnect } from "wagmi";
-import { useWriteContract } from "wagmi";
+
 
 const USDC_TOKEN_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 
 export default function CheckInPage() {
-  const { address, isConnected, isReconnecting, isConnecting } = useAccount();
-  const [message, setMessage] = useState("");
-  const [justCheckedIn, setJustCheckedIn] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [spinLoading, setSpinLoading] = useState(false); // চেক-ইন বাটনের মতো কাজ করার জন্য নতুন স্টেট
-  const [claimLoading, setClaimLoading] = useState(false);
-  const [isSpinning, setIsSpinning] = useState(false);
-  const [rotation, setRotation] = useState(0); 
-  const [isMounted, setIsMounted] = useState(false);
-  const [tempRewards, setTempRewards] = useState<string | null>(null);
-  const [oldRewardsRaw, setOldRewardsRaw] = useState<bigint>(BigInt(0));
-  const [cooldown, setCooldown] = useState(0); 
-  const { writeContractAsync } = useWriteContract();
-  const { sendCalls } = useSendCalls(); 
-  const { connect, connectors } = useConnect();
+    const { address, isConnected, isReconnecting, isConnecting } = useAccount();
+    const [message, setMessage] = useState("");
+    const [justCheckedIn, setJustCheckedIn] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [spinLoading, setSpinLoading] = useState(false); // চেক-ইন বাটনের মতো কাজ করার জন্য নতুন স্টেট
+    const [claimLoading, setClaimLoading] = useState(false);
+    const [isSpinning, setIsSpinning] = useState(false);
+    const [rotation, setRotation] = useState(0); 
+    const [isMounted, setIsMounted] = useState(false);
+    const [tempRewards, setTempRewards] = useState<string | null>(null);
+    const [oldRewardsRaw, setOldRewardsRaw] = useState<bigint>(BigInt(0));
+    const [cooldown, setCooldown] = useState(0); 
 
-  const USDC_LOGO = "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=032";
+    const { sendCalls } = useSendCalls(); 
+    const { connect, connectors } = useConnect();
 
-  // ইমেজ এবং ডিফল্ট পজিশন অনুযায়ী ডিগ্রি (0.008 = 0deg)
-  const wheelSlices = [
-    { val: "0.02", centerDeg: 0 }, 
-    { val: "0.006", centerDeg: 51.43 }, 
-    { val: "0.01", centerDeg: 102.86 }, 
-    { val: "0.03",   centerDeg: 154.29 }, 
-    { val: "0.05",   centerDeg: 205.71 }, 
-    { val: "0.1",    centerDeg: 257.14 }, 
-    { val: "0.008", centerDeg: 308.57 }
-  ];
+    const USDC_LOGO = "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=032";
 
-  useEffect(() => {
-    setIsMounted(true);
-    if (!isConnected && connectors.length > 0) {
-      connect({ connector: connectors[0] });
-    }
-  }, [isConnected, connect, connectors]);
+    // ইমেজ এবং ডিফল্ট পজিশন অনুযায়ী ডিগ্রি (0.008 = 0deg)
+    const wheelSlices = [
+        { val: "0.02", centerDeg: 0 }, 
+        { val: "0.006", centerDeg: 51.43 }, 
+        { val: "0.01", centerDeg: 102.86 }, 
+        { val: "0.03",   centerDeg: 154.29 }, 
+        { val: "0.05",   centerDeg: 205.71 }, 
+        { val: "0.1",    centerDeg: 257.14 }, 
+        { val: "0.008", centerDeg: 308.57 }
+    ];
 
-  useEffect(() => {
-  if (cooldown > 0) {
-    const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
-    return () => clearTimeout(timer);
-  }
-}, [cooldown]); // যখনই cooldown পরিবর্তন হবে এটি কাজ করবে
-
-  // স্মার্ট কন্ট্রাক্ট রিড লজিক
-  const { data: lastCheckInData, refetch: refetchTime } = useReadContract({
-    address: CONTRACT_ADDRESS as `0x${string}`,
-    abi: ABI,
-    functionName: "lastCheckIn",
-    args: [address as `0x${string}`],
-    query: { enabled: !!address },
-  });
-
-  const { data: contractTokenBalance, refetch: refetchSupply } = useReadContract({
-    address: USDC_TOKEN_ADDRESS as `0x${string}`,
-    abi: [{ constant: true, inputs: [{ name: "_owner", type: "address" }], name: "balanceOf", outputs: [{ name: "balance", type: "uint256" }], type: "function" }],
-    functionName: "balanceOf",
-    args: [CONTRACT_ADDRESS as `0x${string}`],
-  });
-
-  const { data: userPoints, refetch: refetchPoints } = useReadContract({
-    address: CONTRACT_ADDRESS as `0x${string}`,
-    abi: ABI,
-    functionName: "getUserPoints",
-    args: [address as `0x${string}`],
-    query: { enabled: !!address },
-  });
-
-  const { data: pendingSpinRewards, refetch: refetchSpinRewards } = useReadContract({
-    address: CONTRACT_ADDRESS as `0x${string}`,
-    abi: ABI,
-    functionName: "getPendingRewards",
-    args: [address as `0x${string}`],
-    query: { enabled: !!address },
-  });
-
-  const lastCheckIn = lastCheckInData ? Number(lastCheckInData) : 0;
-  // const currentSupply = contractTokenBalance ? Math.floor(Number(formatEther(contractTokenBalance as bigint))) : 0;
-  // const currentSupply = contractTokenBalance ? Math.floor(Number(formatUnits(contractTokenBalance as bigint, 6))) : 0;
-const currentSupply = contractTokenBalance ? parseFloat(formatUnits(contractTokenBalance as bigint, 6)).toFixed(2) : "0.00";
-
-  const availablePoints = userPoints ? Number(userPoints) : 0;
-  // const spinRewards = pendingSpinRewards ? formatUnits(pendingSpinRewards as bigint, 18) : "0";
-  // const spinRewards = pendingSpinRewards ? formatUnits(pendingSpinRewards as bigint, 6) : "0";
-//  const spinRewards = pendingSpinRewards ? formatUnits(pendingSpinRewards as bigint, 18) : "0";
-// const spinRewards = pendingSpinRewards ? formatUnits(pendingSpinRewards as bigint, 6) : "0";
-const spinRewards = (isSpinning && tempRewards) 
-    ? formatUnits(oldRewardsRaw, 6) // স্পিন শেষ না হওয়া পর্যন্ত পুরাতন ব্যালেন্স দেখাবে
-    : (pendingSpinRewards ? formatUnits(pendingSpinRewards as bigint, 6) : "0");
-  
-
-  const canCheckIn = () => {
-    if (!isMounted) return false;
-    if (justCheckedIn) return false;
-    if (lastCheckIn === 0) return true;
-    const dayInSeconds = 24 * 60 * 60;
-    const currentTime = Math.floor(Date.now() / 1000);
-    return currentTime >= lastCheckIn + dayInSeconds;
-  };
-
-const handleCheckIn = async () => {
-    if (!canCheckIn() || !address) return;
-    setLoading(true);
-    sendCalls({
-      calls: [{ to: CONTRACT_ADDRESS as `0x${string}`, abi: ABI, functionName: "dailyCheckIn", args: [] }],
-    }, {
-      onSuccess: () => {
-        setMessage("Success! Syncing points...");
-        
-        
-        setTimeout(async () => {
-          await refetchTime(); 
-          await refetchPoints(); 
-          setJustCheckedIn(true);
-          setMessage("Success! +50 PIM earned.");
-          setLoading(false);
-        }, 5000); 
-      },
-      onError: () => { 
-        setMessage("Check-in Failed."); 
-        setLoading(false); 
-      },
-    });
-  };
-
-  // const handleSpin = async () => {
-  //   if (availablePoints < 100 || isSpinning || spinLoading) return;
-  //   const currentRewards = pendingSpinRewards ? (pendingSpinRewards as bigint) : BigInt(0);
-  //   setOldRewardsRaw(currentRewards);
-    
-  //   setSpinLoading(true); // ওয়ালেট কনফার্মেশনের সময় বাটন টেক্সট বদলানোর জন্য
-  //   setMessage("Please confirm in your wallet...");
-
-  //   sendCalls({
-  //     calls: [{ to: CONTRACT_ADDRESS as `0x${string}`, abi: ABI, functionName: "spinWheel", args: [] }],
-  //   }, {
-  //     onSuccess: async () => {
-  //       setSpinLoading(false); // কনফার্মেশন সফল হলে লোডিং বন্ধ
-  //       // setMessage("Spinning... Good Luck!");
-  //       setMessage("Wait Checking Blockchain Confimation. Good Luck!");
-
-  //       let attempts = 0;
-  //       const checkInterval = setInterval(async () => {
-  //         const { data: newData } = await refetchSpinRewards();
-  //         const totalNewRewards = newData ? (newData as bigint) : BigInt(0);
-  //         const winAmountRaw = totalNewRewards - currentRewards;
-  //         attempts++;
-
-  //         if (winAmountRaw > BigInt(0) || attempts >= 20) {
-  //   clearInterval(checkInterval);
-  //   setIsSpinning(true);
-    
-  //   const winAmountStr = formatUnits(winAmountRaw, 6);
-  //   // সরাসরি রিফেচ করা ডাটা দেখানোর বদলে সাময়িকভাবে সেভ করুন
-  //   setTempRewards(formatUnits(totalNewRewards, 6)); 
-
-  //   const slice = wheelSlices.find(s => Math.abs(parseFloat(s.val) - parseFloat(winAmountStr)) < 0.0001);
-
-  //   if (slice) {
-  //       const currentOffset = rotation % 360; 
-  //       const finalRotation = rotation + 3600 + (360 - currentOffset) + (360 - slice.centerDeg); 
-  //       setRotation(finalRotation);
-
-  //       setTimeout(() => {
-  //           setIsSpinning(false);
-  //           // অ্যানিমেশন শেষ হওয়ার পর ক্লেইমএবল ব্যালেন্স আপডেট করুন
-  //           refetchSpinRewards(); 
-  //           setTempRewards(null); // টেম্পোরারি ডাটা ক্লিয়ার করুন
-            
-  //           setMessage(`Congratulations! You won ${winAmountStr} USDC`);
-  //           refetchPoints(); refetchSupply();
-  //           setCooldown(10);
-  //       }, 8000); // চাকা ঘোরার সময় (৮ সেকেন্ড)
-  //   } else {
-  //             // setIsSpinning(false);
-  //             // setMessage(`Win: ${winAmountStr} USDC`);
-  //           }
-  //         } 
-  //         // যদি ৩০ সেকেন্ড পার হয়ে যায় (attempts >= 30)
-  //         else if (attempts >= 15) {
-  //           clearInterval(checkInterval);
-  //           setIsSpinning(false);
-  //           setSpinLoading(false);
-  //           setMessage("Blockchain Confirmation Failed. Please try again.");
-  //         }
-  //       }, 4000);
-  //     },
-  //     onError: () => { setSpinLoading(false); setIsSpinning(false); setMessage("Spin failed."); }
-  //   });
-  // };
-
-
-
-
-
-
-const handleSpin = async () => {
-  if (availablePoints < 100 || isSpinning || spinLoading) return;
-  
-  const currentRewards = pendingSpinRewards ? (pendingSpinRewards as bigint) : BigInt(0);
-  setOldRewardsRaw(currentRewards);
-  setSpinLoading(true);
-  setMessage("Please confirm in your wallet...");
-
-  try {
-    // sendCalls এর বদলে writeContractAsync ব্যবহার
-    await writeContractAsync({
-      address: CONTRACT_ADDRESS as `0x${string}`,
-      abi: ABI,
-      functionName: "spinWheel",
-      args: [],
-    });
-
-    // ট্রানজেকশন সেন্ড সফল হলে নিচের লজিক কাজ করবে
-    setSpinLoading(false);
-    setMessage("Wait Checking Blockchain Confirmation. Good Luck!");
-
-    let attempts = 0;
-    const checkInterval = setInterval(async () => {
-      const { data: newData } = await refetchSpinRewards();
-      const totalNewRewards = newData ? (newData as bigint) : BigInt(0);
-      const winAmountRaw = totalNewRewards - currentRewards;
-      attempts++;
-
-      if (winAmountRaw > BigInt(0) || attempts >= 20) {
-        clearInterval(checkInterval);
-        setIsSpinning(true);
-        
-        const winAmountStr = formatUnits(winAmountRaw, 6);
-        setTempRewards(formatUnits(totalNewRewards, 6)); 
-
-        const slice = wheelSlices.find(s => Math.abs(parseFloat(s.val) - parseFloat(winAmountStr)) < 0.0001);
-
-        if (slice) {
-          const currentOffset = rotation % 360; 
-          const finalRotation = rotation + 3600 + (360 - currentOffset) + (360 - slice.centerDeg); 
-          setRotation(finalRotation);
-
-          setTimeout(() => {
-            setIsSpinning(false);
-            refetchSpinRewards(); 
-            setTempRewards(null); 
-            setMessage(`Congratulations! You won ${winAmountStr} USDC`);
-            refetchPoints(); 
-            refetchSupply();
-            setCooldown(10);
-          }, 8000);
+    useEffect(() => {
+        setIsMounted(true);
+        if (!isConnected && connectors.length > 0) {
+            connect({ connector: connectors[0] });
         }
-      } else if (attempts >= 15) {
-        clearInterval(checkInterval);
-        setIsSpinning(false);
-        setSpinLoading(false);
-        setMessage("Blockchain Confirmation Failed. Please try again.");
-      }
-    }, 4000);
+    }, [isConnected, connect, connectors]);
 
-  } catch (error) {
-    console.error(error);
-    setSpinLoading(false);
-    setIsSpinning(false);
-    setMessage("Spin failed.");
-  }
-};
+    useEffect(() => {
+        if (cooldown > 0) {
+            const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [cooldown]); // যখনই cooldown পরিবর্তন হবে এটি কাজ করবে
 
-
-
-
-
-
-
-
-  const handleClaimReward = async () => {
-    if (Number(spinRewards) <= 0) return;
-    setClaimLoading(true);
-    
-    sendCalls({
-      calls: [{ to: CONTRACT_ADDRESS as `0x${string}`, abi: ABI, functionName: "claimSpinRewards", args: [] }],
-    }, {
-      onSuccess: async () => {
-        setMessage(`Claim Successful! Syncing balance...`);
-        
-        // ২ সেকেন্ড অপেক্ষা করা যাতে ব্লকচেইন ডাটা আপডেট করতে পারে
-        setTimeout(async () => {
-          await refetchSpinRewards();
-          await refetchSupply();
-          setMessage(`Claim Successful! Rewards sent to wallet.`);
-          setClaimLoading(false);
-        }, 5000); 
-      },
-      onError: () => { 
-        setMessage("Claim failed."); 
-        setClaimLoading(false); 
-      },
+    // স্মার্ট কন্ট্রাক্ট রিড লজিক
+    const { data: lastCheckInData, refetch: refetchTime } = useReadContract({
+        address: CONTRACT_ADDRESS as `0x${string}`,
+        abi: ABI,
+        functionName: "lastCheckIn",
+        args: [address as `0x${string}`],
+        query: { enabled: !!address },
     });
-  };
 
-  if (!isMounted) return null;
+    const { data: contractTokenBalance, refetch: refetchSupply } = useReadContract({
+        address: USDC_TOKEN_ADDRESS as `0x${string}`,
+        abi: [{ constant: true, inputs: [{ name: "_owner", type: "address" }], name: "balanceOf", outputs: [{ name: "balance", type: "uint256" }], type: "function" }],
+        functionName: "balanceOf",
+        args: [CONTRACT_ADDRESS as `0x${string}`],
+    });
 
-  const lastDateStr = (lastCheckIn > 0 || justCheckedIn)
-    ? (justCheckedIn ? "Just Now" : new Date(lastCheckIn * 1000).toLocaleString()) 
-    : "Never";
+    const { data: userPoints, refetch: refetchPoints } = useReadContract({
+        address: CONTRACT_ADDRESS as `0x${string}`,
+        abi: ABI,
+        functionName: "getUserPoints",
+        args: [address as `0x${string}`],
+        query: { enabled: !!address },
+    });
 
-  if (isReconnecting || isConnecting) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.loadingWrapper}>
-          <div className={styles.loadingSpinner}></div>
-          <h2 className={styles.loadingText}>Syncing Wallet State...</h2>
-        </div>
-      </div>
-    );
-  }
+    const { data: pendingSpinRewards, refetch: refetchSpinRewards } = useReadContract({
+        address: CONTRACT_ADDRESS as `0x${string}`,
+        abi: ABI,
+        functionName: "getPendingRewards",
+        args: [address as `0x${string}`],
+        query: { enabled: !!address },
+    });
 
-  return (
-    <div className={styles.container}>
-      <div className={styles.supplyHeader}>
-        <span className={styles.supplyDot}></span>
-        {/* Reward Pool: <strong>{currentSupply} DEGEN</strong> */}
-        Reward Pool: <strong>{currentSupply} USDC</strong>
-      </div>
+    const lastCheckIn = lastCheckInData ? Number(lastCheckInData) : 0;
+    const currentSupply = contractTokenBalance ? parseFloat(formatUnits(contractTokenBalance as bigint, 6)).toFixed(2) : "0.00";
 
-      <h1 className={styles.title}>Check-in & Spin to Earn</h1>
+    const availablePoints = userPoints ? Number(userPoints) : 0;
+    const spinRewards = (isSpinning && tempRewards) 
+        ? formatUnits(oldRewardsRaw, 6) // স্পিন শেষ না হওয়া পর্যন্ত পুরাতন ব্যালেন্স দেখাবে
+        : (pendingSpinRewards ? formatUnits(pendingSpinRewards as bigint, 6) : "0");
+    
 
-      <div className={styles.spinSection}>
-        <div className={styles.wheelContainer}>
-          <div 
-            className={styles.wheel} 
-            style={{ 
-              transform: `rotate(${rotation}deg)`, 
-              transition: isSpinning ? 'transform 8s cubic-bezier(0.15, 0, 0.1, 1)' : 'none' 
-            }}
-          >
-            {[1, 2, 3, 4, 5, 6, 7].map((i) => (
-              <div key={i} className={`${styles.segment} ${styles[`s${i}`]}`}>
-                <div className={styles.rewardBox}>
-                  <span className={styles.rewardValue}>{wheelSlices[i-1].val}</span>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-<img 
-  src={USDC_LOGO} 
-  alt="usdc" 
-  width="24" 
-  height="24" 
-  className={styles.tokenLogoLarge} 
-/>
+    const canCheckIn = () => {
+        if (!isMounted) return false;
+        if (justCheckedIn) return false;
+        if (lastCheckIn === 0) return true;
+        const dayInSeconds = 24 * 60 * 60;
+        const currentTime = Math.floor(Date.now() / 1000);
+        return currentTime >= lastCheckIn + dayInSeconds;
+    };
+
+    const handleCheckIn = async () => {
+        if (!canCheckIn() || !address) return;
+        setLoading(true);
+        sendCalls({
+            calls: [{ to: CONTRACT_ADDRESS as `0x${string}`, abi: ABI, functionName: "dailyCheckIn", args: [] }],
+        }, {
+            onSuccess: () => {
+                setMessage("Success! Syncing points...");
+                
+                setTimeout(async () => {
+                    await refetchTime(); 
+                    await refetchPoints(); 
+                    setJustCheckedIn(true);
+                    setMessage("Success! +50 PIM earned.");
+                    setLoading(false);
+                }, 5000); 
+            },
+            onError: () => { 
+                setMessage("Check-in Failed."); 
+                setLoading(false); 
+            },
+        });
+    };
+
+    const handleSpin = async () => {
+        // Safety check: points check করা হচ্ছে যাতে contract revert না করে
+        if (availablePoints < 100 || isSpinning || spinLoading || cooldown > 0) return;
+        
+        const currentRewards = pendingSpinRewards ? (pendingSpinRewards as bigint) : BigInt(0);
+        setOldRewardsRaw(currentRewards);
+        
+        setSpinLoading(true); 
+        setMessage("Please confirm in your wallet...");
+
+        sendCalls({
+            calls: [{ to: CONTRACT_ADDRESS as `0x${string}`, abi: ABI, functionName: "spinWheel", args: [] }],
+        }, {
+            onSuccess: async () => {
+                // success হওয়ার সাথে সাথে বাটন লক রাখার জন্য spinLoading সরানো যাবে না এখানে
+                setMessage("Wait Checking Blockchain Confimation. Good Luck!");
+
+                let attempts = 0;
+                const checkInterval = setInterval(async () => {
+                    const { data: newData } = await refetchSpinRewards();
+                    const totalNewRewards = newData ? (newData as bigint) : BigInt(0);
+                    const winAmountRaw = totalNewRewards - currentRewards;
+                    attempts++;
+
+                    if (winAmountRaw > BigInt(0) || attempts >= 25) { // attempts একটু বাড়ানো হয়েছে blockchain lag হ্যান্ডেল করতে
+                        clearInterval(checkInterval);
+                        setSpinLoading(false); // blockchain confirmation পাওয়ার পর বাটন স্টেট ক্লিয়ার
+                        setIsSpinning(true);
+                        
+                        const winAmountStr = formatUnits(winAmountRaw, 6);
+                        setTempRewards(formatUnits(totalNewRewards, 6)); 
+
+                        const slice = wheelSlices.find(s => Math.abs(parseFloat(s.val) - parseFloat(winAmountStr)) < 0.0001);
+
+                        if (slice) {
+                            const currentOffset = rotation % 360; 
+                            const finalRotation = rotation + 3600 + (360 - currentOffset) + (360 - slice.centerDeg); 
+                            setRotation(finalRotation);
+
+                            setTimeout(() => {
+                                setIsSpinning(false);
+                                refetchSpinRewards(); 
+                                setTempRewards(null); 
+                                
+                                setMessage(`Congratulations! You won ${winAmountStr} USDC`);
+                                refetchPoints(); refetchSupply();
+                                // Cooldown বাড়ানো হয়েছে যাতে RPC sync হওয়ার সময় পায়
+                                setCooldown(15); 
+                            }, 8000); 
+                        } else {
+                            // যদি স্লাইস না পাওয়া যায় তবুও spinning বন্ধ করতে হবে
+                            setIsSpinning(false);
+                            setMessage("Spin sync error. Please check claimable rewards.");
+                        }
+                    } 
+                    else if (attempts >= 20) {
+                        clearInterval(checkInterval);
+                        setIsSpinning(false);
+                        setSpinLoading(false);
+                        setMessage("Blockchain Confirmation Delayed. Refreshing...");
+                        refetchSpinRewards();
+                        refetchPoints();
+                    }
+                }, 4000);
+            },
+            onError: () => { 
+                setSpinLoading(false); 
+                setIsSpinning(false); 
+                setMessage("Spin failed or rejected."); 
+            }
+        });
+    };
+
+    const handleClaimReward = async () => {
+        if (Number(spinRewards) <= 0 || claimLoading) return;
+        setClaimLoading(true);
+        
+        sendCalls({
+            calls: [{ to: CONTRACT_ADDRESS as `0x${string}`, abi: ABI, functionName: "claimSpinRewards", args: [] }],
+        }, {
+            onSuccess: async () => {
+                setMessage(`Claim Successful! Syncing balance...`);
+                
+                setTimeout(async () => {
+                    await refetchSpinRewards();
+                    await refetchSupply();
+                    setMessage(`Claim Successful! Rewards sent to wallet.`);
+                    setClaimLoading(false);
+                }, 5000); 
+            },
+            onError: () => { 
+                setMessage("Claim failed."); 
+                setClaimLoading(false); 
+            },
+        });
+    };
+
+    if (!isMounted) return null;
+
+    const lastDateStr = (lastCheckIn > 0 || justCheckedIn)
+        ? (justCheckedIn ? "Just Now" : new Date(lastCheckIn * 1000).toLocaleString()) 
+        : "Never";
+
+    if (isReconnecting || isConnecting) {
+        return (
+            <div className={styles.container}>
+                <div className={styles.loadingWrapper}>
+                    <div className={styles.loadingSpinner}></div>
+                    <h2 className={styles.loadingText}>Syncing Wallet State...</h2>
                 </div>
-              </div>
-            ))}
-          </div>
-          <div className={styles.wheelInner}>{isSpinning ? "🌀" : "🎡"}</div>
+            </div>
+        );
+    }
+
+    return (
+        <div className={styles.container}>
+            <div className={styles.supplyHeader}>
+                <span className={styles.supplyDot}></span>
+                Reward Pool: <strong>{currentSupply} USDC</strong>
+            </div>
+
+            <h1 className={styles.title}>Check-in & Spin to Earn</h1>
+
+            <div className={styles.spinSection}>
+                <div className={styles.wheelContainer}>
+                    <div 
+                        className={styles.wheel} 
+                        style={{ 
+                            transform: `rotate(${rotation}deg)`, 
+                            transition: isSpinning ? 'transform 8s cubic-bezier(0.15, 0, 0.1, 1)' : 'none' 
+                        }}
+                    >
+                        {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+                            <div key={i} className={`${styles.segment} ${styles[`s${i}`]}`}>
+                                <div className={styles.rewardBox}>
+                                    <span className={styles.rewardValue}>{wheelSlices[i-1].val}</span>
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img 
+                                        src={USDC_LOGO} 
+                                        alt="usdc" 
+                                        width="24" 
+                                        height="24" 
+                                        className={styles.tokenLogoLarge} 
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className={styles.wheelInner}>{isSpinning ? "🌀" : "🎡"}</div>
+                </div>
+                <button 
+                    className={(availablePoints >= 100 && cooldown === 0 && !isSpinning && !spinLoading) ? styles.spinButton : styles.spinButtonLocked} 
+                    onClick={handleSpin} 
+                    disabled={isSpinning || spinLoading || availablePoints < 100 || cooldown > 0}
+                >
+                    {spinLoading ? "Confirming..." : 
+                    isSpinning ? "SPINNING..." : 
+                    cooldown > 0 ? `Wait ${cooldown}s` : 
+                    availablePoints >= 100 ? "SPIN (100 PIM)" : "Earn 100PIM to Unlocked"}
+                </button>
+            </div>
+
+            <div className={styles.pointsDisplayCompact}>
+                <div className={styles.pointsTitle}>AVAILABLE: <span className={styles.pointsValueSmall}>{availablePoints} PIM</span></div>
+                <div className={styles.pointsTitle}>ClAIMABLE: <span className={styles.pointsValueSmall}>{spinRewards} $USDC</span></div>
+                <div className={styles.pointsLabelSmall}>(Daily Check-in = +50 PIM | Spin = Burn 100 PIM)</div>
+            </div>
+
+            <div className={styles.streakCard}>
+                <div className={styles.streakLabel}>Last Check-in: <span className={styles.dateText}>{lastDateStr}</span></div>
+            </div>
+
+            <div className={canCheckIn() ? styles.statusBoxEligible : styles.statusBoxNotEligible}>
+                <p>{canCheckIn() ? "You are eligible for check-in!" : "Come back tomorrow for next check-in."}</p>
+            </div>
+
+            {message && <p className={styles.messageBox}>{message}</p>}
+
+            <div className={styles.actionRow}>
+                <button
+                    className={canCheckIn() ? styles.checkInButtonActive : styles.checkInButtonDisabled}
+                    onClick={handleCheckIn}
+                    disabled={loading || !canCheckIn()}
+                >
+                    {loading ? "Checking..." : canCheckIn() ? "CHECK IN +50PIM" : "CHECKIN DONE"}
+                </button>
+                
+                <button 
+                    className={Number(spinRewards) > 0 ? styles.claimActive : styles.rewardButton} 
+                    onClick={handleClaimReward}
+                    disabled={claimLoading || Number(spinRewards) <= 0}
+                >
+                    {claimLoading ? "Claiming..." : Number(spinRewards) > 0 ? "CLAIM" : "CLAIM LOCKED"}
+                </button>
+            </div>
         </div>
-        <button 
-  className={(availablePoints >= 100 && cooldown === 0) ? styles.spinButton : styles.spinButtonLocked} 
-  onClick={handleSpin} 
-  disabled={isSpinning || spinLoading || availablePoints < 100 || cooldown > 0}
->
-  {spinLoading ? "Confirming..." : 
-   isSpinning ? "SPINNING..." : 
-   cooldown > 0 ? `Wait ${cooldown}s` : // কুলডাউন চললে সেকেন্ড দেখাবে
-   availablePoints >= 100 ? "SPIN (100 PIM)" : "Earn 100PIM to Unlocked"}
-</button>
-      </div>
-
-      <div className={styles.pointsDisplayCompact}>
-        <div className={styles.pointsTitle}>AVAILABLE: <span className={styles.pointsValueSmall}>{availablePoints} PIM</span></div>
-        
-        <div className={styles.pointsTitle}>ClAIMABLE: <span className={styles.pointsValueSmall}>{spinRewards} $USDC</span></div>
-        <div className={styles.pointsLabelSmall}>(Daily Check-in = +50 PIM | Spin = Burn 100 PIM)</div>
-      </div>
-
-      <div className={styles.streakCard}>
-        <div className={styles.streakLabel}>Last Check-in: <span className={styles.dateText}>{lastDateStr}</span></div>
-      </div>
-
-      <div className={canCheckIn() ? styles.statusBoxEligible : styles.statusBoxNotEligible}>
-        <p>{canCheckIn() ? "You are eligible for check-in!" : "Come back tomorrow for next check-in."}</p>
-      </div>
-
-      {message && <p className={styles.messageBox}>{message}</p>}
-
-      <div className={styles.actionRow}>
-        <button
-          className={canCheckIn() ? styles.checkInButtonActive : styles.checkInButtonDisabled}
-          onClick={handleCheckIn}
-          disabled={loading || !canCheckIn()}
-        >
-          {loading ? "Checking..." : canCheckIn() ? "CHECK IN +50PIM" : "CHECKIN DONE"}
-        </button>
-        
-        <button 
-          className={Number(spinRewards) > 0 ? styles.claimActive : styles.rewardButton} 
-          onClick={handleClaimReward}
-          disabled={claimLoading || Number(spinRewards) <= 0}
-        >
-          {claimLoading ? "Claiming..." : Number(spinRewards) > 0 ? "CLAIM" : "CLAIM LOCKED"}
-        </button>
-      </div>
-    </div>
-  );
+    );
 }
