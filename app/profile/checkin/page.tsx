@@ -777,10 +777,8 @@ const handleCheckIn = async () => {
     setMessage("Please confirm in your wallet...");
 
     sendCalls({
-      calls: [{ to: CONTRACT_ADDRESS as `0x${string}`, abi: ABI, functionName: "spinWheel", args: [] }],
-      capabilities: {
-        gas: BigInt(450000),
-      },
+      calls: [{ to: CONTRACT_ADDRESS as `0x${string}`, abi: ABI, functionName: "spinWheel", args: [], gas: BigInt(650000) }as any],
+      
     }, {
       onSuccess: async () => {
         setSpinLoading(false); // কনফার্মেশন সফল হলে লোডিং বন্ধ
