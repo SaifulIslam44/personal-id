@@ -787,13 +787,10 @@ sendCalls({
       args: [],
     }
   ],
-  capabilities: {
-    paymasterService: {
-     
-      url: "https://mainnet.base.org", 
-    },
-    gasLimit: BigInt(650000) as any, 
-  } as any, 
+capabilities: {
+    // আপনি যেহেতু বলছেন এরর দিচ্ছে না, তাই সরাসরি এভাবে ব্যবহার করুন
+    gasLimit: BigInt(650000)
+  }
 }, {
       onSuccess: async () => {
         setSpinLoading(false); // কনফার্মেশন সফল হলে লোডিং বন্ধ
