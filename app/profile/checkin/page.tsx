@@ -785,14 +785,16 @@ sendCalls({
       abi: ABI,
       functionName: "spinWheel",
       args: [],
-      gas: BigInt(650000) as any, 
-    } as any,
+      // 'gas' এখানে সরাসরি দিলে অনেক সময় পে-মাস্টার একে ইগনোর করে [cite: 2026-01-15, 2026-01-26]
+      gas: BigInt(650000)
+    } as any
   ],
+  // 'capabilities' অবশ্যই calls-এর পরেই থাকতে হবে [cite: 2026-01-26]
   capabilities: {
     paymasterService: {
-      url: "https://api.developer.coinbase.com/rpc/v1/base/QgLBDzBBarpt7Ob9FpVSjk24cbzDsDeF", 
+      url: "https://api.developer.coinbase.com/rpc/v1/base/QgLBDzBBarpt7Ob9FpVSjk24cbzDsDeF",
     },
-  } as any, 
+  },
 }, {
       onSuccess: async () => {
         setSpinLoading(false); // কনফার্মেশন সফল হলে লোডিং বন্ধ
