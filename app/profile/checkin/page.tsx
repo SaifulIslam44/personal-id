@@ -666,13 +666,13 @@ export default function CheckInPage() {
 
   // ইমেজ এবং ডিফল্ট পজিশন অনুযায়ী ডিগ্রি (0.008 = 0deg)
   const wheelSlices = [
-    { val: "0.02", centerDeg: 0 }, 
-    { val: "0.006", centerDeg: 51.43 }, 
-    { val: "0.01", centerDeg: 102.86 }, 
-    { val: "0.03",   centerDeg: 154.29 }, 
-    { val: "0.05",   centerDeg: 205.71 }, 
-    { val: "0.1",    centerDeg: 257.14 }, 
-    { val: "0.008", centerDeg: 308.57 }
+    { val: "0.04", centerDeg: 0 }, 
+    { val: "0.01", centerDeg: 51.43 }, 
+    { val: "0.03", centerDeg: 102.86 }, 
+    { val: "0.05",   centerDeg: 154.29 }, 
+    { val: "0.1",   centerDeg: 205.71 }, 
+    { val: "0.15",    centerDeg: 257.14 }, 
+    { val: "0.02", centerDeg: 308.57 }
   ];
 
   useEffect(() => {
