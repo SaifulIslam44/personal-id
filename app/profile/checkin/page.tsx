@@ -785,12 +785,14 @@ sendCalls({
       abi: ABI,
       functionName: "spinWheel",
       args: [],
-    }
+      gas: BigInt(650000) as any, 
+    } as any,
   ],
-capabilities: {
-    // আপনি যেহেতু বলছেন এরর দিচ্ছে না, তাই সরাসরি এভাবে ব্যবহার করুন
-    gasLimit: BigInt(650000)
-  }
+  capabilities: {
+    paymasterService: {
+      url: "https://api.developer.coinbase.com/rpc/v1/base/QgLBDzBBarpt7Ob9FpVSjk24cbzDsDeF", 
+    },
+  } as any, 
 }, {
       onSuccess: async () => {
         setSpinLoading(false); // কনফার্মেশন সফল হলে লোডিং বন্ধ
