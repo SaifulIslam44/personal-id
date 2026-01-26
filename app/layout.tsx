@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { Inter, Source_Code_Pro } from "next/font/google";
 import { SafeArea } from "@coinbase/onchainkit/minikit";
 import { minikitConfig } from "../minikit.config";
-import { RootProvider } from "./rootProvider";
+import { Providers } from "./providers";
 import "./globals.css";
 import ConditionalFooter from "./components/ConditionalFooter";
 
@@ -53,14 +53,14 @@ export default function RootLayout({
     
     <html lang="en">
       <body className={`${inter.variable} ${sourceCodePro.variable}`}>
-        <RootProvider>
+        <Providers>
           <WalletProviders> 
             <SafeArea>
               {children}
             </SafeArea>
              <ConditionalFooter />
           </WalletProviders>
-        </RootProvider>
+        </Providers>
       </body>
     </html>
   );

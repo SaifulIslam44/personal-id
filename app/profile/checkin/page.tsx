@@ -779,8 +779,10 @@ const handleCheckIn = async () => {
     setMessage("Please confirm in your wallet...");
 
 
-    
+
 sendCalls({
+  
+  chainId: 8453, 
   calls: [
     {
       to: CONTRACT_ADDRESS as `0x${string}`,
