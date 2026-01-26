@@ -778,6 +778,8 @@ const handleCheckIn = async () => {
     setSpinLoading(true); // ওয়ালেট কনফার্মেশনের সময় বাটন টেক্সট বদলানোর জন্য
     setMessage("Please confirm in your wallet...");
 
+
+    
 sendCalls({
   calls: [
     {
@@ -787,12 +789,10 @@ sendCalls({
       args: [],
     }
   ],
-  
   capabilities: {
     paymasterService: {
       url: "https://api.developer.coinbase.com/rpc/v1/base/QgLBDzBBarpt7Ob9FpVSjk24cbzDsDeF",
     },
-    gasLimit: BigInt(650000)
   },
 }, {
       onSuccess: async () => {
