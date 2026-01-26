@@ -463,6 +463,7 @@ import { Moon, Sun } from "lucide-react";
 import Image from "next/image"; 
 import Task50 from "./components/Task50";
 import FollowTask from "./components/FollowTask";
+import DailyShareTask from "./components/DailyShareTask";
 
 export default function TaskPage() {
   const { address, isConnected } = useAccount();
@@ -808,6 +809,12 @@ const isEligible2 = refCountNum >= 10;
           Finish simple tasks and earn real onchain rewards
         </p>
       </div>
+
+
+
+
+{/* ================= NEW: FOLLOW TASK (সব টাস্কের উপরে) ================= */}
+      <DailyShareTask fid={fid} />
 
 {/* ================= NEW: FOLLOW TASK (সব টাস্কের উপরে) ================= */}
       <FollowTask />
