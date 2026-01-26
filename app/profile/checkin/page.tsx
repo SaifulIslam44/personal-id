@@ -640,6 +640,7 @@ import { formatUnits } from "viem";
 import { CONTRACT_ADDRESS, ABI } from "@/lib/contract";
 import styles from "./checkin.module.css";
 import { useConnect } from "wagmi";
+import { useWriteContract } from 'wagmi'; // wagmi থেকে এটি ইমপোর্ট করতে হবে
 
 
 const USDC_TOKEN_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
@@ -659,6 +660,7 @@ export default function CheckInPage() {
   const [cooldown, setCooldown] = useState(0); 
   const { sendCalls } = useSendCalls(); 
   const { connect, connectors } = useConnect();
+  const { writeContract } = useWriteContract();
 
   const USDC_LOGO = "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=032";
 
@@ -768,6 +770,92 @@ const handleCheckIn = async () => {
     });
   };
 
+//   const handleSpin = async () => {
+//     if (availablePoints < 100 || isSpinning || spinLoading || cooldown > 0) return;
+//     const currentRewards = pendingSpinRewards ? (pendingSpinRewards as bigint) : BigInt(0);
+//     setOldRewardsRaw(currentRewards);
+    
+//     setSpinLoading(true); // ওয়ালেট কনফার্মেশনের সময় বাটন টেক্সট বদলানোর জন্য
+//     setMessage("Please confirm in your wallet...");
+
+//     sendCalls({
+//   calls: [
+//     {
+//       to: CONTRACT_ADDRESS as `0x${string}`,
+//       abi: ABI,
+//       functionName: "spinWheel",
+//       args: [],
+//       gas: BigInt(650000) as any, 
+//     } as any, 
+//   ],
+// }, {
+//       onSuccess: async () => {
+//         setSpinLoading(false); // কনফার্মেশন সফল হলে লোডিং বন্ধ
+//         // setMessage("Spinning... Good Luck!");
+//         setMessage("Wait Checking Blockchain Confimation. Good Luck!");
+
+//         let attempts = 0;
+//         const checkInterval = setInterval(async () => {
+//           const { data: newData } = await refetchSpinRewards();
+//           const totalNewRewards = newData ? (newData as bigint) : BigInt(0);
+//           const winAmountRaw = totalNewRewards - currentRewards;
+//           attempts++;
+
+//           if (winAmountRaw > BigInt(0) || attempts >= 15) {
+//     clearInterval(checkInterval);
+//     setIsSpinning(true);
+    
+//     const winAmountStr = formatUnits(winAmountRaw, 6);
+//     // সরাসরি রিফেচ করা ডাটা দেখানোর বদলে সাময়িকভাবে সেভ করুন
+//     setTempRewards(formatUnits(totalNewRewards, 6)); 
+
+//     const slice = wheelSlices.find(s => Math.abs(parseFloat(s.val) - parseFloat(winAmountStr)) < 0.0001);
+
+//     if (slice) {
+//         const currentOffset = rotation % 360; 
+//         const finalRotation = rotation + 3600 + (360 - currentOffset) + (360 - slice.centerDeg); 
+//         setRotation(finalRotation);
+
+//         setTimeout(() => {
+//             setIsSpinning(false);
+//             // অ্যানিমেশন শেষ হওয়ার পর ক্লেইমএবল ব্যালেন্স আপডেট করুন
+//             refetchSpinRewards(); 
+//             setTempRewards(null); // টেম্পোরারি ডাটা ক্লিয়ার করুন
+            
+//             setMessage(`Congratulations! You won ${winAmountStr} USDC`);
+//             refetchPoints(); refetchSupply();
+//             setCooldown(10);
+//         }, 8000); // চাকা ঘোরার সময় (৮ সেকেন্ড)
+//     } else {
+//               // setIsSpinning(false);
+//               // setMessage(`Win: ${winAmountStr} USDC`);
+//             }
+//           } 
+//           // যদি ৩০ সেকেন্ড পার হয়ে যায় (attempts >= 30)
+//           else if (attempts >= 10) {
+//             clearInterval(checkInterval);
+//             setIsSpinning(false);
+//             setSpinLoading(false);
+//             setMessage("Blockchain Confirmation Failed. Please try again.");
+//           }
+//         }, 3000);
+//       },
+//       onError: () => { setSpinLoading(false); setIsSpinning(false); setMessage("Spin failed."); }
+//     });
+//   };
+
+
+
+
+
+
+
+
+
+
+
+
+
   const handleSpin = async () => {
     if (availablePoints < 100 || isSpinning || spinLoading || cooldown > 0) return;
     const currentRewards = pendingSpinRewards ? (pendingSpinRewards as bigint) : BigInt(0);
@@ -776,17 +864,13 @@ const handleCheckIn = async () => {
     setSpinLoading(true); // ওয়ালেট কনফার্মেশনের সময় বাটন টেক্সট বদলানোর জন্য
     setMessage("Please confirm in your wallet...");
 
-    sendCalls({
-  calls: [
-    {
-      to: CONTRACT_ADDRESS as `0x${string}`,
-      abi: ABI,
-      functionName: "spinWheel",
-      args: [],
-      gas: BigInt(650000) as any, 
-    } as any, 
-  ],
-}, {
+   writeContract({
+        address: CONTRACT_ADDRESS as `0x${string}`,
+        abi: ABI,
+        functionName: "spinWheel",
+        args: [],
+        gas: BigInt(650000), // এটি এখন Basescan-এ সরাসরি ৬৫০,০০০ লিমিট হিসেবে দেখাবে
+    }, {
       onSuccess: async () => {
         setSpinLoading(false); // কনফার্মেশন সফল হলে লোডিং বন্ধ
         // setMessage("Spinning... Good Luck!");
@@ -841,6 +925,13 @@ const handleCheckIn = async () => {
       onError: () => { setSpinLoading(false); setIsSpinning(false); setMessage("Spin failed."); }
     });
   };
+
+
+
+
+
+
+
 
 
 
