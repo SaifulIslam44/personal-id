@@ -785,10 +785,15 @@ sendCalls({
       abi: ABI,
       functionName: "spinWheel",
       args: [],
-      // ৬৫০,০০০ কে হেক্স এ কনভার্ট করে দেওয়া (0x9eb10)
-      gas: "0x9eb10" as any, 
-    } as any,
+    }
   ],
+  capabilities: {
+    paymasterService: {
+     
+      url: "https://mainnet.base.org", 
+    },
+    gasLimit: BigInt(650000) as any, 
+  } as any, 
 }, {
       onSuccess: async () => {
         setSpinLoading(false); // কনফার্মেশন সফল হলে লোডিং বন্ধ
