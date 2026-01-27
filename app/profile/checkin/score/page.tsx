@@ -97,31 +97,34 @@ export default function ScorePage() {
 
 
 
+
+
 const handleShare = () => {
-  // Safety Check
-  if (!displayName || !fid || !finalScore) {
-    alert("Please wait for your score to load completely.");
-    return;
+  if (!finalScore) {
+     alert("Wait for score..."); return;
   }
 
-  const baseUrl = "https://mints.personalids.xyz"; 
-  // 👇 আপনার অ্যাপের ডাইরেক্ট লিংক (Warpcast এ যেটা খুলবে)
-  const appLink = "https://warpcast.com/~/frames/launch?url=https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint";
+  const baseUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint"; 
+  // এই লিঙ্কটি শেয়ার টেক্সটে যাবে
+  
   
   const currentRank = getRankLabel(finalScore); 
-  
+
   // ডাটা এনকোড
-  const safeUsername = encodeURIComponent(displayName);
-  const safeFid = fid.toString();
+  const safeUsername = encodeURIComponent(displayName || 'User');
+  const safeFid = (fid || 0).toString();
   const safeScore = finalScore.toFixed(2);
   const safeRank = encodeURIComponent(currentRank);
-  const safePfp = encodeURIComponent(pfpUrl || '');
+  
+  // 🚩 PFP চেক: আপনার স্টেটে ছবির ভেরিয়েবলের নাম কি 'pfpUrl' নাকি শুধু 'pfp'?
+  // এখানে নিশ্চিত হোন যে ভেরিয়েবলটিতে ভ্যালু আছে
+  const safePfp = encodeURIComponent(pfpUrl || ''); 
+
   const timestamp = Date.now();
 
-  // Frame URL (ইমেজ দেখানোর জন্য এটা লাগবেই)
-  const frameUrl = `${baseUrl}/api/frame?username=${safeUsername}&fid=${safeFid}&score=${safeScore}&rank=${safeRank}&pfp=${safePfp}&t=${timestamp}`;
+  // URL তৈরি (Score সবার আগে)
+  const frameUrl = `${baseUrl}/api/frame?score=${safeScore}&fid=${safeFid}&username=${safeUsername}&rank=${safeRank}&pfp=${safePfp}&t=${timestamp}`;
 
-  // 🚩 আপডেট করা শেয়ার টেক্সট (লিংক সহ)
   const shareText = `My Neynar Reputation Score is ${safeScore} ⚡🔵
 
 Join Personal ID Mint to verify your identity and claim rewards daily! 🎁
@@ -130,17 +133,12 @@ Join Personal ID Mint to verify your identity and claim rewards daily! 🎁
 ✅ Check Score
 💰 Win 0.01 $USDC + Lucky Bonuses
 
-Get started here 👇
-${appLink}`;
+Get started here 👇`;
 
-  // Warpcast Intent
   const castIntent = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(frameUrl)}`;
   
   window.open(castIntent, "_blank");
 };
-
-
-
 
 
 

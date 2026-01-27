@@ -159,7 +159,6 @@
 
 
 
-
 /* eslint-disable @next/next/no-img-element */
 
 import { ImageResponse } from 'next/og';
@@ -167,6 +166,7 @@ import { ImageResponse } from 'next/og';
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
 
+  // প্যারামিটারগুলো রিসিভ করা
   const username = searchParams.get('username') || 'User';
   const fid = searchParams.get('fid') || '0';
   const score = searchParams.get('score') || '0.00';
@@ -197,8 +197,7 @@ export async function GET(request: Request) {
           borderRadius: '40px',
           padding: '40px',
           width: '550px', // কার্ডের সাইজ ফিক্সড রাখা হলো যাতে দেখতে সুন্দর লাগে
-          // height অটোমেটিক কন্টেন্ট অনুযায়ী নিবে
-          boxShadow: '0 10px 40px rgba(0,0,0,0.5)', // একটু শ্যাডো দেওয়া হলো ডেপথের জন্য
+          boxShadow: '0 10px 40px rgba(0,0,0,0.5)', // একটু শ্যাডো দেওয়া হলো ডেপথের জন্য
           fontFamily: '"Inter", sans-serif',
         }}>
 
@@ -275,6 +274,13 @@ export async function GET(request: Request) {
       // 🚩 স্ট্যান্ডার্ড সাইজ: ১২০০ x ৬৩০
       width: 1200,
       height: 630,
+      
+      // 🚩 Cache Control Headers (খুবই গুরুত্বপূর্ণ)
+      // এটি যুক্ত করায় সার্ভার পুরনো ইমেজ ধরে রাখবে না
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate',
+        'Pragma': 'no-cache',
+      },
     }
   );
 }
