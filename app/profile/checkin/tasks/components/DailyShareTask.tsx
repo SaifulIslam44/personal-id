@@ -44,7 +44,7 @@ export default function DailyShareTask({ fid }: { fid: any }) {
   const lastClaimTime = lastClaimData ? Number(lastClaimData) : 0;
   const resetHour = resetHourData !== undefined ? Number(resetHourData) : 6;
 
-  // ৪. টাইম রিসেট লজিক (সকাল ৬টা)
+  // ৪. টাইম রিসেট লজিক (UTC সময় অনুযায়ী)
   useEffect(() => {
     const updateStatus = () => {
       if (limitDisabled) {
@@ -52,32 +52,42 @@ export default function DailyShareTask({ fid }: { fid: any }) {
         return;
       }
 
+      // বর্তমান সময়কে UTC-তে কনভার্ট করে হিসাব করা
       const now = new Date();
+      const nowUTC = new Date(now.toUTCString());
       
-      // পরবর্তী সকাল ৬টা নির্ধারণ
-      const nextReset = new Date();
-      if (now.getHours() >= resetHour) {
-        nextReset.setDate(now.getDate() + 1);
+      // পরবর্তী UTC রিসেট টাইম নির্ধারণ
+      const nextResetUTC = new Date(now.toUTCString());
+      if (nowUTC.getUTCHours() >= resetHour) {
+        nextResetUTC.setUTCDate(nowUTC.getUTCDate() + 1);
       }
-      nextReset.setHours(resetHour, 0, 0, 0);
+      nextResetUTC.setUTCHours(resetHour, 0, 0, 0);
 
-      // বর্তমান ক্লেইম সাইকেলের শুরুর সময়
-      const currentCycleStart = new Date();
-      if (now.getHours() < resetHour) {
-        currentCycleStart.setDate(currentCycleStart.getDate() - 1);
+      // বর্তমান ক্লেইম সাইকেলের শুরুর সময় (UTC)
+      const currentCycleStartUTC = new Date(now.toUTCString());
+      if (nowUTC.getUTCHours() < resetHour) {
+        currentCycleStartUTC.setUTCDate(currentCycleStartUTC.getUTCDate() - 1);
       }
-      currentCycleStart.setHours(resetHour, 0, 0, 0);
+      currentCycleStartUTC.setUTCHours(resetHour, 0, 0, 0);
 
-      // যদি লাস্ট ক্লেইম বর্তমান সাইকেলের পরে হয়ে থাকে (অর্থাৎ আজ অলরেডি ডান)
-      if (lastClaimTime * 1000 > currentCycleStart.getTime()) {
+      // লাস্ট ক্লেইম টাইম (সেকেন্ড থেকে মিলিসেকেন্ডে)
+      const lastClaimMs = lastClaimTime * 1000;
+
+      // যদি লাস্ট ক্লেইম বর্তমান সাইকেলের পরে হয়ে থাকে (অর্থাৎ এই সাইকেলে ক্লেইম করা শেষ)
+      if (lastClaimTime !== 0 && lastClaimMs >= currentCycleStartUTC.getTime()) {
         setIsLocked(true);
         
-        const diff = nextReset.getTime() - now.getTime();
-        const h = Math.floor(diff / (1000 * 60 * 60));
-        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const s = Math.floor((diff % (1000 * 60)) / 1000);
+        const diff = nextResetUTC.getTime() - nowUTC.getTime();
         
-        setTimeLeft(`${h}h ${m}m ${s}s`);
+        if (diff > 0) {
+          const h = Math.floor(diff / (1000 * 60 * 60));
+          const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+          const s = Math.floor((diff % (1000 * 60)) / 1000);
+          setTimeLeft(`${h}h ${m}m ${s}s`);
+        } else {
+          // যদি ডিফারেন্স ০ হয়ে যায়, তবে লক খুলে দাও
+          setIsLocked(false);
+        }
       } else {
         setIsLocked(false);
       }
@@ -109,19 +119,22 @@ export default function DailyShareTask({ fid }: { fid: any }) {
     if (!address) return;
     try {
       setIsClaiming(true);
-      await writeContractAsync({
+      const tx = await writeContractAsync({
         address: CONTRACT_ADDRESS,
         abi: ABI,
         functionName: "claimDailyTaskReward",
         args: [TASK_ID],
       });
 
-      // ক্লেইম সফল হলে অন-চেইন ডাটা রিফ্রেশ করা
-      await refetchClaimTime();
-      
-      // স্টেট ক্লিনআপ
-      setHasShared(false);
-      setIsVerified(false);
+      // ট্রানজেকশন সফল হওয়ার পর ডাটা রিফ্রেশ করা
+      if (tx) {
+        // রিফ্রেশ করার মাধ্যমে lastClaimTime আপডেট হবে এবং টাইমার চালু হবে
+        await refetchClaimTime();
+        
+        // স্টেট ক্লিনআপ
+        setHasShared(false);
+        setIsVerified(false);
+      }
       setIsClaiming(false);
     } catch (err) {
       console.error("Claim failed:", err);
@@ -136,11 +149,11 @@ export default function DailyShareTask({ fid }: { fid: any }) {
       <div className={styles.center}>
         <h3>Daily App Share</h3>
         <p className={styles.desc}>
-          Earn 50 PIM daily. Next reset at {resetHour}:00 AM.
+          Earn 50 PIM daily. Next reset at {resetHour}:00 AM UTC.
         </p>
 
         {isLocked ? (
-          <button className={styles.retryBtn} disabled style={{ opacity: 0.8, cursor: "wait" }}>
+          <button className={styles.retryBtn1} disabled style={{ opacity: 0.8, cursor: "wait" }}>
             Reset in: {timeLeft}
           </button>
         ) : isVerifying ? (
