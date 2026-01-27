@@ -98,48 +98,47 @@ export default function ScorePage() {
 
 
 
-
 const handleShare = () => {
-  if (!finalScore) {
-     alert("Wait for score..."); return;
+  // ১. সেফটি চেক
+  if (!displayName || !fid || !finalScore) {
+    alert("Please wait for your score to load completely.");
+    return;
   }
 
-  const baseUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint"; 
-  // এই লিঙ্কটি শেয়ার টেক্সটে যাবে
-  
+  // ২. কনফিগারেশন
+  const baseUrl = "https://mints.personalids.xyz"; 
   
   const currentRank = getRankLabel(finalScore); 
-
-  // ডাটা এনকোড
-  const safeUsername = encodeURIComponent(displayName || 'User');
-  const safeFid = (fid || 0).toString();
+  
+  // ৩. ডাটা এনকোড
+  const safeUsername = encodeURIComponent(displayName);
+  const safeFid = fid.toString();
   const safeScore = finalScore.toFixed(2);
   const safeRank = encodeURIComponent(currentRank);
-  
-  // 🚩 PFP চেক: আপনার স্টেটে ছবির ভেরিয়েবলের নাম কি 'pfpUrl' নাকি শুধু 'pfp'?
-  // এখানে নিশ্চিত হোন যে ভেরিয়েবলটিতে ভ্যালু আছে
-  const safePfp = encodeURIComponent(pfpUrl || ''); 
-
+  const safePfp = encodeURIComponent(pfpUrl || '');
   const timestamp = Date.now();
 
-  // URL তৈরি (Score সবার আগে)
+  // ৪. Frame URL (ইমেজ দেখানোর জন্য এটাই Embed হবে)
+  // এটিই ব্যাকগ্রাউন্ডে আপনার farcaster.xyz লিংককে টার্গেট করছে (route.ts এর মাধ্যমে)
   const frameUrl = `${baseUrl}/api/frame?score=${safeScore}&fid=${safeFid}&username=${safeUsername}&rank=${safeRank}&pfp=${safePfp}&t=${timestamp}`;
 
+  // ৫. শেয়ার টেক্সট (লিংক ছাড়া)
+  // লিংক সরিয়ে ফেলা হলো, এখন শুধু সুন্দর ক্যাপশন থাকবে
   const shareText = `My Neynar Reputation Score is ${safeScore} ⚡🔵
 
-Join Personal ID Mint to verify your identity and claim rewards daily! 🎁
+Mint ID & Check Score to claim daily rewards! 🎁
 
 ✅ Mint ID
 ✅ Check Score
-💰 Win 0.01 $USDC + Lucky Bonuses
+💰 Win 0.01 $USDC + Lucky Bonuses`;
 
-Get started here 👇`;
-
+  // ৬. Warpcast Intent
+  // embeds[] এ frameUrl যাচ্ছে -> ফলে ছবি দেখাবে ডাইনামিক
+  // frameUrl এর বাটনে ক্লিক করলে -> farcaster.xyz ওপেন হবে (যা route.ts এ সেট করা আছে)
   const castIntent = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(frameUrl)}`;
   
   window.open(castIntent, "_blank");
 };
-
 
 
 
