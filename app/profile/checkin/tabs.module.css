@@ -23,7 +23,7 @@
 }
 
 /* ===== Bottom Nav Bar ===== */
-.bottomNav {
+/* .bottomNav {
   position: fixed;
   bottom: 0;
   left: 0;
@@ -35,7 +35,28 @@
   border-top: 1px solid #0e1630;
   z-index: 999;
   transition: background 0.3s ease;
+} */
+
+
+/* ===== Bottom Nav Bar ===== */
+.bottomNav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  background: linear-gradient(180deg, #0b1224, #070c1a);
+  
+  /* columns 4 theke 5 kore dao */
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); 
+  
+  border-top: 1px solid #0e1630;
+  z-index: 999;
+  transition: background 0.3s ease;
 }
+
+
 
 /* ☀️ Light Mode Nav: ন্যাভ বারকেও লাইট করা */
 :global(.light-mode) .bottomNav {
@@ -98,7 +119,7 @@
 }
 
 /* ===== Mobile polish ===== */
-@media (max-width: 480px) {
+/* @media (max-width: 480px) {
   .bottomNav {
     height: 60px;
   }
@@ -111,5 +132,31 @@
   .tabBtn svg {
     width: 20px;
     height: 20px;
+  }
+} */
+
+
+
+/* ===== Mobile polish ===== */
+@media (max-width: 480px) {
+  .bottomNav {
+    height: 60px;
+    /* ensure 5 columns on mobile too */
+    grid-template-columns: repeat(5, 1fr);
+  }
+  .content {
+    padding-bottom: 76px;
+  }
+  .tabBtn {
+    font-size: 9px; /* Ektu font komiye dilam jate text overlap na kore */
+    gap: 2px;
+  }
+  .tabBtn svg {
+    width: 20px; /* Icon ektu chhoto kora holo logic onusare */
+    height: 20px;
+  }
+  .dot {
+    width: 4px;
+    height: 4px;
   }
 }

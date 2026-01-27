@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import styles from "./tabs.module.css";
-import { Gift, ListChecks, Users, Info } from "lucide-react";
+import { Gift, ListChecks, Users, Info, BarChart3 } from "lucide-react";
 
 export default function ProfileLayout({
   children,
@@ -15,6 +15,7 @@ export default function ProfileLayout({
   const tabs = [
     { label: "Rewards", path: "/profile/checkin", icon: Gift },
     { label: "Task", path: "/profile/checkin/tasks", icon: ListChecks },
+    { label: "Score", path: "/profile/checkin/score", icon: BarChart3 },
     { label: "Frens", path: "/profile/checkin/frens", icon: Users },
     { label: "Info", path: "/profile/checkin/info", icon: Info },
   ];

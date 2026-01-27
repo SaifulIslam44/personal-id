@@ -1,0 +1,180 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import styles from "./score.module.css";
+import { Moon, Sun, Share2, ShieldCheck, Zap } from "lucide-react";
+import { useMiniKit } from "@coinbase/onchainkit/minikit";
+import miniApp from "@farcaster/miniapp-sdk";
+import Image from "next/image";
+
+export default function ScorePage() {
+  const { context } = useMiniKit();
+  const [frameContext, setFrameContext] = useState<any>(null);
+  const [isDarkMode, setIsDarkMode] = useState(true);
+  const [displayScore, setDisplayScore] = useState(0.0);
+  const finalScore = 0.19; 
+
+  // 🚩 Neynar Score ভিত্তিক অটো পারসেন্টেজ র‍্যাঙ্ক লজিক
+  const getRankLabel = (score: number) => {
+    if (score >= 0.90) return "TOP 1% OF USERS";
+    if (score >= 0.75) return "TOP 5% OF USERS";
+    if (score >= 0.60) return "TOP 10% OF USERS";
+    if (score >= 0.40) return "TOP 20% OF USERS";
+    if (score >= 0.20) return "TOP 30% OF USERS";
+    if (score >= 0.10) return "TOP 50% OF USERS"; 
+    return "TOP 75% OF USERS";
+  };
+
+  // 🚩 শেয়ার লজিক: এটি আপনার অ্যাপ লিঙ্কের সাথে ডায়নামিক কার্ড ইমেজ এমবেড করবে
+// const handleShare = () => {
+//   const currentRank = getRankLabel(finalScore);
+//   const shareText = `Check out my Farcaster Reputation Score! ⚡`;
+  
+//   // ১. আপনার ডিজাইন করা Neynar কার্ডের ইমেজ লিঙ্ক (যা আপনার api/og থেকে আসবে)
+//   const baseUrl = "https://prevent-toolbox-stevens-thats.trycloudflare.com"; 
+//   const ogImageUrl = `${baseUrl}/api/og?username=${encodeURIComponent(displayName)}&fid=${fid}&score=${finalScore.toFixed(2)}&pfp=${encodeURIComponent(pfpUrl)}&rank=${encodeURIComponent(currentRank)}&v=${Date.now()}`;
+
+//   // ২. আপনার মেইন অ্যাপের জয়েন লিঙ্ক (যা নিচে ছোট এমবেড হিসেবে থাকবে)
+//   const appJoinUrl = `https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint`;
+
+//   // 🚩 এখানে আমরা embeds[] এ ইমেজ এবং অ্যাপ লিঙ্ক দুটোই পাঠিয়ে দিচ্ছি
+//   const castIntent = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(ogImageUrl)}&embeds[]=${encodeURIComponent(appJoinUrl)}`;
+  
+//   window.open(castIntent, "_blank");
+// };
+
+
+
+const handleShare = () => {
+  // ১. আপনার বেস URL
+  const baseUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint"; 
+
+  // ২. র‍্যাঙ্ক এবং অন্যান্য ডাটা প্রিপারেশন
+  const currentRank = getRankLabel(finalScore); 
+  
+  // ৩. ডাটা এনকোড করা
+  const safeUsername = encodeURIComponent(displayName || 'User');
+  const safeFid = fid || '0';
+  const safeScore = finalScore ? finalScore.toFixed(2) : '0.00';
+  const safeRank = encodeURIComponent(currentRank || 'ACTIVE USER');
+  const safePfp = encodeURIComponent(pfpUrl || '');
+
+  // ৪. Frame URL তৈরি (Warpcast এ এটাই এমবেড হবে)
+  const frameUrl = `${baseUrl}/api/frame?username=${safeUsername}&fid=${safeFid}&score=${safeScore}&rank=${safeRank}&pfp=${safePfp}&t=${Date.now()}`;
+
+  // ৫. 🚩 স্মার্ট এবং আকর্ষণীয় শেয়ার টেক্সট (Updated)
+  // এখানে স্কোর ডাইনামিকালি দেখানো হচ্ছে এবং রিওয়ার্ডের কথা বলে আগ্রহ তৈরি করা হচ্ছে
+  const shareText = `My Neynar Reputation Score is ${safeScore} ⚡🔵
+
+Join Personal ID Mint to verify your identity and claim rewards daily! 🎁
+
+✅ Mint ID
+✅ Check Score
+💰 Win 0.01 $USDC + Lucky Bonuses
+
+Get started here 👇`;
+
+  // ৬. Warpcast Intent তৈরি
+  const castIntent = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(frameUrl)}`;
+  
+  // ৭. উইন্ডো ওপেন করা
+  window.open(castIntent, "_blank");
+};
+
+  // SDK context load
+  useEffect(() => {
+    miniApp.context.then(setFrameContext).catch(() => {});
+  }, []);
+
+  // Count-up animation logic (Smooth 60fps)
+  useEffect(() => {
+    let start = 0;
+    const duration = 2000; 
+    const frameRate = 1000 / 60;
+    const totalFrames = duration / frameRate;
+    const increment = finalScore / totalFrames;
+
+    const timer = setInterval(() => {
+      start += increment;
+      if (start >= finalScore) {
+        setDisplayScore(finalScore);
+        clearInterval(timer);
+      } else {
+        setDisplayScore(start);
+      }
+    }, frameRate);
+    return () => clearInterval(timer);
+  }, [finalScore]);
+
+  // User details fallback
+  const user = context?.user || frameContext?.user;
+  const displayName = user?.displayName || user?.username || "Saiful Islam";
+  const fid = user?.fid || "123456";
+  const pfpUrl = user?.pfpUrl || "https://placehold.co/100x100?text=User";
+
+  return (
+    <div className={`${styles.container} ${!isDarkMode ? styles.lightMode : ""}`}>
+      {/* Premium Top Navigation */}
+      <nav className={styles.topBar}>
+        <div className={styles.profileSummary}>
+          <div className={styles.miniPfpWrapper}>
+            <Image src={pfpUrl} alt="PFP" className={styles.miniPfp} width={28} height={28} unoptimized />
+          </div>
+          <span className={styles.profileName}>{displayName}</span>
+        </div>
+        <button className={styles.themeToggle} onClick={() => setIsDarkMode(!isDarkMode)}>
+          {isDarkMode ? <Moon size={18} className={styles.iconBlue} /> : <Sun size={18} className={styles.iconOrange} />}
+        </button>
+      </nav>
+
+      <main className={styles.mainContent}>
+        <header className={styles.heroHeader}>
+          <h1 className={styles.mainTitle}>NEYNAR SCORE</h1>
+          <p className={styles.subTitle}>Reputation score based on your On-chain & Social Activity, powered by Neynar</p>
+        </header>
+
+        {/* The Professional Score Card */}
+        <section className={styles.idCard}>
+          <div className={styles.cardGlassOverlay}></div>
+          
+          <div className={styles.cardHeader}>
+             <ShieldCheck size={14} />
+             <span>VERIFIED IDENTITY</span>
+          </div>
+          
+          <div className={styles.identitySection}>
+            <div className={styles.avatarContainer}>
+               <div className={styles.avatarRing}>
+                  <Image src={pfpUrl} alt="User Profile" className={styles.pfpGol} width={90} height={90} unoptimized />
+               </div>
+            </div>
+            <div className={styles.userDetails}>
+               <h2 className={styles.nameLabel}>User: <span className={styles.whiteText}>{displayName}</span></h2>
+               <p className={styles.fidLabel}>FID: <span className={styles.fidValue}>{fid}</span></p>
+            </div>
+          </div>
+
+          <div className={styles.scoreSection}>
+            <div className={styles.scoreTitle}>ACTIVITY NEYNAR SCORE</div>
+            <div className={styles.scoreNumber}>
+              {displayScore.toFixed(2)}
+            </div>
+            
+            <div className={styles.rankBadge}>
+              <Zap size={12} fill="currentColor" />
+              <span>{getRankLabel(finalScore)}</span>
+            </div>
+          </div>
+          
+          <div className={styles.cardFooterAccent}></div>
+        </section>
+
+        {/* 🚩 এখানে আপনার শেয়ার বাটনটি কাজ করবে */}
+        <button className={styles.shareBtn} onClick={handleShare}>
+          <Share2 size={20} />
+          <span>Share Your Score</span>
+        </button>
+      </main>
+    </div>
+  );
+}
