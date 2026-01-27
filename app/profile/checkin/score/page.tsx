@@ -46,24 +46,32 @@ export default function ScorePage() {
 
 
 const handleShare = () => {
-  // ১. আপনার বেস URL
-  const baseUrl = "https://mints.personalids.xyz"; 
+  // ১. Safety Check: ডাটা লোড না হলে শেয়ার হবে না
+  if (!displayName || !fid || !finalScore) {
+    console.warn("Data not ready yet!");
+    alert("Please wait for your score to load completely.");
+    return;
+  }
 
-  // ২. র‍্যাঙ্ক এবং অন্যান্য ডাটা প্রিপারেশন
+  const baseUrl = "https://mints.personalids.xyz"; 
   const currentRank = getRankLabel(finalScore); 
   
-  // ৩. ডাটা এনকোড করা
-  const safeUsername = encodeURIComponent(displayName || 'User');
-  const safeFid = fid || '0';
-  const safeScore = finalScore ? finalScore.toFixed(2) : '0.00';
-  const safeRank = encodeURIComponent(currentRank || 'ACTIVE USER');
+  // ২. ডাটা এনকোড করা
+  const safeUsername = encodeURIComponent(displayName);
+  const safeFid = fid.toString();
+  // স্কোর স্ট্রিং নিশ্চিত করা
+  const safeScore = finalScore.toFixed(2); 
+  const safeRank = encodeURIComponent(currentRank);
+  // PFP লিংক এনকোড করা (খুব জরুরি)
   const safePfp = encodeURIComponent(pfpUrl || '');
+  // টাইমস্ট্যাম্প
+  const timestamp = Date.now();
 
-  // ৪. Frame URL তৈরি (Warpcast এ এটাই এমবেড হবে)
-  const frameUrl = `${baseUrl}/api/frame?username=${safeUsername}&fid=${safeFid}&score=${safeScore}&rank=${safeRank}&pfp=${safePfp}&t=${Date.now()}`;
+  // ৩. Frame URL তৈরি
+  // আমরা এখানে 't' পাঠাচ্ছি, যা backend রিসিভ করে ইমেজে বসাবে
+  const frameUrl = `${baseUrl}/api/frame?username=${safeUsername}&fid=${safeFid}&score=${safeScore}&rank=${safeRank}&pfp=${safePfp}&t=${timestamp}`;
 
-  // ৫. 🚩 স্মার্ট এবং আকর্ষণীয় শেয়ার টেক্সট (Updated)
-  // এখানে স্কোর ডাইনামিকালি দেখানো হচ্ছে এবং রিওয়ার্ডের কথা বলে আগ্রহ তৈরি করা হচ্ছে
+  // ৪. শেয়ার টেক্সট
   const shareText = `My Neynar Reputation Score is ${safeScore} ⚡🔵
 
 Join Personal ID Mint to verify your identity and claim rewards daily! 🎁
@@ -74,10 +82,14 @@ Join Personal ID Mint to verify your identity and claim rewards daily! 🎁
 
 Get started here 👇`;
 
-  // ৬. Warpcast Intent তৈরি
+  // ৫. Warpcast Intent
   const castIntent = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(frameUrl)}`;
   
-  // ৭. উইন্ডো ওপেন করা
+  // ৬. Debugging (Console Check)
+  console.log("---- READY TO SHARE ----");
+  console.log("Link:", frameUrl);
+  
+  // ৭. ওপেন
   window.open(castIntent, "_blank");
 };
 
