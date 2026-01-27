@@ -264,7 +264,7 @@ import Image from "next/image";
 
 export default function ScorePage() {
   const { context } = useMiniKit();
-  const [frameContext, setFrameContext] = useState<any>(null);
+  const [setFrameContext] = useState<any>(null);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [displayScore, setDisplayScore] = useState(0.0);
   
