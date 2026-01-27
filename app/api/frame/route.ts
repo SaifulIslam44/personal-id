@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   const rank = searchParams.get('rank') || 'ACTIVE USER';
   const pfp = searchParams.get('pfp') || '';
 
-  const baseUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint";
+  const baseUrl = "https://mints.personalids.xyz";
 
   // সেই আগের ইমেজ জেনারেশন URL টি এখানে তৈরি করুন
   // এটিই ফ্রেমের প্রিভিউ ইমেজ হিসেবে দেখাবে

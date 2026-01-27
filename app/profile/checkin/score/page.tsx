@@ -47,7 +47,7 @@ export default function ScorePage() {
 
 const handleShare = () => {
   // ১. আপনার বেস URL
-  const baseUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint"; 
+  const baseUrl = "https://mints.personalids.xyz"; 
 
   // ২. র‍্যাঙ্ক এবং অন্যান্য ডাটা প্রিপারেশন
   const currentRank = getRankLabel(finalScore); 
