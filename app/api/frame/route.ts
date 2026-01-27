@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
+  // ডাটা রিসিভ করা এবং সেফটি চেক
   const username = searchParams.get('username') || 'User';
   const fid = searchParams.get('fid') || '0';
   const score = searchParams.get('score') || '0.00';
@@ -13,8 +14,7 @@ export async function GET(request: NextRequest) {
   const baseUrl = "https://mints.personalids.xyz"; 
   const appJoinUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint"; 
 
-  // 🚩 FIX: PFP সবার শেষে রাখা হয়েছে
-  // username এবং rank এনকোড করা হচ্ছে যাতে স্পেস বা ক্যারেক্টার সমস্যা না করে
+  // 🚩 OG ইমেজের ইউআরএল তৈরি - প্রোপার এনকোডিং সহ
   const imageUrl = `${baseUrl}/api/og?score=${score}&fid=${fid}&rank=${encodeURIComponent(rank)}&username=${encodeURIComponent(username)}&t=${timestamp}&pfp=${encodeURIComponent(pfp)}`;
 
   const html = `
@@ -36,7 +36,10 @@ export async function GET(request: NextRequest) {
         <meta http-equiv="refresh" content="0;url=${appJoinUrl}" />
       </head>
       <body>
-        <h1>Redirecting...</h1>
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif;">
+          <h1>Redirecting to Personal ID Mint...</h1>
+          <p>Please wait while we take you to the app.</p>
+        </div>
         <script>
           window.location.href = "${appJoinUrl}";
         </script>
@@ -49,6 +52,7 @@ export async function GET(request: NextRequest) {
     headers: {
       'Content-Type': 'text/html',
       'Cache-Control': 'no-store, no-cache, must-revalidate',
+      'Pragma': 'no-cache',
     },
   });
 }
