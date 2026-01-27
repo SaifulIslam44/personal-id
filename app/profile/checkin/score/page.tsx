@@ -45,33 +45,83 @@ export default function ScorePage() {
 
 
 
+// const handleShare = () => {
+//   // ১. Safety Check: ডাটা লোড না হলে শেয়ার হবে না
+//   if (!displayName || !fid || !finalScore) {
+//     console.warn("Data not ready yet!");
+//     alert("Please wait for your score to load completely.");
+//     return;
+//   }
+
+//   const baseUrl = "https://mints.personalids.xyz"; 
+//   const currentRank = getRankLabel(finalScore); 
+  
+//   // ২. ডাটা এনকোড করা
+//   const safeUsername = encodeURIComponent(displayName);
+//   const safeFid = fid.toString();
+//   // স্কোর স্ট্রিং নিশ্চিত করা
+//   const safeScore = finalScore.toFixed(2); 
+//   const safeRank = encodeURIComponent(currentRank);
+//   // PFP লিংক এনকোড করা (খুব জরুরি)
+//   const safePfp = encodeURIComponent(pfpUrl || '');
+//   // টাইমস্ট্যাম্প
+//   const timestamp = Date.now();
+
+//   // ৩. Frame URL তৈরি
+//   // আমরা এখানে 't' পাঠাচ্ছি, যা backend রিসিভ করে ইমেজে বসাবে
+//   const frameUrl = `${baseUrl}/api/frame?username=${safeUsername}&fid=${safeFid}&score=${safeScore}&rank=${safeRank}&pfp=${safePfp}&t=${timestamp}`;
+
+//   // ৪. শেয়ার টেক্সট
+//   const shareText = `My Neynar Reputation Score is ${safeScore} ⚡🔵
+
+// Join Personal ID Mint to verify your identity and claim rewards daily! 🎁
+
+// ✅ Mint ID
+// ✅ Check Score
+// 💰 Win 0.01 $USDC + Lucky Bonuses
+
+// Get started here 👇`;
+
+//   // ৫. Warpcast Intent
+//   const castIntent = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(frameUrl)}`;
+  
+//   // ৬. Debugging (Console Check)
+//   console.log("---- READY TO SHARE ----");
+//   console.log("Link:", frameUrl);
+  
+//   // ৭. ওপেন
+//   window.open(castIntent, "_blank");
+// };
+
+
+
+
+
 const handleShare = () => {
-  // ১. Safety Check: ডাটা লোড না হলে শেয়ার হবে না
+  // Safety Check
   if (!displayName || !fid || !finalScore) {
-    console.warn("Data not ready yet!");
     alert("Please wait for your score to load completely.");
     return;
   }
 
   const baseUrl = "https://mints.personalids.xyz"; 
+  // 👇 আপনার অ্যাপের ডাইরেক্ট লিংক (Warpcast এ যেটা খুলবে)
+  const appLink = "https://warpcast.com/~/frames/launch?url=https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint";
+  
   const currentRank = getRankLabel(finalScore); 
   
-  // ২. ডাটা এনকোড করা
+  // ডাটা এনকোড
   const safeUsername = encodeURIComponent(displayName);
   const safeFid = fid.toString();
-  // স্কোর স্ট্রিং নিশ্চিত করা
-  const safeScore = finalScore.toFixed(2); 
+  const safeScore = finalScore.toFixed(2);
   const safeRank = encodeURIComponent(currentRank);
-  // PFP লিংক এনকোড করা (খুব জরুরি)
   const safePfp = encodeURIComponent(pfpUrl || '');
-  // টাইমস্ট্যাম্প
   const timestamp = Date.now();
 
-  // ৩. Frame URL তৈরি
-  // আমরা এখানে 't' পাঠাচ্ছি, যা backend রিসিভ করে ইমেজে বসাবে
+  // Frame URL (ইমেজ দেখানোর জন্য এটা লাগবেই)
   const frameUrl = `${baseUrl}/api/frame?username=${safeUsername}&fid=${safeFid}&score=${safeScore}&rank=${safeRank}&pfp=${safePfp}&t=${timestamp}`;
 
-  // ৪. শেয়ার টেক্সট
+  // 🚩 আপডেট করা শেয়ার টেক্সট (লিংক সহ)
   const shareText = `My Neynar Reputation Score is ${safeScore} ⚡🔵
 
 Join Personal ID Mint to verify your identity and claim rewards daily! 🎁
@@ -80,18 +130,20 @@ Join Personal ID Mint to verify your identity and claim rewards daily! 🎁
 ✅ Check Score
 💰 Win 0.01 $USDC + Lucky Bonuses
 
-Get started here 👇`;
+Get started here 👇
+${appLink}`;
 
-  // ৫. Warpcast Intent
+  // Warpcast Intent
   const castIntent = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(frameUrl)}`;
   
-  // ৬. Debugging (Console Check)
-  console.log("---- READY TO SHARE ----");
-  console.log("Link:", frameUrl);
-  
-  // ৭. ওপেন
   window.open(castIntent, "_blank");
 };
+
+
+
+
+
+
 
   // SDK context load
   useEffect(() => {
