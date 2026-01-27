@@ -12,9 +12,23 @@ export default function ScorePage() {
   const [frameContext, setFrameContext] = useState<any>(null);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [displayScore, setDisplayScore] = useState(0.0);
+  
+  // 🚩 1. হার্ডকোডেড স্কোর এবং ডাটা সবার উপরে ডিফাইন করুন
   const finalScore = 0.19; 
 
-  // 🚩 Neynar Score ভিত্তিক অটো পারসেন্টেজ র‍্যাঙ্ক লজিক
+  // SDK context load
+  useEffect(() => {
+    miniApp.context.then(setFrameContext).catch(() => {});
+  }, []);
+
+  // 🚩 2. ইউজার ডাটা (User Data) সবার আগে ক্যালকুলেট করতে হবে
+  const user = context?.user || frameContext?.user;
+  const displayName = user?.displayName || user?.username || "Saiful Islam";
+  const fid = user?.fid || "123456";
+  // PFP তে কোনো টেক্সট বা স্পেস থাকলে এনকোডিং এ ঝামেলা হতে পারে, তাই ক্লিন রাখা ভালো
+  const pfpUrl = user?.pfpUrl || "https://placehold.co/100x100.png";
+
+  // 🚩 3. র‍্যাঙ্ক লজিক
   const getRankLabel = (score: number) => {
     if (score >= 0.90) return "TOP 1% OF USERS";
     if (score >= 0.75) return "TOP 5% OF USERS";
@@ -25,106 +39,30 @@ export default function ScorePage() {
     return "TOP 75% OF USERS";
   };
 
-  // 🚩 শেয়ার লজিক: এটি আপনার অ্যাপ লিঙ্কের সাথে ডায়নামিক কার্ড ইমেজ এমবেড করবে
-// const handleShare = () => {
-//   const currentRank = getRankLabel(finalScore);
-//   const shareText = `Check out my Farcaster Reputation Score! ⚡`;
-  
-//   // ১. আপনার ডিজাইন করা Neynar কার্ডের ইমেজ লিঙ্ক (যা আপনার api/og থেকে আসবে)
-//   const baseUrl = "https://prevent-toolbox-stevens-thats.trycloudflare.com"; 
-//   const ogImageUrl = `${baseUrl}/api/og?username=${encodeURIComponent(displayName)}&fid=${fid}&score=${finalScore.toFixed(2)}&pfp=${encodeURIComponent(pfpUrl)}&rank=${encodeURIComponent(currentRank)}&v=${Date.now()}`;
+  // 🚩 4. Handle Share (এখন এটি উপরের সব ডাটা পাবে)
+  const handleShare = () => {
+    // সেফটি চেক
+    if (!displayName || !fid) {
+      alert("Please wait for data to load.");
+      return;
+    }
 
-//   // ২. আপনার মেইন অ্যাপের জয়েন লিঙ্ক (যা নিচে ছোট এমবেড হিসেবে থাকবে)
-//   const appJoinUrl = `https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint`;
+    const baseUrl = "https://mints.personalids.xyz"; 
+    const currentRank = getRankLabel(finalScore); 
+    const timestamp = Date.now();
 
-//   // 🚩 এখানে আমরা embeds[] এ ইমেজ এবং অ্যাপ লিঙ্ক দুটোই পাঠিয়ে দিচ্ছি
-//   const castIntent = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(ogImageUrl)}&embeds[]=${encodeURIComponent(appJoinUrl)}`;
-  
-//   window.open(castIntent, "_blank");
-// };
+    // ডাটা এনকোড (খুব সাবধানে)
+    const safeUsername = encodeURIComponent(displayName);
+    const safeFid = String(fid);
+    const safeScore = finalScore.toFixed(2);
+    const safeRank = encodeURIComponent(currentRank);
+    const safePfp = encodeURIComponent(pfpUrl);
 
+    // URL তৈরি: PFP সবার শেষে দেবেন (কারণ এটি লম্বা হয়)
+    const frameUrl = `${baseUrl}/api/frame?score=${safeScore}&fid=${safeFid}&username=${safeUsername}&rank=${safeRank}&t=${timestamp}&pfp=${safePfp}`;
 
-
-// const handleShare = () => {
-//   // ১. Safety Check: ডাটা লোড না হলে শেয়ার হবে না
-//   if (!displayName || !fid || !finalScore) {
-//     console.warn("Data not ready yet!");
-//     alert("Please wait for your score to load completely.");
-//     return;
-//   }
-
-//   const baseUrl = "https://mints.personalids.xyz"; 
-//   const currentRank = getRankLabel(finalScore); 
-  
-//   // ২. ডাটা এনকোড করা
-//   const safeUsername = encodeURIComponent(displayName);
-//   const safeFid = fid.toString();
-//   // স্কোর স্ট্রিং নিশ্চিত করা
-//   const safeScore = finalScore.toFixed(2); 
-//   const safeRank = encodeURIComponent(currentRank);
-//   // PFP লিংক এনকোড করা (খুব জরুরি)
-//   const safePfp = encodeURIComponent(pfpUrl || '');
-//   // টাইমস্ট্যাম্প
-//   const timestamp = Date.now();
-
-//   // ৩. Frame URL তৈরি
-//   // আমরা এখানে 't' পাঠাচ্ছি, যা backend রিসিভ করে ইমেজে বসাবে
-//   const frameUrl = `${baseUrl}/api/frame?username=${safeUsername}&fid=${safeFid}&score=${safeScore}&rank=${safeRank}&pfp=${safePfp}&t=${timestamp}`;
-
-//   // ৪. শেয়ার টেক্সট
-//   const shareText = `My Neynar Reputation Score is ${safeScore} ⚡🔵
-
-// Join Personal ID Mint to verify your identity and claim rewards daily! 🎁
-
-// ✅ Mint ID
-// ✅ Check Score
-// 💰 Win 0.01 $USDC + Lucky Bonuses
-
-// Get started here 👇`;
-
-//   // ৫. Warpcast Intent
-//   const castIntent = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(frameUrl)}`;
-  
-//   // ৬. Debugging (Console Check)
-//   console.log("---- READY TO SHARE ----");
-//   console.log("Link:", frameUrl);
-  
-//   // ৭. ওপেন
-//   window.open(castIntent, "_blank");
-// };
-
-
-
-
-
-
-const handleShare = () => {
-  // ১. সেফটি চেক
-  if (!displayName || !fid || !finalScore) {
-    alert("Please wait for your score to load completely.");
-    return;
-  }
-
-  // ২. কনফিগারেশন
-  const baseUrl = "https://mints.personalids.xyz"; 
-  
-  const currentRank = getRankLabel(finalScore); 
-  
-  // ৩. ডাটা এনকোড
-  const safeUsername = encodeURIComponent(displayName);
-  const safeFid = fid.toString();
-  const safeScore = finalScore.toFixed(2);
-  const safeRank = encodeURIComponent(currentRank);
-  const safePfp = encodeURIComponent(pfpUrl || '');
-  const timestamp = Date.now();
-
-  // ৪. Frame URL (ইমেজ দেখানোর জন্য এটাই Embed হবে)
-  // এটিই ব্যাকগ্রাউন্ডে আপনার farcaster.xyz লিংককে টার্গেট করছে (route.ts এর মাধ্যমে)
-  const frameUrl = `${baseUrl}/api/frame?score=${safeScore}&fid=${safeFid}&username=${safeUsername}&rank=${safeRank}&pfp=${safePfp}&t=${timestamp}`;
-
-  // ৫. শেয়ার টেক্সট (লিংক ছাড়া)
-  // লিংক সরিয়ে ফেলা হলো, এখন শুধু সুন্দর ক্যাপশন থাকবে
-  const shareText = `My Neynar Reputation Score is ${safeScore} ⚡🔵
+    // শেয়ার টেক্সট
+    const shareText = `My Neynar Reputation Score is ${safeScore} ⚡🔵
 
 Mint ID & Check Score to claim daily rewards! 🎁
 
@@ -132,22 +70,16 @@ Mint ID & Check Score to claim daily rewards! 🎁
 ✅ Check Score
 💰 Win 0.01 $USDC + Lucky Bonuses`;
 
-  // ৬. Warpcast Intent
-  // embeds[] এ frameUrl যাচ্ছে -> ফলে ছবি দেখাবে ডাইনামিক
-  // frameUrl এর বাটনে ক্লিক করলে -> farcaster.xyz ওপেন হবে (যা route.ts এ সেট করা আছে)
-  const castIntent = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(frameUrl)}`;
-  
-  window.open(castIntent, "_blank");
-};
+    // Warpcast Intent
+    const castIntent = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(frameUrl)}`;
+    
+    // Debugging (Console এ চেক করুন লিংক ঠিক আছে কিনা)
+    console.log("Generating Link:", frameUrl);
+    
+    window.open(castIntent, "_blank");
+  };
 
-
-
-  // SDK context load
-  useEffect(() => {
-    miniApp.context.then(setFrameContext).catch(() => {});
-  }, []);
-
-  // Count-up animation logic (Smooth 60fps)
+  // Count-up animation
   useEffect(() => {
     let start = 0;
     const duration = 2000; 
@@ -167,15 +99,9 @@ Mint ID & Check Score to claim daily rewards! 🎁
     return () => clearInterval(timer);
   }, [finalScore]);
 
-  // User details fallback
-  const user = context?.user || frameContext?.user;
-  const displayName = user?.displayName || user?.username || "Saiful Islam";
-  const fid = user?.fid || "123456";
-  const pfpUrl = user?.pfpUrl || "https://placehold.co/100x100?text=User";
-
   return (
     <div className={`${styles.container} ${!isDarkMode ? styles.lightMode : ""}`}>
-      {/* Premium Top Navigation */}
+      {/* Navbar */}
       <nav className={styles.topBar}>
         <div className={styles.profileSummary}>
           <div className={styles.miniPfpWrapper}>
@@ -188,13 +114,14 @@ Mint ID & Check Score to claim daily rewards! 🎁
         </button>
       </nav>
 
+      {/* Main Content */}
       <main className={styles.mainContent}>
         <header className={styles.heroHeader}>
           <h1 className={styles.mainTitle}>NEYNAR SCORE</h1>
-          <p className={styles.subTitle}>Reputation score based on your On-chain & Social Activity, powered by Neynar</p>
+          <p className={styles.subTitle}>Reputation score based on your On-chain & Social Activity</p>
         </header>
 
-        {/* The Professional Score Card */}
+        {/* Score Card */}
         <section className={styles.idCard}>
           <div className={styles.cardGlassOverlay}></div>
           
@@ -230,7 +157,7 @@ Mint ID & Check Score to claim daily rewards! 🎁
           <div className={styles.cardFooterAccent}></div>
         </section>
 
-        {/* 🚩 এখানে আপনার শেয়ার বাটনটি কাজ করবে */}
+        {/* Share Button */}
         <button className={styles.shareBtn} onClick={handleShare}>
           <Share2 size={20} />
           <span>Share Your Score</span>

@@ -13,9 +13,9 @@ export async function GET(request: NextRequest) {
   const baseUrl = "https://mints.personalids.xyz"; 
   const appJoinUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint"; 
 
-  // 🚩 FIX: Parameters Re-ordered (Score & FID first)
-  // স্কোর এবং FID সবার আগে দেওয়া হলো যাতে মিস না হয়
-  const imageUrl = `${baseUrl}/api/og?score=${score}&fid=${fid}&rank=${encodeURIComponent(rank)}&username=${encodeURIComponent(username)}&pfp=${encodeURIComponent(pfp)}&t=${timestamp}`;
+  // 🚩 FIX: PFP সবার শেষে রাখা হয়েছে
+  // username এবং rank এনকোড করা হচ্ছে যাতে স্পেস বা ক্যারেক্টার সমস্যা না করে
+  const imageUrl = `${baseUrl}/api/og?score=${score}&fid=${fid}&rank=${encodeURIComponent(rank)}&username=${encodeURIComponent(username)}&t=${timestamp}&pfp=${encodeURIComponent(pfp)}`;
 
   const html = `
     <!DOCTYPE html>
