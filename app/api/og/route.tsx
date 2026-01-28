@@ -294,12 +294,13 @@
 
 
 
-
 /* eslint-disable @next/next/no-img-element */
 import { ImageResponse } from 'next/og';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
+  
+  // URL থেকে পাঠানো এনকোডেড ডেটা রিসিভ করা
   const username = searchParams.get('username') || 'User';
   const fid = searchParams.get('fid') || '0';
   const score = searchParams.get('score') || '0.00';
@@ -315,7 +316,7 @@ export async function GET(request: Request) {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#020408', 
+        backgroundColor: '#020408',
       }}>
 
         <div style={{
@@ -343,7 +344,7 @@ export async function GET(request: Request) {
             <span style={{ marginRight: '8px' }}>🛡️</span> VERIFIED IDENTITY
           </div>
 
-          {/* প্রোফাইল পিকচার */}
+          {/* প্রোফাইল পিকচার ফিক্স */}
           <div style={{
             display: 'flex',
             width: '120px',
@@ -363,27 +364,27 @@ export async function GET(request: Request) {
             )}
           </div>
 
-          {/* ইউজার নাম ও FID */}
+          {/* ইউজার নাম ও FID ফিক্স */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '20px' }}>
-            <h2 style={{ color: 'white', fontSize: '32px', margin: '0 0 5px', fontWeight: '800', textAlign: 'center', display: 'flex' }}>
+            <h2 style={{ color: 'white', fontSize: '32px', margin: '0 0 5px', fontWeight: '800', textAlign: 'center' }}>
               {decodeURIComponent(username)}
             </h2>
-            <p style={{ color: '#f0642f', fontSize: '20px', fontWeight: '700', margin: '0', opacity: 0.9, display: 'flex' }}>
+            <p style={{ color: '#f0642f', fontSize: '20px', fontWeight: '700', margin: '0', opacity: 0.9 }}>
               FID: {fid}
             </p>
           </div>
 
           <div style={{ display: 'flex', height: '2px', width: '70%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)', margin: '0 0 20px 0' }}></div>
 
-          {/* স্কোর সেকশন */}
+          {/* স্কোর সেকশন ফিক্স */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
              <p style={{ color: '#8a94a8', fontSize: '14px', margin: '0 0 5px 0', textTransform: 'uppercase', fontWeight: '600' }}>Activity Neynar Score</p>
-             <h1 style={{ color: 'white', fontSize: '90px', margin: '0', fontWeight: '900', lineHeight: '1', textAlign: 'center', display: 'flex' }}>
+             <h1 style={{ color: 'white', fontSize: '90px', margin: '0', fontWeight: '900', lineHeight: '1', textAlign: 'center' }}>
                {score}
              </h1>
           </div>
 
-          {/* র‍্যাঙ্ক ব্যাজ */}
+          {/* র‍্যাঙ্ক ব্যাজ ফিক্স */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
