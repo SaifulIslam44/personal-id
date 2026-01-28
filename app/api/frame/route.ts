@@ -63,13 +63,13 @@
 
 
 
-
-
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  
+  const userAgent = request.headers.get('user-agent') || '';
+
+  const isFarcasterBot = userAgent.includes('Farcaster') || userAgent.includes('Warpcast');
   const username = searchParams.get('username') || 'User';
   const fid = searchParams.get('fid') || '0';
   const score = searchParams.get('score') || '0.00';
@@ -78,9 +78,16 @@ export async function GET(request: NextRequest) {
   const timestamp = searchParams.get('t') || Date.now().toString();
 
   const baseUrl = "https://mints.personalids.xyz"; 
+  // এই লিঙ্কটি সরাসরি Warpcast থেকে কপি করা Mini App শেয়ার লিঙ্ক হতে হবে
   const appJoinUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint"; 
 
   const imageUrl = `${baseUrl}/api/og?username=${encodeURIComponent(username)}&fid=${fid}&score=${score}&rank=${encodeURIComponent(rank)}&pfp=${encodeURIComponent(pfp)}&t=${timestamp}`;
+  
+
+const redirectMeta = !isFarcasterBot 
+    ? `<meta http-equiv="refresh" content="0;url=${appJoinUrl}" />` 
+    : '';
+
 
   const html = `
     <!DOCTYPE html>
@@ -97,8 +104,9 @@ export async function GET(request: NextRequest) {
         <meta property="fc:frame:button:1" content="Check Yours ⚡" />
         <meta property="fc:frame:button:1:action" content="launch_app" />
         <meta property="fc:frame:button:1:target" content="${appJoinUrl}" />
+      ${redirectMeta}
       </head>
-      <body style="background: #000;">
+      <body>
       </body>
     </html>
   `;
@@ -107,7 +115,7 @@ export async function GET(request: NextRequest) {
     status: 200,
     headers: {
       'Content-Type': 'text/html',
-      'Cache-Control': 'no-store, max-age=0',
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate', // ক্যাশ ক্লিয়ার করতে এটি জরুরি
     },
   });
 }

@@ -603,24 +603,26 @@ const handleShare = () => {
     
     const shareText = `My Neynar Reputation Score is ${actualScore.toFixed(2)} ⚡🔵\n\nMint ID & Check Score to claim daily rewards! 🎁\n\n✅ Mint ID\n✅ Check Score\n💰 Win 0.01 $USDC + Lucky Bonuses`;
 
-    const castAction = {
-      text: shareText,
-      embeds: [frameUrl],
-    };
+    // Warpcast ইন্টারনাল কাস্ট ইনটেন্ট URL
+    const castIntentUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(frameUrl)}`;
 
     try {
-      // Farcaster Frame V2 SDK check
       const fcSDK = (window as any).farcaster?.sdk;
 
+      // ১. প্রথমে সরাসরি কাস্ট উইন্ডো খোলার চেষ্টা করবে
       if (fcSDK?.actions?.composeCast) {
-        // এটি সরাসরি Warpcast-এর ভেতর কাস্ট উইন্ডো খুলবে
-        fcSDK.actions.composeCast(castAction);
-      } else if ((miniApp as any).actions?.composeCast) {
-        // MiniApp SDK fallback
-        (miniApp as any).actions.composeCast(castAction);
-      } else {
-        // যদি কোনো SDK না থাকে, তবে ব্রাউজার না খুলে চুপচাপ থাকবে
-        console.log("SDK not found, avoiding browser redirect.");
+        fcSDK.actions.composeCast({
+          text: shareText,
+          embeds: [frameUrl],
+        });
+      } 
+      // ২. যদি সেটি না থাকে, তবে SDK-র openUrl দিয়ে ইন্টারনাললি ওপেন করবে (ব্রাউজারে যাবে না)
+      else if (fcSDK?.actions?.openUrl) {
+        fcSDK.actions.openUrl(castIntentUrl);
+      }
+      // ৩. অথবা MiniApp SDK এর মাধ্যমে ওপেন করবে
+      else if ((miniApp as any).actions?.openUrl) {
+        (miniApp as any).actions.openUrl(castIntentUrl);
       }
     } catch (error) {
       console.error("Share error:", error);
