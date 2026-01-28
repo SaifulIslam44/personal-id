@@ -11,8 +11,7 @@ export async function GET(request: NextRequest) {
   const timestamp = searchParams.get('t') || Date.now().toString();
 
   const baseUrl = "https://mints.personalids.xyz"; 
-  
-  // 🚩 আপনার আসল মিনি অ্যাপ লিঙ্ক (farcaster.xyz ফরম্যাটে)
+  // এই লিঙ্কটি সরাসরি Warpcast থেকে কপি করা Mini App শেয়ার লিঙ্ক হতে হবে
   const appJoinUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint"; 
 
   const imageUrl = `${baseUrl}/api/og?username=${encodeURIComponent(username)}&fid=${fid}&score=${score}&rank=${encodeURIComponent(rank)}&pfp=${encodeURIComponent(pfp)}&t=${timestamp}`;
@@ -21,20 +20,19 @@ export async function GET(request: NextRequest) {
     <!DOCTYPE html>
     <html>
       <head>
-        <title>${username}'s Score</title>
-        <meta property="og:title" content="${username}'s Score: ${score}" />
+        <title>Neynar Score</title>
+        <meta property="og:title" content="${username}'s Score" />
         <meta property="og:image" content="${imageUrl}" />
         
         <meta property="fc:frame" content="vNext" />
         <meta property="fc:frame:image" content="${imageUrl}" />
         <meta property="fc:frame:image:aspect_ratio" content="1.91:1" />
 
-        <meta property="fc:frame:button:1" content="Check Yours / Join" />
+        <meta property="fc:frame:button:1" content="Check Yours ⚡" />
         <meta property="fc:frame:button:1:action" content="launch_app" />
         <meta property="fc:frame:button:1:target" content="${appJoinUrl}" />
       </head>
-      <body>
-      </body>
+      <body></body>
     </html>
   `;
 
@@ -42,7 +40,7 @@ export async function GET(request: NextRequest) {
     status: 200,
     headers: {
       'Content-Type': 'text/html',
-      'Cache-Control': 'no-store, no-cache, must-revalidate',
+      'Cache-Control': 'no-store, no-cache, must-revalidate', // ক্যাশ ক্লিয়ার করতে এটি জরুরি
     },
   });
 }
