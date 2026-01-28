@@ -252,6 +252,7 @@
 
 
 
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -263,10 +264,11 @@ import Image from "next/image";
 
 export default function ScorePage() {
   const { context } = useMiniKit();
-  const [_frameContext, setFrameContext] = useState<any>(null);
+  const [setFrameContext] = useState<any>(null);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [displayScore, setDisplayScore] = useState(0.0);
   
+  // 🚩 ম্যানুয়াল স্কোর বাদ দিয়ে স্টেট ব্যবহার করা হয়েছে
   const [actualScore, setActualScore] = useState(0.0);
   const [userData, setUserData] = useState({
     displayName: "User",
@@ -274,14 +276,17 @@ export default function ScorePage() {
     pfpUrl: "https://placehold.co/100x100?text=User"
   });
 
+  // 🚩 Neynar API থেকে আসল স্কোর নিয়ে আসার ফাংশন
   const fetchNeynarScore = async (fid: string) => {
     try {
-      // 🚩 Proxy API ব্যবহার করে .env থেকে ডাটা লোড করা হচ্ছে
-      const response = await fetch(`/api/score?fid=${fid}`);
+      const response = await fetch(`https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`, {
+        headers: {
+          'api_key': '088ADB7C-2B73-4676-95C6-6F775A495287' // আপনার Neynar API Key এখানে দিন
+        }
+      });
       const data = await response.json();
-      if (data.score !== undefined) {
-        setActualScore(data.score);
-      }
+      const score = data.users[0]?.profile?.score || 0;
+      setActualScore(score);
     } catch (error) {
       console.error("Score fetch failed", error);
     }
@@ -297,7 +302,7 @@ export default function ScorePage() {
           fid: userFid,
           pfpUrl: ctx.user.pfpUrl || "https://placehold.co/100x100?text=User"
         });
-        if (userFid !== "0") fetchNeynarScore(userFid);
+        if (userFid !== "0") fetchNeynarScore(userFid); // আসল স্কোর কল করা
       }
     }).catch(() => {});
 
@@ -340,7 +345,13 @@ export default function ScorePage() {
 
     const frameUrl = `${baseUrl}/api/frame?score=${safeScore}&fid=${safeFid}&username=${safeUsername}&rank=${safeRank}&pfp=${safePfp}&t=${timestamp}`;
 
-    const shareText = `My Neynar Reputation Score is ${safeScore} ⚡🔵\n\nMint ID & Check Score to claim daily rewards! 🎁\n\n✅ Mint ID\n✅ Check Score\n💰 Win 0.01 $USDC + Lucky Bonuses`;
+      const shareText = `My Neynar Reputation Score is ${safeScore} ⚡🔵
+
+Mint ID & Check Score to claim daily rewards! 🎁
+
+✅ Mint ID
+✅ Check Score
+💰 Win 0.01 $USDC + Lucky Bonuses`;
     const castIntent = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(frameUrl)}`;
     
     window.open(castIntent, "_blank");
