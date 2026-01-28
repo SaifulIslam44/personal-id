@@ -560,53 +560,36 @@ export default function ScorePage() {
   };
 
 const handleShare = () => {
-  if (!scoreLoaded || userData.fid === "0") {
-    alert("Score still syncing, please wait...");
-    return;
-  }
-
-  const baseUrl = "https://mints.personalids.xyz";
-  const currentRank = getRankLabel(actualScore);
-  
-  // ক্যাশ এড়ানোর জন্য 'v' প্যারামিটার যোগ করা হয়েছে
-  const queryParams = new URLSearchParams({
-    username: userData.displayName,
-    fid: userData.fid,
-    score: actualScore.toFixed(2),
-    rank: currentRank,
-    pfp: userData.pfpUrl,
-    v: "2.0.1", // প্রতিবার বড় আপডেটের সময় এই ভার্সনটি পাল্টে দেবেন (যেমন: 2.0.2)
-    t: Date.now().toString() // ইউনিক টাইমস্ট্যাম্প
-  });
-
-  const frameUrl = `${baseUrl}/api/frame?${queryParams.toString()}`;
-  
-  const shareText = `My Neynar Reputation Score is ${actualScore.toFixed(2)} ⚡🔵\n\nMint ID & Check Score to claim daily rewards! 🎁\n\n✅ Mint ID\n✅ Check Score\n💰 Win 0.01 $USDC + Lucky Bonuses`;
-
-  const castAction = {
-    text: shareText,
-    embeds: [frameUrl],
-  };
-
-  try {
-    const farcasterSDK = (window as any).farcaster?.sdk || (window as any).farcaster;
-    
-    if (farcasterSDK?.actions?.composeCast) {
-      farcasterSDK.actions.composeCast(castAction);
-    } 
-    else if ((miniApp as any).actions?.composeCast) {
-      (miniApp as any).actions.composeCast(castAction);
-    } 
-    else {
-      const castIntent = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(frameUrl)}`;
-      window.location.href = castIntent;
+    if (!scoreLoaded || userData.fid === "0") {
+      alert("Score still syncing, please wait...");
+      return;
     }
-  } catch (error) {
-    console.error("Share error:", error);
-    alert("Could not open share sheet. Please try again.");
-  }
-};
 
+    const baseUrl = "https://mints.personalids.xyz";
+    const currentRank = getRankLabel(actualScore);
+    const frameUrl = `${baseUrl}/api/frame?username=${encodeURIComponent(userData.displayName)}&fid=${userData.fid}&score=${actualScore.toFixed(2)}&rank=${encodeURIComponent(currentRank)}&pfp=${encodeURIComponent(userData.pfpUrl)}&t=${Date.now()}`;
+    const shareText = `My Neynar Reputation Score is ${actualScore.toFixed(2)} ⚡🔵\n\nMint ID & Check Score to claim daily rewards! 🎁\n\n✅ Mint ID\n✅ Check Score\n💰 Win 0.01 $USDC + Lucky Bonuses`;
+
+    try {
+      // ✅ এখানে ফিক্স করা হয়েছে: সরাসরি টাইপ কাস্টিং করে এক্সেস করা হচ্ছে
+      const castAction = {
+        text: shareText,
+        embeds: [frameUrl],
+      };
+
+      if ((window as any).farcaster?.sdk?.actions?.composeCast) {
+        (window as any).farcaster.sdk.actions.composeCast(castAction);
+      } else if ((miniApp as any).actions?.composeCast) {
+        (miniApp as any).actions.composeCast(castAction);
+      } else {
+        // Fallback: শুধুমাত্র যদি SDK না পাওয়া যায়
+        const castIntent = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(frameUrl)}`;
+        window.open(castIntent, "_blank");
+      }
+    } catch (error) {
+      console.error("Share error:", error);
+    }
+  };
 
   // ✅ Animated score overwrite fix - ChatGPT Fix
   useEffect(() => {
