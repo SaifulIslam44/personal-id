@@ -595,8 +595,6 @@ export default function ScorePage() {
 
 
 
-
-
 const handleShare = () => {
     if (!scoreLoaded || userData.fid === "0") {
       alert("Score still syncing, please wait...");
@@ -622,14 +620,12 @@ const handleShare = () => {
       } else {
         // Fallback: শুধুমাত্র যদি SDK না পাওয়া যায়
         const castIntent = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(frameUrl)}`;
-        (miniApp as any).actions.openUrl(castIntent);
+        window.open(castIntent, "_blank");
       }
     } catch (error) {
       console.error("Share error:", error);
     }
   };
-
-
 
 
 
