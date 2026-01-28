@@ -71,9 +71,6 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const userAgent = request.headers.get('user-agent') || '';
-
-  const isFarcasterBot = userAgent.includes('Farcaster') || userAgent.includes('Warpcast');
   const username = searchParams.get('username') || 'User';
   const fid = searchParams.get('fid') || '0';
   const score = searchParams.get('score') || '0.00';
@@ -88,9 +85,6 @@ export async function GET(request: NextRequest) {
   const imageUrl = `${baseUrl}/api/og?username=${encodeURIComponent(username)}&fid=${fid}&score=${score}&rank=${encodeURIComponent(rank)}&pfp=${encodeURIComponent(pfp)}&t=${timestamp}`;
   
 
-const redirectMeta = !isFarcasterBot 
-    ? `<meta http-equiv="refresh" content="0;url=${appJoinUrl}" />` 
-    : '';
 
 
   const html = `
