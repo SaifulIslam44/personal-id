@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     status: 200,
     headers: {
       'Content-Type': 'text/html',
-      'Cache-Control': 'no-store, no-cache, must-revalidate', // ক্যাশ ক্লিয়ার করতে এটি জরুরি
+      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate', // ক্যাশ ক্লিয়ার করতে এটি জরুরি
     },
   });
 }

@@ -568,14 +568,15 @@ const handleShare = () => {
   const baseUrl = "https://mints.personalids.xyz";
   const currentRank = getRankLabel(actualScore);
   
-  // URL তৈরি
+  // ক্যাশ এড়ানোর জন্য 'v' প্যারামিটার যোগ করা হয়েছে
   const queryParams = new URLSearchParams({
     username: userData.displayName,
     fid: userData.fid,
     score: actualScore.toFixed(2),
     rank: currentRank,
     pfp: userData.pfpUrl,
-    t: Date.now().toString()
+    v: "2.0.1", // প্রতিবার বড় আপডেটের সময় এই ভার্সনটি পাল্টে দেবেন (যেমন: 2.0.2)
+    t: Date.now().toString() // ইউনিক টাইমস্ট্যাম্প
   });
 
   const frameUrl = `${baseUrl}/api/frame?${queryParams.toString()}`;
@@ -588,7 +589,6 @@ const handleShare = () => {
   };
 
   try {
-    // ১. Farcaster SDK চেক (V2/V1)
     const farcasterSDK = (window as any).farcaster?.sdk || (window as any).farcaster;
     
     if (farcasterSDK?.actions?.composeCast) {
@@ -598,16 +598,11 @@ const handleShare = () => {
       (miniApp as any).actions.composeCast(castAction);
     } 
     else {
-      // ২. Fallback: সরাসরি Warpcast কম্পোজার ইউআরএল
       const castIntent = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(frameUrl)}`;
-      
-      // মোবাইল অ্যাপের ভেতরে থাকলে window.open অনেক সময় কাজ করে না, 
-      // তাই লোকেশন চেঞ্জ করা নিরাপদ
       window.location.href = castIntent;
     }
   } catch (error) {
     console.error("Share error:", error);
-    // ইউজারকে অন্তত একটা ফিডব্যাক দেওয়া ভালো
     alert("Could not open share sheet. Please try again.");
   }
 };
