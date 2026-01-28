@@ -535,6 +535,7 @@ export default function ScorePage() {
         // ✅ Guard added to prevent multiple calls
         if (userFid !== "0" && !scoreLoaded) fetchNeynarScore(userFid); 
       }
+      (window as any).farcaster?.sdk?.actions?.ready();
     }).catch(() => {});
 
     if (context?.user) {
@@ -644,7 +645,7 @@ const handleShare = () => {
     try {
       const castAction = {
         text: shareText,
-        embeds: [appJoinUrl, frameUrl],
+        embeds: [appJoinUrl, frameUrl], // ✅ ফিক্সড: embeds কীওয়ার্ড যোগ করা হয়েছে
       };
 
       // ১. প্রথমে চেক করবে আধুনিক SDK আছে কি না
@@ -658,8 +659,7 @@ const handleShare = () => {
         (window as any).miniApp.actions.composeCast(castAction);
       } 
       else {
-        // ৩. যদি কোনো SDK না পাওয়া যায়, তবে কিছু করবে না। 
-        // এখানে আগে আপনার openUrl ছিল যা ব্রাউজার ওপেন করত। সেটি রিমুভ করা হয়েছে।
+        // ৩. যদি কোনো SDK না পাওয়া যায়, তবে কিছু করবে না। 
         console.error("Farcaster SDK not found. Share action failed.");
       }
     } catch (error) {
