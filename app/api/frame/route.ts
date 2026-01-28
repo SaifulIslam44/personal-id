@@ -11,8 +11,9 @@ export async function GET(request: NextRequest) {
   const timestamp = searchParams.get('t') || Date.now().toString();
 
   const baseUrl = "https://mints.personalids.xyz"; 
-  // সরাসরি আপনার মিনি অ্যাপের ডোমেইন লিঙ্কটি এখানে ব্যবহার করুন
-  const appUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint"; 
+  
+  // 🚩 আপনার আসল মিনি অ্যাপ লিঙ্ক (farcaster.xyz ফরম্যাটে)
+  const appJoinUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint"; 
 
   const imageUrl = `${baseUrl}/api/og?username=${encodeURIComponent(username)}&fid=${fid}&score=${score}&rank=${encodeURIComponent(rank)}&pfp=${encodeURIComponent(pfp)}&t=${timestamp}`;
 
@@ -30,7 +31,7 @@ export async function GET(request: NextRequest) {
 
         <meta property="fc:frame:button:1" content="Check Yours / Join" />
         <meta property="fc:frame:button:1:action" content="launch_app" />
-        <meta property="fc:frame:button:1:target" content="${appUrl}" />
+        <meta property="fc:frame:button:1:target" content="${appJoinUrl}" />
       </head>
       <body>
       </body>
