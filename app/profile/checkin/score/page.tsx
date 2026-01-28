@@ -643,7 +643,7 @@ const handleShare = () => {
     // 👇 CHANGE: PFP parameter remove kore dewa hoyeche URL choto rakhte
     const frameUrl = `${baseUrl}/api/frame?username=${encodeURIComponent(userData.displayName)}&fid=${userData.fid}&score=${actualScore.toFixed(2)}&rank=${encodeURIComponent(currentRank)}&t=${Date.now()}`;
     
-    const shareText = `My Neynar Reputation Score is ${actualScore.toFixed(2)} ⚡🔵\n\nMint ID & Check Score to claim daily rewards! 🎁\n\n✅ Mint ID\n✅ Check Score\n💰 Win 0.01 $USDC + Lucky Bonuses`;
+    const shareText = `My Neynar Reputation Score is ${actualScore.toFixed(2)} ⚡🔵\n\nMint ID & Check Score to claim daily rewards! 🎁\n\n✅ Mint ID\n✅ Check Neynar Score\n💰 Win 0.01 $USDC + Lucky Bonuses`;
 
     try {
       const castAction = {
