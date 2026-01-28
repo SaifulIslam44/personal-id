@@ -252,7 +252,6 @@
 
 
 
-
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -264,11 +263,10 @@ import Image from "next/image";
 
 export default function ScorePage() {
   const { context } = useMiniKit();
-  const [setFrameContext] = useState<any>(null);
+  const [_frameContext, setFrameContext] = useState<any>(null);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [displayScore, setDisplayScore] = useState(0.0);
   
-  // 🚩 ম্যানুয়াল স্কোর বাদ দিয়ে স্টেট ব্যবহার করা হয়েছে
   const [actualScore, setActualScore] = useState(0.0);
   const [userData, setUserData] = useState({
     displayName: "User",
@@ -276,17 +274,14 @@ export default function ScorePage() {
     pfpUrl: "https://placehold.co/100x100?text=User"
   });
 
-  // 🚩 Neynar API থেকে আসল স্কোর নিয়ে আসার ফাংশন
   const fetchNeynarScore = async (fid: string) => {
     try {
-      const response = await fetch(`https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`, {
-        headers: {
-          'api_key': 'YOUR_NEYNAR_API_KEY' // আপনার Neynar API Key এখানে দিন
-        }
-      });
+      // 🚩 Proxy API ব্যবহার করে .env থেকে ডাটা লোড করা হচ্ছে
+      const response = await fetch(`/api/score?fid=${fid}`);
       const data = await response.json();
-      const score = data.users[0]?.profile?.score || 0;
-      setActualScore(score);
+      if (data.score !== undefined) {
+        setActualScore(data.score);
+      }
     } catch (error) {
       console.error("Score fetch failed", error);
     }
@@ -302,7 +297,7 @@ export default function ScorePage() {
           fid: userFid,
           pfpUrl: ctx.user.pfpUrl || "https://placehold.co/100x100?text=User"
         });
-        if (userFid !== "0") fetchNeynarScore(userFid); // আসল স্কোর কল করা
+        if (userFid !== "0") fetchNeynarScore(userFid);
       }
     }).catch(() => {});
 
@@ -324,7 +319,7 @@ export default function ScorePage() {
     if (score >= 0.40) return "TOP 20% OF USERS";
     if (score >= 0.20) return "TOP 30% OF USERS";
     if (score >= 0.10) return "TOP 50% OF USERS";
-    return "TOP 75% OF USERS";
+    return "TOP 95% OF USERS";
   };
 
   const handleShare = () => {
@@ -345,13 +340,7 @@ export default function ScorePage() {
 
     const frameUrl = `${baseUrl}/api/frame?score=${safeScore}&fid=${safeFid}&username=${safeUsername}&rank=${safeRank}&pfp=${safePfp}&t=${timestamp}`;
 
-      const shareText = `My Neynar Reputation Score is ${safeScore} ⚡🔵
-
-Mint ID & Check Score to claim daily rewards! 🎁
-
-✅ Mint ID
-✅ Check Score
-💰 Win 0.01 $USDC + Lucky Bonuses`;
+    const shareText = `My Neynar Reputation Score is ${safeScore} ⚡🔵\n\nMint ID & Check Score to claim daily rewards! 🎁\n\n✅ Mint ID\n✅ Check Score\n💰 Win 0.01 $USDC + Lucky Bonuses`;
     const castIntent = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(frameUrl)}`;
     
     window.open(castIntent, "_blank");
