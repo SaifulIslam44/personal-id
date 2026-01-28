@@ -277,16 +277,41 @@ export default function ScorePage() {
   });
 
   // 🚩 Neynar API থেকে আসল স্কোর নিয়ে আসার ফাংশন
+// 🚩 Neynar API থেকে আসল স্কোর নিয়ে আসার ফাংশন (FIXED)
   const fetchNeynarScore = async (fid: string) => {
     try {
+      console.log(`Fetching score for FID: ${fid}...`); // ১. চেক করুন কল হচ্ছে কিনা
+      
       const response = await fetch(`https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`, {
         headers: {
-          'api_key': '088ADB7C-2B73-4676-95C6-6F775A495287' // আপনার Neynar API Key এখানে দিন
+          'accept': 'application/json',
+          'api_key': '088ADB7C-2B73-4676-95C6-6F775A495287' // ⚠️ আপনার API Key ঠিক আছে তো?
         }
       });
+
+      if (!response.ok) {
+        console.error("API Error:", response.status, response.statusText);
+        return;
+      }
+
       const data = await response.json();
-      const score = data.users[0]?.profile?.score || 0;
-      setActualScore(score);
+      console.log("Neynar API Data:", data); // ২. কনসোলে পুরো ডাটা দেখুন
+
+      if (data.users && data.users.length > 0) {
+        const user = data.users[0];
+        
+        // 🚩 ৩. স্কোর বের করার সঠিক লজিক (সব অপশন চেক করা হচ্ছে)
+        // অপশন ১: সরাসরি স্কোরে (OpenRank)
+        // অপশন ২: এক্সপেরিমেন্টাল নেইনার স্কোরে
+        // অপশন ৩: প্রোফাইল স্কোরে (যদি থাকে)
+        const score = user.score || user.experimental?.neynar_user_score || user.profile?.score || 0;
+        
+        console.log("Found Score:", score); // ৪. কত স্কোর পেল সেটা প্রিন্ট হবে
+        setActualScore(score);
+      } else {
+        console.warn("No user found in API response");
+      }
+
     } catch (error) {
       console.error("Score fetch failed", error);
     }
