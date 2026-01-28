@@ -301,10 +301,10 @@
 /* eslint-disable @next/next/no-img-element */
 import { ImageResponse } from 'next/og';
 
+
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-
-  // 🚩 প্যারামিটারগুলো রিসিভ করা (সঠিক কী-নাম নিশ্চিত করা হয়েছে)
   const username = searchParams.get('username') || 'User';
   const fid = searchParams.get('fid') || '0';
   const score = searchParams.get('score') || '0.00';

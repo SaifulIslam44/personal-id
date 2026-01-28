@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-
-  // ১. সব প্যারামিটার রিসিভ করা হচ্ছে
   const username = searchParams.get('username') || 'User';
   const fid = searchParams.get('fid') || '0';
   const score = searchParams.get('score') || '0.00';
@@ -14,10 +12,15 @@ export async function GET(request: NextRequest) {
   const baseUrl = "https://mints.personalids.xyz"; 
   const appJoinUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint"; 
 
-  // 🚩 ২. প্যারামিটার সিরিয়াল পরিবর্তন (Score এবং Rank আগে আনা হয়েছে)
-  // PFP লিঙ্ক অনেক বড় হয়, তাই এটিকে লিঙ্কের একদম শেষে রাখা নিরাপদ
+  // 🚩 প্যারামিটার এনকোডিং সহ ইমেজ ইউআরএল (সিরিয়াল ফিক্সড)
   const imageUrl = `${baseUrl}/api/og?score=${score}&rank=${encodeURIComponent(rank)}&username=${encodeURIComponent(username)}&fid=${fid}&t=${timestamp}&pfp=${encodeURIComponent(pfp)}`;
-
+  
+  
+  
+  
+  
+  
+  
   const html = `
     <!DOCTYPE html>
     <html>
