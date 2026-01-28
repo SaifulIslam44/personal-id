@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
 
   const baseUrl = "https://mints.personalids.xyz"; 
   // সরাসরি আপনার মিনি অ্যাপের ডোমেইন লিঙ্কটি এখানে ব্যবহার করুন
-  const appUrl = "https://mints.personalids.xyz"; 
+  const appUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint"; 
 
   const imageUrl = `${baseUrl}/api/og?username=${encodeURIComponent(username)}&fid=${fid}&score=${score}&rank=${encodeURIComponent(rank)}&pfp=${encodeURIComponent(pfp)}&t=${timestamp}`;
 
