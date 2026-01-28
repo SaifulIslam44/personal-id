@@ -79,53 +79,25 @@ export async function GET(request: NextRequest) {
   const timestamp = searchParams.get('t') || Date.now().toString();
 
   const baseUrl = "https://mints.personalids.xyz"; 
-  // এই লিঙ্কটি সরাসরি Warpcast থেকে কপি করা Mini App শেয়ার লিঙ্ক হতে হবে
   const appJoinUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint"; 
-
   const imageUrl = `${baseUrl}/api/og?username=${encodeURIComponent(username)}&fid=${fid}&score=${score}&rank=${encodeURIComponent(rank)}&pfp=${encodeURIComponent(pfp)}&t=${timestamp}`;
-  
 
-
-
-  const html = `
-    <!DOCTYPE html>
+  const html = `<!DOCTYPE html>
     <html>
       <head>
-        <title>Neynar Score</title>
         <meta property="og:title" content="${username}'s Score" />
         <meta property="og:image" content="${imageUrl}" />
-        
         <meta property="fc:frame" content="vNext" />
         <meta property="fc:frame:image" content="${imageUrl}" />
         <meta property="fc:frame:image:aspect_ratio" content="1.91:1" />
-
         <meta property="fc:frame:button:1" content="Check Yours ⚡" />
         <meta property="fc:frame:button:1:action" content="launch_app" />
         <meta property="fc:frame:button:1:target" content="${appJoinUrl}" />
       </head>
-      <body style="background: #000;">
-        <script src="https://cdn.jsdelivr.net/npm/@farcaster/frame-sdk/dist/bundle.js"></script>
-        <script>
-          document.addEventListener("DOMContentLoaded", function() {
-            // যদি ইউজার ফারকাস্টার বটের বাইরে থাকে (যেমন সরাসরি ব্রাউজারে)
-            if (!navigator.userAgent.includes("Farcaster")) {
-              try {
-                // ফারকাস্টার এসডিকে ট্রাই করবে
-                if (window.farcaster?.sdk?.actions?.openUrl) {
-                  window.farcaster.sdk.actions.openUrl("${appJoinUrl}");
-                } else {
-                  // এসডিকে না থাকলে নরমাল রিডাইরেক্ট (ব্রাউজার ইউজারদের জন্য)
-                  window.location.href = "${appJoinUrl}";
-                }
-              } catch (e) {
-                window.location.href = "${appJoinUrl}";
-              }
-            }
-          });
-        </script>
-      </body>
-    </html>
-  `;
+      <body style="background: #000;"></body>
+    </html>`;
+
+
 
   return new NextResponse(html, {
     status: 200,
