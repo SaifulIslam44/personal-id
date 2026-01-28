@@ -51,7 +51,7 @@ export default function Home() {
         console.error("Initialization error:", err);
       } finally {
         // ৪. কাজ শেষে রিডাইরেক্ট
-        router.replace("/loading");
+        router.replace("/profile");
       }
     };
 

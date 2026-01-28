@@ -559,44 +559,35 @@ export default function ScorePage() {
     return "TOP 95% OF USERS";
   };
 
- const handleShare = () => {
-    
+const handleShare = () => {
     if (!scoreLoaded || userData.fid === "0") {
       alert("Score still syncing, please wait...");
       return;
     }
 
     const baseUrl = "https://mints.personalids.xyz";
-
     const currentRank = getRankLabel(actualScore);
-    
-    const safeUsername = encodeURIComponent(userData.displayName);
-    const safeFid = userData.fid;
-    const safeScore = actualScore.toFixed(2);
-    const safeRank = encodeURIComponent(currentRank);
-    const safePfp = encodeURIComponent(userData.pfpUrl);
-    const timestamp = Date.now();
+    const frameUrl = `${baseUrl}/api/frame?username=${encodeURIComponent(userData.displayName)}&fid=${userData.fid}&score=${actualScore.toFixed(2)}&rank=${encodeURIComponent(currentRank)}&pfp=${encodeURIComponent(userData.pfpUrl)}&t=${Date.now()}`;
+    const shareText = `My Neynar Reputation Score is ${actualScore.toFixed(2)} ⚡🔵\n\nMint ID & Check Score to claim daily rewards! 🎁\n\n✅ Mint ID\n✅ Check Score\n💰 Win 0.01 $USDC + Lucky Bonuses`;
 
-    const frameUrl = `${baseUrl}/api/frame?username=${safeUsername}&fid=${safeFid}&score=${safeScore}&rank=${safeRank}&pfp=${safePfp}&t=${timestamp}`;
-
-    const shareText = `My Neynar Reputation Score is ${safeScore} ⚡🔵\n\nMint ID & Check Score to claim daily rewards! 🎁\n\n✅ Mint ID\n✅ Check Score\n💰 Win 0.01 $USDC + Lucky Bonuses`;
-    
-    // 🚩 সরাসরি মিনি অ্যাপ ইন্টারফেস থেকে কাস্ট ওপেন করার লজিক
- 
     try {
-      if (miniApp && (miniApp as any).sdk) {
-        (miniApp as any).sdk.actions.composeCast({
-          text: shareText,
-          embeds: [frameUrl],
-        });
+      // ✅ এখানে ফিক্স করা হয়েছে: সরাসরি টাইপ কাস্টিং করে এক্সেস করা হচ্ছে
+      const castAction = {
+        text: shareText,
+        embeds: [frameUrl],
+      };
+
+      if ((window as any).farcaster?.sdk?.actions?.composeCast) {
+        (window as any).farcaster.sdk.actions.composeCast(castAction);
+      } else if ((miniApp as any).actions?.composeCast) {
+        (miniApp as any).actions.composeCast(castAction);
       } else {
-        // ব্যাকআপ সিস্টেম যদি SDK কোনো কারণে না পায় (রিমুভ করা হয়নি)
+        // Fallback: শুধুমাত্র যদি SDK না পাওয়া যায়
         const castIntent = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(frameUrl)}`;
         window.open(castIntent, "_blank");
       }
-    } catch {
-      const castIntent = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(frameUrl)}`;
-      window.open(castIntent, "_blank");
+    } catch (error) {
+      console.error("Share error:", error);
     }
   };
 
