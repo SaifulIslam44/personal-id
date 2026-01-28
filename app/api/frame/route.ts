@@ -63,6 +63,10 @@
 
 
 
+
+
+
+
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -104,9 +108,27 @@ const redirectMeta = !isFarcasterBot
         <meta property="fc:frame:button:1" content="Check Yours ⚡" />
         <meta property="fc:frame:button:1:action" content="launch_app" />
         <meta property="fc:frame:button:1:target" content="${appJoinUrl}" />
-      ${redirectMeta}
       </head>
-      <body>
+      <body style="background: #000;">
+        <script src="https://cdn.jsdelivr.net/npm/@farcaster/frame-sdk/dist/bundle.js"></script>
+        <script>
+          document.addEventListener("DOMContentLoaded", function() {
+            // যদি ইউজার ফারকাস্টার বটের বাইরে থাকে (যেমন সরাসরি ব্রাউজারে)
+            if (!navigator.userAgent.includes("Farcaster")) {
+              try {
+                // ফারকাস্টার এসডিকে ট্রাই করবে
+                if (window.farcaster?.sdk?.actions?.openUrl) {
+                  window.farcaster.sdk.actions.openUrl("${appJoinUrl}");
+                } else {
+                  // এসডিকে না থাকলে নরমাল রিডাইরেক্ট (ব্রাউজার ইউজারদের জন্য)
+                  window.location.href = "${appJoinUrl}";
+                }
+              } catch (e) {
+                window.location.href = "${appJoinUrl}";
+              }
+            }
+          });
+        </script>
       </body>
     </html>
   `;
@@ -119,3 +141,15 @@ const redirectMeta = !isFarcasterBot
     },
   });
 }
+
+
+
+
+
+
+
+
+
+
+
+

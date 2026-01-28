@@ -593,41 +593,45 @@ export default function ScorePage() {
 
 
 
+
+
+
 const handleShare = () => {
-    if (!scoreLoaded || userData.fid === "0") return;
+    if (!scoreLoaded || userData.fid === "0") {
+      alert("Score still syncing, please wait...");
+      return;
+    }
 
     const baseUrl = "https://mints.personalids.xyz";
     const currentRank = getRankLabel(actualScore);
-    
-    const frameUrl = `${baseUrl}/api/frame?username=${encodeURIComponent(userData.displayName)}&fid=${userData.fid}&score=${actualScore.toFixed(2)}&rank=${encodeURIComponent(currentRank)}&pfp=${encodeURIComponent(userData.pfpUrl)}&v=direct_launch&t=${Date.now()}`;
-    
+    const frameUrl = `${baseUrl}/api/frame?username=${encodeURIComponent(userData.displayName)}&fid=${userData.fid}&score=${actualScore.toFixed(2)}&rank=${encodeURIComponent(currentRank)}&pfp=${encodeURIComponent(userData.pfpUrl)}&t=${Date.now()}`;
     const shareText = `My Neynar Reputation Score is ${actualScore.toFixed(2)} ⚡🔵\n\nMint ID & Check Score to claim daily rewards! 🎁\n\n✅ Mint ID\n✅ Check Score\n💰 Win 0.01 $USDC + Lucky Bonuses`;
 
-    // Warpcast ইন্টারনাল কাস্ট ইনটেন্ট URL
-    const castIntentUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(frameUrl)}`;
-
     try {
-      const fcSDK = (window as any).farcaster?.sdk;
+      // ✅ এখানে ফিক্স করা হয়েছে: সরাসরি টাইপ কাস্টিং করে এক্সেস করা হচ্ছে
+      const castAction = {
+        text: shareText,
+        embeds: [frameUrl],
+      };
 
-      // ১. প্রথমে সরাসরি কাস্ট উইন্ডো খোলার চেষ্টা করবে
-      if (fcSDK?.actions?.composeCast) {
-        fcSDK.actions.composeCast({
-          text: shareText,
-          embeds: [frameUrl],
-        });
-      } 
-      // ২. যদি সেটি না থাকে, তবে SDK-র openUrl দিয়ে ইন্টারনাললি ওপেন করবে (ব্রাউজারে যাবে না)
-      else if (fcSDK?.actions?.openUrl) {
-        fcSDK.actions.openUrl(castIntentUrl);
-      }
-      // ৩. অথবা MiniApp SDK এর মাধ্যমে ওপেন করবে
-      else if ((miniApp as any).actions?.openUrl) {
-        (miniApp as any).actions.openUrl(castIntentUrl);
+      if ((window as any).farcaster?.sdk?.actions?.composeCast) {
+        (window as any).farcaster.sdk.actions.composeCast(castAction);
+      } else if ((miniApp as any).actions?.composeCast) {
+        (miniApp as any).actions.composeCast(castAction);
+      } else {
+        // Fallback: শুধুমাত্র যদি SDK না পাওয়া যায়
+        const castIntent = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(frameUrl)}`;
+        (miniApp as any).actions.openUrl(castIntent);
       }
     } catch (error) {
       console.error("Share error:", error);
     }
   };
+
+
+
+
+
 
 
   // ✅ Animated score overwrite fix - ChatGPT Fix
