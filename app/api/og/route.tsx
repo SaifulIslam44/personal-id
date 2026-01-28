@@ -292,20 +292,30 @@
 
 
 
-
-
 /* eslint-disable @next/next/no-img-element */
 import { ImageResponse } from 'next/og';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   
-  // URL থেকে পাঠানো এনকোডেড ডেটা রিসিভ করা
-  const username = searchParams.get('username') || 'User';
-  const fid = searchParams.get('fid') || '0';
-  const score = searchParams.get('score') || '0.00';
-  const rank = searchParams.get('rank') || 'ACTIVE USER';
-  const pfp = searchParams.get('pfp');
+  // Safe parsing helper - semicolon সমস্যা ফিক্স করার জন্য
+  const getParam = (key: string) => {
+    return searchParams.get(key) || searchParams.get(`${key};`);
+  };
+
+  const safeDecode = (str: string | null) => {
+    try {
+      return str ? decodeURIComponent(str) : '';
+    } catch {
+      return str || '';
+    }
+  };
+
+  const username = safeDecode(getParam('username')) || 'User';
+  const fid = getParam('fid') || '0';
+  const score = getParam('score') || '0.00';
+  const rank = safeDecode(getParam('rank')) || 'ACTIVE USER';
+  const pfp = getParam('pfp');
 
   return new ImageResponse(
     (
@@ -318,7 +328,6 @@ export async function GET(request: Request) {
         justifyContent: 'center',
         backgroundColor: '#020408',
       }}>
-
         <div style={{
           display: 'flex',
           flexDirection: 'column',
@@ -329,83 +338,37 @@ export async function GET(request: Request) {
           borderRadius: '40px',
           padding: '40px',
           width: '550px',
-          boxShadow: '0 10px 40px rgba(0,0,0,0.5)',
         }}>
-
-          {/* হেডার */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            color: '#f0642f',
-            fontSize: '18px',
-            marginBottom: '20px',
-            fontWeight: '700',
-          }}>
-            <span style={{ marginRight: '8px' }}>🛡️</span> VERIFIED IDENTITY
+          <div style={{ display: 'flex', color: '#f0642f', fontSize: '18px', marginBottom: '20px', fontWeight: '700' }}>
+            🛡️ VERIFIED IDENTITY
           </div>
 
-          {/* প্রোফাইল পিকচার ফিক্স */}
-          <div style={{
-            display: 'flex',
-            width: '120px',
-            height: '120px',
-            borderRadius: '100px',
-            border: '4px solid #f0642f',
-            backgroundColor: '#1a1d23',
-            overflow: 'hidden',
-            marginBottom: '15px',
-          }}>
+          <div style={{ display: 'flex', width: '120px', height: '120px', borderRadius: '100px', border: '4px solid #f0642f', overflow: 'hidden', marginBottom: '15px' }}>
             {pfp ? (
               <img src={decodeURIComponent(pfp)} width="120" height="120" style={{ objectFit: 'cover' }} alt="PFP" />
             ) : (
-              <div style={{ display: 'flex', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', color: '#f0642f', fontSize: '50px' }}>
-                👤
-              </div>
+              <div style={{ display: 'flex', fontSize: '50px' }}>👤</div>
             )}
           </div>
 
-          {/* ইউজার নাম ও FID ফিক্স */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '20px' }}>
-            <h2 style={{ color: 'white', fontSize: '32px', margin: '0 0 5px', fontWeight: '800', textAlign: 'center' }}>
-              {decodeURIComponent(username)}
-            </h2>
-            <p style={{ color: '#f0642f', fontSize: '20px', fontWeight: '700', margin: '0', opacity: 0.9 }}>
-              FID: {fid}
-            </p>
+            <h2 style={{ color: 'white', fontSize: '32px', margin: '0', fontWeight: '800' }}>{username}</h2>
+            <p style={{ color: '#f0642f', fontSize: '20px', fontWeight: '700', margin: '5px 0' }}>FID: {fid}</p>
           </div>
 
-          <div style={{ display: 'flex', height: '2px', width: '70%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)', margin: '0 0 20px 0' }}></div>
+          <div style={{ display: 'flex', height: '2px', width: '70%', background: 'rgba(255,255,255,0.1)', marginBottom: '20px' }}></div>
 
-          {/* স্কোর সেকশন ফিক্স */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-             <p style={{ color: '#8a94a8', fontSize: '14px', margin: '0 0 5px 0', textTransform: 'uppercase', fontWeight: '600' }}>Activity Neynar Score</p>
-             <h1 style={{ color: 'white', fontSize: '90px', margin: '0', fontWeight: '900', lineHeight: '1', textAlign: 'center' }}>
-               {score}
-             </h1>
+             <p style={{ color: '#8a94a8', fontSize: '14px', margin: '0' }}>ACTIVITY NEYNAR SCORE</p>
+             <h1 style={{ color: 'white', fontSize: '90px', margin: '0', fontWeight: '900' }}>{score}</h1>
           </div>
 
-          {/* র‍্যাঙ্ক ব্যাজ ফিক্স */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            background: 'rgba(74, 222, 128, 0.1)',
-            color: '#4ade80',
-            border: '1px solid rgba(74, 222, 128, 0.25)',
-            padding: '10px 25px',
-            borderRadius: '50px',
-            fontSize: '18px',
-            marginTop: '25px',
-            fontWeight: '700',
-          }}>
-            <span style={{ marginRight: '8px' }}>⚡</span> {decodeURIComponent(rank)}
+          <div style={{ display: 'flex', background: 'rgba(74, 222, 128, 0.1)', color: '#4ade80', padding: '10px 25px', borderRadius: '50px', marginTop: '20px', fontWeight: '700' }}>
+            ⚡ {rank}
           </div>
-
         </div>
       </div>
     ),
-    {
-      width: 1200,
-      height: 630,
-    }
+    { width: 1200, height: 630 }
   );
 }

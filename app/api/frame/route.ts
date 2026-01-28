@@ -14,9 +14,8 @@ export async function GET(request: NextRequest) {
   const baseUrl = "https://mints.personalids.xyz"; 
   const appJoinUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint"; 
 
-  // 🚩 ২. এই লিঙ্কটিই OG ইমেজ জেনারেট করে (প্যারামিটারগুলো সঠিক এনকোডিং সহ)
-  const imageUrl = `${baseUrl}/api/og?username=${encodeURIComponent(username)}&fid=${fid}&score=${score}&rank=${encodeURIComponent(rank)}&pfp=${encodeURIComponent(pfp)}&t=${timestamp}`;
-
+// imageUrl তৈরির লজিকটি এভাবে লিখুন
+const imageUrl = `${baseUrl}/api/og?username=${encodeURIComponent(username)}&fid=${fid}&score=${score}&rank=${encodeURIComponent(rank)}&pfp=${encodeURIComponent(pfp)}&t=${timestamp}`;
   const html = `
     <!DOCTYPE html>
     <html>
@@ -36,7 +35,7 @@ export async function GET(request: NextRequest) {
         <meta http-equiv="refresh" content="0;url=${appJoinUrl}" />
       </head>
       <body>
-        <h1>Redirecting...</h1>
+  
         <script>
           window.location.href = "${appJoinUrl}";
         </script>
