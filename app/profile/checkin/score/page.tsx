@@ -638,29 +638,34 @@ const handleShare = () => {
     const baseUrl = "https://mints.personalids.xyz";
     const appJoinUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint";
     const currentRank = getRankLabel(actualScore);
-    
     const frameUrl = `${baseUrl}/api/frame?username=${encodeURIComponent(userData.displayName)}&fid=${userData.fid}&score=${actualScore.toFixed(2)}&rank=${encodeURIComponent(currentRank)}&pfp=${encodeURIComponent(userData.pfpUrl)}&t=${Date.now()}`;
-    
-    const shareText = `My Neynar Reputation Score is ${actualScore.toFixed(2)} ⚡🔵\n\nMint ID & Check Score to claim daily rewards! 🎁`;
+    const shareText = `My Neynar Reputation Score is ${actualScore.toFixed(2)} ⚡🔵\n\nMint ID & Check Score to claim daily rewards! 🎁\n\n✅ Mint ID\n✅ Check Score\n💰 Win 0.01 $USDC + Lucky Bonuses`;
 
     try {
       const castAction = {
         text: shareText,
-        // appJoinUrl আগে দেওয়ায় এমবেডে farcaster.xyz দেখাবে
-        embeds: [appJoinUrl, frameUrl], 
+        embeds: [appJoinUrl, frameUrl],
       };
 
-      const sdk = (window as any).farcaster?.sdk || (window as any).miniApp;
+      // ১. প্রথমে চেক করবে আধুনিক SDK আছে কি না
+      const sdk = (window as any).farcaster?.sdk;
 
       if (sdk?.actions?.composeCast) {
         sdk.actions.composeCast(castAction);
-      } else {
-        console.error("SDK not found");
+      } 
+      // ২. যদি পুরাতন miniApp অবজেক্ট থাকে
+      else if ((window as any).miniApp?.actions?.composeCast) {
+        (window as any).miniApp.actions.composeCast(castAction);
+      } 
+      else {
+        // ৩. যদি কোনো SDK না পাওয়া যায়, তবে কিছু করবে না। 
+        // এখানে আগে আপনার openUrl ছিল যা ব্রাউজার ওপেন করত। সেটি রিমুভ করা হয়েছে।
+        console.error("Farcaster SDK not found. Share action failed.");
       }
     } catch (error) {
       console.error("Share error:", error);
     }
-};
+  };
 
 
 
