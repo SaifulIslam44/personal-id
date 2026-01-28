@@ -295,13 +295,8 @@
 
 
 
-
-
-
 /* eslint-disable @next/next/no-img-element */
 import { ImageResponse } from 'next/og';
-
-
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -320,7 +315,7 @@ export async function GET(request: Request) {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#020408', // মেইন ব্যাকগ্রাউন্ড কালো রাখা হলো যাতে সাইডে গ্যাপ না থাকে
+        backgroundColor: '#020408', 
       }}>
 
         <div style={{
@@ -360,7 +355,7 @@ export async function GET(request: Request) {
             marginBottom: '15px',
           }}>
             {pfp ? (
-              <img src={pfp} width="120" height="120" style={{ objectFit: 'cover' }} alt="PFP" />
+              <img src={decodeURIComponent(pfp)} width="120" height="120" style={{ objectFit: 'cover' }} alt="PFP" />
             ) : (
               <div style={{ display: 'flex', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center', color: '#f0642f', fontSize: '50px' }}>
                 👤
@@ -368,10 +363,10 @@ export async function GET(request: Request) {
             )}
           </div>
 
-          {/* ইউজার নাম ও FID - এখানে নিশ্চিত করা হয়েছে ডাটা প্রিন্ট হচ্ছে */}
+          {/* ইউজার নাম ও FID */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '20px' }}>
             <h2 style={{ color: 'white', fontSize: '32px', margin: '0 0 5px', fontWeight: '800', textAlign: 'center', display: 'flex' }}>
-              {username}
+              {decodeURIComponent(username)}
             </h2>
             <p style={{ color: '#f0642f', fontSize: '20px', fontWeight: '700', margin: '0', opacity: 0.9, display: 'flex' }}>
               FID: {fid}
@@ -401,7 +396,7 @@ export async function GET(request: Request) {
             marginTop: '25px',
             fontWeight: '700',
           }}>
-            <span style={{ marginRight: '8px' }}>⚡</span> {rank}
+            <span style={{ marginRight: '8px' }}>⚡</span> {decodeURIComponent(rank)}
           </div>
 
         </div>
@@ -410,10 +405,6 @@ export async function GET(request: Request) {
     {
       width: 1200,
       height: 630,
-      headers: {
-        'Cache-Control': 'no-store, no-cache, must-revalidate',
-        'Pragma': 'no-cache',
-      },
     }
   );
 }

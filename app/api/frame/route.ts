@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
+
+  // ১. সব প্যারামিটার ডাইরেক্টলি রিসিভ করা হচ্ছে
   const username = searchParams.get('username') || 'User';
   const fid = searchParams.get('fid') || '0';
   const score = searchParams.get('score') || '0.00';
@@ -12,15 +14,9 @@ export async function GET(request: NextRequest) {
   const baseUrl = "https://mints.personalids.xyz"; 
   const appJoinUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint"; 
 
-  // 🚩 প্যারামিটার এনকোডিং সহ ইমেজ ইউআরএল (সিরিয়াল ফিক্সড)
-  const imageUrl = `${baseUrl}/api/og?score=${score}&rank=${encodeURIComponent(rank)}&username=${encodeURIComponent(username)}&fid=${fid}&t=${timestamp}&pfp=${encodeURIComponent(pfp)}`;
-  
-  
-  
-  
-  
-  
-  
+  // 🚩 ২. এই লিঙ্কটিই OG ইমেজ জেনারেট করে (প্যারামিটারগুলোর নাম চেক করুন)
+  const imageUrl = `${baseUrl}/api/og?username=${encodeURIComponent(username)}&fid=${fid}&score=${score}&rank=${encodeURIComponent(rank)}&pfp=${encodeURIComponent(pfp)}&t=${timestamp}`;
+
   const html = `
     <!DOCTYPE html>
     <html>
@@ -40,9 +36,7 @@ export async function GET(request: NextRequest) {
         <meta http-equiv="refresh" content="0;url=${appJoinUrl}" />
       </head>
       <body>
-        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #000; color: #fff; font-family: sans-serif;">
-          <h1>Redirecting to Personal ID Mint...</h1>
-        </div>
+        <h1>Redirecting...</h1>
         <script>
           window.location.href = "${appJoinUrl}";
         </script>
