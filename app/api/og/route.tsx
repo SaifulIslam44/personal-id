@@ -292,30 +292,144 @@
 
 
 
+// /* eslint-disable @next/next/no-img-element */
+// import { ImageResponse } from 'next/og';
+
+// export async function GET(request: Request) {
+//   const { searchParams } = new URL(request.url);
+  
+//   // Safe parsing helper - semicolon সমস্যা ফিক্স করার জন্য
+//   const getParam = (key: string) => {
+//     return searchParams.get(key) || searchParams.get(`${key};`);
+//   };
+
+//   const safeDecode = (str: string | null) => {
+//     try {
+//       return str ? decodeURIComponent(str) : '';
+//     } catch {
+//       return str || '';
+//     }
+//   };
+
+//   const username = safeDecode(getParam('username')) || 'User';
+//   const fid = getParam('fid') || '0';
+//   const score = getParam('score') || '0.00';
+//   const rank = safeDecode(getParam('rank')) || 'ACTIVE USER';
+//   const pfp = getParam('pfp');
+
+//   return new ImageResponse(
+//     (
+//       <div style={{
+//         height: '100%',
+//         width: '100%',
+//         display: 'flex',
+//         flexDirection: 'column',
+//         alignItems: 'center',
+//         justifyContent: 'center',
+//         backgroundColor: '#020408',
+//       }}>
+//         <div style={{
+//           display: 'flex',
+//           flexDirection: 'column',
+//           alignItems: 'center',
+//           justifyContent: 'center',
+//           background: 'linear-gradient(165deg, #0e121a 0%, #020408 100%)',
+//           border: '3px solid rgba(240, 100, 47, 0.5)', 
+//           borderRadius: '40px',
+//           padding: '40px',
+//           width: '550px',
+//         }}>
+//           <div style={{ display: 'flex', color: '#f0642f', fontSize: '18px', marginBottom: '20px', fontWeight: '700' }}>
+//             🛡️ VERIFIED IDENTITY
+//           </div>
+
+//           <div style={{ display: 'flex', width: '120px', height: '120px', borderRadius: '100px', border: '4px solid #f0642f', overflow: 'hidden', marginBottom: '15px' }}>
+//             {pfp ? (
+//               <img src={decodeURIComponent(pfp)} width="120" height="120" style={{ objectFit: 'cover' }} alt="PFP" />
+//             ) : (
+//               <div style={{ display: 'flex', fontSize: '50px' }}>👤</div>
+//             )}
+//           </div>
+
+//           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '20px' }}>
+//             <h2 style={{ color: 'white', fontSize: '32px', margin: '0', fontWeight: '800' }}>{username}</h2>
+//             <p style={{ color: '#f0642f', fontSize: '20px', fontWeight: '700', margin: '5px 0' }}>FID: {fid}</p>
+//           </div>
+
+//           <div style={{ display: 'flex', height: '2px', width: '70%', background: 'rgba(255,255,255,0.1)', marginBottom: '20px' }}></div>
+
+//           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+//              <p style={{ color: '#8a94a8', fontSize: '14px', margin: '0' }}>ACTIVITY NEYNAR SCORE</p>
+//              <h1 style={{ color: 'white', fontSize: '90px', margin: '0', fontWeight: '900' }}>{score}</h1>
+//           </div>
+
+//           <div style={{ display: 'flex', background: 'rgba(74, 222, 128, 0.1)', color: '#4ade80', padding: '10px 25px', borderRadius: '50px', marginTop: '20px', fontWeight: '700' }}>
+//             ⚡ {rank}
+//           </div>
+//         </div>
+//       </div>
+//     ),
+//     { width: 1200, height: 630 }
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* eslint-disable @next/next/no-img-element */
 import { ImageResponse } from 'next/og';
+
+export const runtime = 'edge'; // Edge runtime use kora valo OG er jonno
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   
-  // Safe parsing helper - semicolon সমস্যা ফিক্স করার জন্য
-  const getParam = (key: string) => {
-    return searchParams.get(key) || searchParams.get(`${key};`);
-  };
-
+  const getParam = (key: string) => searchParams.get(key) || searchParams.get(`${key};`);
+  
   const safeDecode = (str: string | null) => {
-    try {
-      return str ? decodeURIComponent(str) : '';
-    } catch {
-      return str || '';
-    }
+    try { return str ? decodeURIComponent(str) : ''; } 
+    catch { return str || ''; }
   };
 
   const username = safeDecode(getParam('username')) || 'User';
   const fid = getParam('fid') || '0';
   const score = getParam('score') || '0.00';
   const rank = safeDecode(getParam('rank')) || 'ACTIVE USER';
-  const pfp = getParam('pfp');
+  
+  // 👇 Logic: URL e PFP na thakle FID diye fetch koro
+  let pfpUrl = getParam('pfp');
+
+  if (!pfpUrl && fid !== '0') {
+    try {
+        const neynarRes = await fetch(`https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`, {
+            headers: {
+                'accept': 'application/json',
+                'api_key': '088ADB7C-2B73-4676-95C6-6F775A495287' // Tomar API Key
+            }
+        });
+        const data = await neynarRes.json();
+        if (data.users && data.users.length > 0) {
+            pfpUrl = data.users[0].pfp_url;
+        }
+    } catch (e) {
+        console.error("Failed to fetch PFP in OG", e);
+    }
+  }
+
+  // Fallback image
+  if (!pfpUrl) pfpUrl = "https://placehold.co/120x120?text=User";
 
   return new ImageResponse(
     (
@@ -344,11 +458,8 @@ export async function GET(request: Request) {
           </div>
 
           <div style={{ display: 'flex', width: '120px', height: '120px', borderRadius: '100px', border: '4px solid #f0642f', overflow: 'hidden', marginBottom: '15px' }}>
-            {pfp ? (
-              <img src={decodeURIComponent(pfp)} width="120" height="120" style={{ objectFit: 'cover' }} alt="PFP" />
-            ) : (
-              <div style={{ display: 'flex', fontSize: '50px' }}>👤</div>
-            )}
+             {/* PFP Render */}
+             <img src={pfpUrl} width="120" height="120" style={{ objectFit: 'cover' }} alt="PFP" />
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '20px' }}>
