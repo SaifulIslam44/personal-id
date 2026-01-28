@@ -29,13 +29,11 @@ const imageUrl = `${baseUrl}/api/og?username=${encodeURIComponent(username)}&fid
         <meta property="fc:frame:image:aspect_ratio" content="1.91:1" />
 
         <meta property="fc:frame:button:1" content="Check Yours / Join" />
-        <meta property="fc:frame:button:1:action" content="link" />
+        <meta property="fc:frame:button:1:action" content="launch_app" />
         <meta property="fc:frame:button:1:target" content="${appJoinUrl}" />
         
-        <meta http-equiv="refresh" content="0;url=${appJoinUrl}" />
-      </head>
+        </head>
       <body>
-  
         <script>
           window.location.href = "${appJoinUrl}";
         </script>
