@@ -66,7 +66,6 @@
 
 
 
-
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -99,7 +98,17 @@ export async function GET(request: NextRequest) {
         
         <meta property="fc:frame:app_id" content="WbTVgaQ34L1m" />
       </head>
-      <body style="background: #000;"></body>
+      <body style="background: #000;">
+        <script>
+          // যদি ইউজার ফারকাস্টার অ্যাপের ভেতরে থাকে, তবে এটি সরাসরি অ্যাপ লঞ্চ করবে
+          window.location.href = "farcaster://miniapps/WbTVgaQ34L1m";
+          
+          // ব্যাকআপ হিসেবে ২ সেকেন্ড পর স্ট্যানডার্ড লিঙ্কে রিডাইরেক্ট করবে
+          setTimeout(function() {
+            window.location.href = "${appJoinUrl}";
+          }, 2000);
+        </script>
+      </body>
     </html>`;
 
   return new NextResponse(html, {
@@ -110,8 +119,6 @@ export async function GET(request: NextRequest) {
     },
   });
 }
-
-
 
 
 
