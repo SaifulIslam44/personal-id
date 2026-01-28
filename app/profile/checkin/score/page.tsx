@@ -594,15 +594,11 @@ export default function ScorePage() {
 
 
 const handleShare = () => {
-    if (!scoreLoaded || userData.fid === "0") {
-      alert("Score still syncing, please wait...");
-      return;
-    }
+    if (!scoreLoaded || userData.fid === "0") return;
 
     const baseUrl = "https://mints.personalids.xyz";
     const currentRank = getRankLabel(actualScore);
     
-    // ক্যাশ এড়ানোর জন্য v=direct_launch এবং টাইমস্ট্যাম্প
     const frameUrl = `${baseUrl}/api/frame?username=${encodeURIComponent(userData.displayName)}&fid=${userData.fid}&score=${actualScore.toFixed(2)}&rank=${encodeURIComponent(currentRank)}&pfp=${encodeURIComponent(userData.pfpUrl)}&v=direct_launch&t=${Date.now()}`;
     
     const shareText = `My Neynar Reputation Score is ${actualScore.toFixed(2)} ⚡🔵\n\nMint ID & Check Score to claim daily rewards! 🎁\n\n✅ Mint ID\n✅ Check Score\n💰 Win 0.01 $USDC + Lucky Bonuses`;
@@ -613,22 +609,23 @@ const handleShare = () => {
     };
 
     try {
-      // সরাসরি SDK অ্যাকশন কল করা হচ্ছে
-      const farcasterSDK = (window as any).farcaster?.sdk || (window as any).farcaster;
+      // Farcaster Frame V2 SDK check
+      const fcSDK = (window as any).farcaster?.sdk;
 
-      if (farcasterSDK?.actions?.composeCast) {
-        farcasterSDK.actions.composeCast(castAction);
+      if (fcSDK?.actions?.composeCast) {
+        // এটি সরাসরি Warpcast-এর ভেতর কাস্ট উইন্ডো খুলবে
+        fcSDK.actions.composeCast(castAction);
       } else if ((miniApp as any).actions?.composeCast) {
+        // MiniApp SDK fallback
         (miniApp as any).actions.composeCast(castAction);
       } else {
-        // ব্রাউজারে না পাঠিয়ে ইউজারকে অ্যালার্ট দিন
-        alert("Please use this inside Farcaster/Warpcast to share.");
+        // যদি কোনো SDK না থাকে, তবে ব্রাউজার না খুলে চুপচাপ থাকবে
+        console.log("SDK not found, avoiding browser redirect.");
       }
     } catch (error) {
       console.error("Share error:", error);
     }
   };
-
 
 
   // ✅ Animated score overwrite fix - ChatGPT Fix

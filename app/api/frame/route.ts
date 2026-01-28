@@ -65,15 +65,10 @@
 
 
 
-
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const userAgent = request.headers.get('user-agent') || '';
-
-  // ইউজার কি ফারকাস্টার অ্যাপের ভেতরে আছে কিনা তা চেক করা
-  const isFarcaster = userAgent.includes('Farcaster') || userAgent.includes('Warpcast');
   
   const username = searchParams.get('username') || 'User';
   const fid = searchParams.get('fid') || '0';
@@ -103,17 +98,7 @@ export async function GET(request: NextRequest) {
         <meta property="fc:frame:button:1:action" content="launch_app" />
         <meta property="fc:frame:button:1:target" content="${appJoinUrl}" />
       </head>
-      <body>
-        ${!isFarcaster ? `
-          <div style="text-align: center; margin-top: 50px;">
-            <h1>Open in Farcaster</h1>
-            <a href="${appJoinUrl}" style="padding: 10px 20px; background: #8a63d2; color: white; text-decoration: none; border-radius: 5px;">
-              Launch Mini App
-            </a>
-          </div>
-        ` : `
-          <p>Redirecting inside Farcaster...</p>
-        `}
+      <body style="background: #000;">
       </body>
     </html>
   `;
