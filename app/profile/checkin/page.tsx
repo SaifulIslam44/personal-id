@@ -639,8 +639,8 @@ import { useAccount, useReadContract, useSendCalls } from "wagmi";
 import { formatUnits } from "viem";
 import { CONTRACT_ADDRESS, ABI } from "@/lib/contract";
 import styles from "./checkin.module.css";
-import { useConnect } from "wagmi";
-import { useWriteContract } from 'wagmi'; 
+import { useConnect, useWriteContract } from "wagmi";
+import { sdk } from "@farcaster/miniapp-sdk";
 
 
 const USDC_TOKEN_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
@@ -661,6 +661,14 @@ export default function CheckInPage() {
   const { sendCalls } = useSendCalls(); 
   const { connect, connectors } = useConnect();
   const { writeContract } = useWriteContract();
+
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+const [lastClaimedAmount, setLastClaimedAmount] = useState("0");
+
+
+
+
+
 
   const USDC_LOGO = "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=032";
 
@@ -946,22 +954,53 @@ const handleCheckIn = async () => {
 
 
 
-  const handleClaimReward = async () => {
+  // const handleClaimReward = async () => {
+  //   if (Number(spinRewards) <= 0) return;
+  //   setClaimLoading(true);
+    
+  //   sendCalls({
+  //     calls: [{ to: CONTRACT_ADDRESS as `0x${string}`, abi: ABI, functionName: "claimSpinRewards", args: [] }],
+  //   }, {
+  //     onSuccess: async () => {
+  //       setMessage(`Claim Successful! Syncing balance...`);
+        
+  //       // ২ সেকেন্ড অপেক্ষা করা যাতে ব্লকচেইন ডাটা আপডেট করতে পারে
+  //       setTimeout(async () => {
+  //         await refetchSpinRewards();
+  //         await refetchSupply();
+  //         setMessage(`Claim Successful! Rewards sent to wallet.`);
+  //         setClaimLoading(false);
+  //       }, 5000); 
+  //     },
+  //     onError: () => { 
+  //       setMessage("Claim failed."); 
+  //       setClaimLoading(false); 
+  //     },
+  //   });
+  // };
+
+
+
+
+const handleClaimReward = async () => {
     if (Number(spinRewards) <= 0) return;
+    const amountToClaim = spinRewards;
     setClaimLoading(true);
     
+
     sendCalls({
       calls: [{ to: CONTRACT_ADDRESS as `0x${string}`, abi: ABI, functionName: "claimSpinRewards", args: [] }],
     }, {
       onSuccess: async () => {
-        setMessage(`Claim Successful! Syncing balance...`);
-        
-        // ২ সেকেন্ড অপেক্ষা করা যাতে ব্লকচেইন ডাটা আপডেট করতে পারে
         setTimeout(async () => {
           await refetchSpinRewards();
           await refetchSupply();
-          setMessage(`Claim Successful! Rewards sent to wallet.`);
+          
+          setLastClaimedAmount(amountToClaim); // অ্যামাউন্ট সেট করা
+          setShowSuccessModal(true);           // পপআপ দেখানো
+          
           setClaimLoading(false);
+          setMessage(`Claim Successful!`);
         }, 5000); 
       },
       onError: () => { 
@@ -969,7 +1008,83 @@ const handleCheckIn = async () => {
         setClaimLoading(false); 
       },
     });
-  };
+};
+
+
+const fetchEngagedUsers = async (fid: number): Promise<string[]> => {
+  try {
+    const response = await fetch(`/api/get-friends?fid=${fid}`);
+    if (!response.ok) return [];
+    const data = await response.json();
+    return data.usernames || [];
+  } catch (error) {
+    console.error("Fetch Error details:", error);
+    return [];
+  }
+};
+
+const handleShare = async () => {
+  let userFid: number | null = null;
+
+  try {
+    const context = await sdk.context; 
+    userFid = context?.user?.fid || null;
+
+    if (!userFid) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const fidFromUrl = urlParams.get("fid");
+      if (fidFromUrl) userFid = parseInt(fidFromUrl);
+    }
+
+    const shareUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint";
+
+    if (!userFid) {
+      // ইমোজিটি একদম লাইনের শুরুতে দেওয়া হয়েছে
+      const simpleText = `I just claimed ${lastClaimedAmount} $USDC from the Daily Spin! 🎡✨
+
+🔵 Join me on Personal ID and earn too!`;
+      
+      sdk.actions.openUrl(`https://warpcast.com/~/compose?text=${encodeURIComponent(simpleText)}&embeds[]=${encodeURIComponent(shareUrl)}`);
+      return;
+    }
+
+    const friends = await fetchEngagedUsers(userFid);
+    const mentions = friends.map((u: string) => `@${u}`).join(' ');
+    
+    const tagLine = mentions ? `
+
+✅ You can try this guys ${mentions}` : "";
+    
+    // এখানেও জয়েন মেসেজের আগে ইমোজিটি যোগ করে দিলাম
+    const shareText = `I just claimed ${lastClaimedAmount} $USDC from the Daily Spin! 🎡✨
+
+🔵 Join me on Personal ID and earn too!${tagLine}`;
+    
+    sdk.actions.openUrl(`https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(shareUrl)}`);
+
+  } catch (error) {
+    console.error("Share error:", error);
+    const fallbackText = `I just claimed ${lastClaimedAmount} $USDC from the Daily Spin! 🎡✨
+
+🔵 Join me on Personal ID and earn too!`;
+    sdk.actions.openUrl(`https://warpcast.com/~/compose?text=${encodeURIComponent(fallbackText)}`);
+  }
+};
+
+// const handleShare = () => {
+//   const shareText = `I just claimed ${lastClaimedAmount} $USDC from the Daily Spin! 🎡✨ Join me on personal id and earn too! \n\n🔵I just taged you @stlifestyle.base.eth `;
+//   const shareUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint";
+  
+//   // সরাসরি Farcaster-এর কাস্ট (Post) করার লিঙ্ক
+//   const farcasterUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(shareUrl)}`;
+  
+//   window.open(farcasterUrl, '_blank');
+// };
+
+
+
+
+
 
   if (!isMounted) return null;
 
@@ -1075,7 +1190,41 @@ const handleCheckIn = async () => {
         >
           {claimLoading ? "Claiming..." : Number(spinRewards) > 0 ? "CLAIM" : "CLAIM LOCKED"}
         </button>
+
       </div>
+
+{/* Success Modal */}
+{showSuccessModal && (
+  <div className={styles.modalOverlay}>
+    <div className={styles.modalContent}>
+      <button className={styles.closeButton} onClick={() => setShowSuccessModal(false)}>×</button>
+      
+      <div className={styles.successIcon}>
+        <div className={styles.checkMark}>L</div>
+      </div>
+
+      <h2 className={styles.modalTitle}>Claim Successful!</h2>
+      <p className={styles.modalSubTitle}>
+        {lastClaimedAmount} $USDC sent to your wallet.
+      </p>
+
+      <div className={styles.modalActionRow}>
+        <button className={styles.shareBtn} onClick={handleShare}>
+  Share
+</button>
+        {/* <button 
+          className={styles.buyBtn} 
+          onClick={() => setShowSuccessModal(false)}
+        >
+          Done
+        </button> */}
+      </div>
+    </div>
+  </div>
+)}
+
+
+
     </div>
   );
 }

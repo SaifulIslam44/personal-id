@@ -494,33 +494,62 @@ export default function ScorePage() {
   });
 
   // 🚩 Neynar API থেকে আসল স্কোর নিয়ে আসার ফাংশন (FIXED)
-  const fetchNeynarScore = async (fid: string) => {
+  // const fetchNeynarScore = async (fid: string) => {
+  //   try {
+  //     console.log(`Fetching score for FID: ${fid}...`); 
+      
+  //     const response = await fetch(`https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`, {
+  //       headers: {
+  //         'accept': 'application/json',
+  //         'api_key': '088ADB7C-2B73-4676-95C6-6F775A495287' 
+  //       }
+  //     });
+
+  //     if (!response.ok) {
+  //       console.error("API Error:", response.status, response.statusText);
+  //       return;
+  //     }
+
+  //     const data = await response.json();
+  //     if (data.users && data.users.length > 0) {
+  //       const user = data.users[0];
+  //       const score = user.score || user.experimental?.neynar_user_score || user.profile?.score || 0;
+  //       setActualScore(score);
+  //       setScoreLoaded(true); // ✅ atomic sync lock
+  //     }
+  //   } catch (error) {
+  //     console.error("Score fetch failed", error);
+  //   }
+  // };
+
+
+const fetchNeynarScore = async (fid: string) => {
     try {
       console.log(`Fetching score for FID: ${fid}...`); 
       
-      const response = await fetch(`https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`, {
-        headers: {
-          'accept': 'application/json',
-          'api_key': '088ADB7C-2B73-4676-95C6-6F775A495287' 
-        }
-      });
+      // ✅ এখন আমরা সরাসরি আমাদের লোকাল API-কে কল করছি
+      const response = await fetch(`/api/get-score?fid=${fid}`);
 
       if (!response.ok) {
-        console.error("API Error:", response.status, response.statusText);
+        console.error("API Error:", response.status);
         return;
       }
 
       const data = await response.json();
       if (data.users && data.users.length > 0) {
         const user = data.users[0];
+        // স্কোরের লজিক আগের মতোই থাকবে
         const score = user.score || user.experimental?.neynar_user_score || user.profile?.score || 0;
         setActualScore(score);
-        setScoreLoaded(true); // ✅ atomic sync lock
+        setScoreLoaded(true);
       }
     } catch (error) {
       console.error("Score fetch failed", error);
     }
   };
+
+
+
 
   useEffect(() => {
     miniApp.context.then((ctx) => {

@@ -101,7 +101,7 @@ export default function DailyShareTask({ fid }: { fid: any }) {
   const handleShare = () => {
     if (!fid) return;
     const appUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint";
-    const text = encodeURIComponent("🔥 I just shared & earned 50 PIM! Mint your ID now 👇");
+    const text = encodeURIComponent("🔥 I just daily shared & earned 50 $PIM! Mint your ID now and earn you too!! 👇");
     const shareUrl = `https://warpcast.com/~/compose?text=${text}&embeds[]=${encodeURIComponent(`${appUrl}?fid=${fid}`)}`;
     window.open(shareUrl, "_blank");
     setHasShared(true);

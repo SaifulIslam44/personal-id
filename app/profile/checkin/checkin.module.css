@@ -607,3 +607,125 @@
 @keyframes spin { 
   to { transform: rotate(360deg); } 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: white;
+  padding: 40px 20px;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  position: relative;
+}
+
+.closeButton {
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #666;
+  cursor: pointer;
+}
+
+.successIcon {
+  width: 100px;
+  height: 100px;
+  background: #a8f3d1;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+}
+
+.checkMark {
+  color: #22c55e;
+  font-size: 50px;
+  transform: scaleX(-1) rotate(-35deg); /* টিক চিহ্নের মতো দেখাবে */
+  font-weight: bold;
+}
+
+.modalTitle {
+  font-size: 24px;
+  color: #000;
+  margin-bottom: 10px;
+}
+
+.modalSubTitle {
+  color: #666;
+  font-size: 18px;
+  margin-bottom: 30px;
+}
+
+.modalActionRow {
+  display: flex;
+  gap: 15px;
+}
+
+.shareBtn {
+  flex: 1;
+  background: #9333ea;
+  color: white;
+  padding: 15px;
+  border-radius: 12px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.buyBtn {
+  flex: 1;
+  background: #000;
+  color: white;
+  padding: 15px;
+  border-radius: 12px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
