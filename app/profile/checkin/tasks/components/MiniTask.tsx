@@ -110,7 +110,7 @@ export default function MiniTask() {
       }
       
       setIsClaiming(false);
-    } catch (err) {
+    } catch {
       setIsClaiming(false);
       setRetryTimer(3); // ৩ সেকেন্ডের টাইমার সেট করা হলো
     }
