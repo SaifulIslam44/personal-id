@@ -15,7 +15,7 @@ export default function MiniTask() {
   const [isAddedToProfile, setIsAddedToProfile] = useState(false);
   const [verifyLoading, setVerifyLoading] = useState(false);
 
-  // ১. অন-চেইন চেক: রিওয়ার্ড ক্লেম করা হয়েছে কি না
+  // ১. অন-চেইন চেক
   const { data: isTaskDone, refetch: refetchTask } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: ABI,
@@ -49,28 +49,36 @@ export default function MiniTask() {
     checkAdditionStatus();
   }, [checkAdditionStatus]);
 
-  // ৩. Add Button হ্যান্ডলার - যা "Not Now" দেওয়ার পরও বারবার পপআপ আনবে
+  // ৩. Add Button হ্যান্ডলার - যা পপআপ বারবার ট্রিগার করবে
   const handleAddClick = async () => {
+    // আগের এরর রিসেট করুন যেন নতুন ক্লিকে পপআপ ব্লক না হয়
     setClaimError(false); 
     
     try {
-      // রিয়েল-টাইম চেক: অলরেডি অ্যাড হয়ে থাকলে আর পপআপ দেবে না
+      // প্রথমে ফ্রেশ কনটেক্সট চেক করে নিন
       const alreadyAdded = await checkAdditionStatus();
       if (alreadyAdded) return;
 
+      // পপআপ কল করার আগে সামান্য সময় অপেক্ষা (Resetting internal state)
+      // এটি করার ফলে বারবার পপআপ ট্রিগার হওয়ার সম্ভাবনা বাড়ে
+      await new Promise(resolve => setTimeout(resolve, 100));
+
       // সরাসরি পপআপ ট্রিগার করা
-      // এটি করার ফলে ইউজার ক্যানসেল করলেও পরবর্তী ক্লিকে আবার পপআপ আসবে
       await sdk.actions.addFrame();
       
-      // পপআপ থেকে ইউজার ফিরে আসার পর স্ট্যাটাস রি-চেক
+      // পপআপ ক্লোজ হওয়ার পর আবার ভেরিফাই করুন
       await checkAdditionStatus();
     } catch (error: any) {
-      console.log("Add Action Interaction", error);
+      console.log("Add Action Interaction Details:", error);
       
-      // ইউজার 'Not Now' দিলে বা এরর হলে এখানে আসবে
-      // এখানে স্টেট আপডেট করে দিচ্ছি যাতে ইউজার আবার ট্রাই করতে পারে
+      // ইউজার 'Not Now' দিলেও স্টেট ফ্রেশ রাখুন যেন আবার ক্লিক করতে পারে
       setClaimError(true); 
       setIsAddedToProfile(false);
+
+      // যদি ডোমেইন মেনিফেস্ট এরর থাকে
+      if (error?.message?.includes("invalid_domain_manifest")) {
+        console.error("Configuration Error: Please clear Warpcast cache.");
+      }
     }
   };
 
@@ -111,9 +119,9 @@ export default function MiniTask() {
           </button>
         ) : (
           <div className={styles.actionGroup}>
-            <button  
-              className={styles.verifyBtn}  
-              onClick={handleAddClick}  
+            <button 
+              className={styles.verifyBtn} 
+              onClick={handleAddClick} 
               disabled={verifyLoading}
             >
               {verifyLoading ? "Checking..." : "Add Mini App"}
