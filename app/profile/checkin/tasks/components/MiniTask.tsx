@@ -15,7 +15,7 @@ export default function MiniTask() {
   const [isAddedToProfile, setIsAddedToProfile] = useState(false);
   const [verifyLoading, setVerifyLoading] = useState(false);
 
-  // ১. অন-চেইন চেক
+  // ১. অন-চেইন চেক: রিওয়ার্ড ক্লেম করা হয়েছে কি না
   const { data: isTaskDone, refetch: refetchTask } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: ABI,
@@ -24,7 +24,7 @@ export default function MiniTask() {
     query: { enabled: !!address },
   });
 
-  // ২. স্ট্যাটাস চেক ফাংশন
+  // ২. প্রোফাইল স্ট্যাটাস চেক করার ফাংশন
   const checkAdditionStatus = useCallback(async () => {
     setVerifyLoading(true);
     try {
@@ -33,10 +33,12 @@ export default function MiniTask() {
         setIsAddedToProfile(true);
         setClaimError(false);
         return true;
+      } else {
+        setIsAddedToProfile(false);
+        return false;
       }
-      setIsAddedToProfile(false);
-      return false;
     } catch (error) {
+      console.error("SDK Context Error:", error);
       return false;
     } finally {
       setVerifyLoading(false);
@@ -47,7 +49,7 @@ export default function MiniTask() {
     checkAdditionStatus();
   }, [checkAdditionStatus]);
 
-  // ৩. পপআপ ট্রিগার হ্যান্ডলার (বারবার ট্রাই করার জন্য)
+  // ৩. Add Button হ্যান্ডলার - যা "Not Now" দেওয়ার পরও বারবার পপআপ আনবে
   const handleAddClick = async () => {
     setClaimError(false); 
     
@@ -56,20 +58,23 @@ export default function MiniTask() {
       const alreadyAdded = await checkAdditionStatus();
       if (alreadyAdded) return;
 
-      // পপআপ কল
+      // সরাসরি পপআপ ট্রিগার করা
+      // এটি করার ফলে ইউজার ক্যানসেল করলেও পরবর্তী ক্লিকে আবার পপআপ আসবে
       await sdk.actions.addFrame();
       
-      // পপআপ থেকে ইউজার ফিরে আসার পর আবার চেক
+      // পপআপ থেকে ইউজার ফিরে আসার পর স্ট্যাটাস রি-চেক
       await checkAdditionStatus();
-    } catch (error) {
-      // ইউজার 'Not Now' দিলে বা ক্যানসেল করলে এখানে আসবে
+    } catch (error: any) {
       console.log("Add Action Interaction", error);
+      
+      // ইউজার 'Not Now' দিলে বা এরর হলে এখানে আসবে
+      // এখানে স্টেট আপডেট করে দিচ্ছি যাতে ইউজার আবার ট্রাই করতে পারে
       setClaimError(true); 
-      // স্টেট রিসেট করা হচ্ছে যেন পরবর্তী ক্লিকে পপআপ আবার আসতে পারে
       setIsAddedToProfile(false);
     }
   };
 
+  // ৪. রিওয়ার্ড ক্লেম
   const handleClaim = async () => {
     if (!address || !isAddedToProfile) return;
     try {
@@ -82,7 +87,7 @@ export default function MiniTask() {
       });
       await refetchTask();
     } catch (err) {
-      console.error(err);
+      console.error("Claim Error:", err);
     } finally {
       setIsClaiming(false);
     }
@@ -90,7 +95,10 @@ export default function MiniTask() {
 
   return (
     <div className={styles.taskCard}>
-      <div className={styles.left}><div className={styles.icon}>📱</div></div>
+      <div className={styles.left}>
+        <div className={styles.icon}>📱</div>
+      </div>
+
       <div className={styles.center}>
         <h3>Add Mini App</h3>
         <p className={styles.desc}>Add to your Farcaster to claim +50 PIM.</p>
@@ -103,9 +111,9 @@ export default function MiniTask() {
           </button>
         ) : (
           <div className={styles.actionGroup}>
-            <button 
-              className={styles.verifyBtn} 
-              onClick={handleAddClick} 
+            <button  
+              className={styles.verifyBtn}  
+              onClick={handleAddClick}  
               disabled={verifyLoading}
             >
               {verifyLoading ? "Checking..." : "Add Mini App"}
@@ -114,7 +122,10 @@ export default function MiniTask() {
           </div>
         )}
       </div>
-      <div className={styles.right}><span className={styles.reward}>+50 PIM</span></div>
+
+      <div className={styles.right}>
+        <span className={styles.reward}>+50 PIM</span>
+      </div>
     </div>
   );
 }
