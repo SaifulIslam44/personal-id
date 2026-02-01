@@ -318,7 +318,7 @@ useEffect(() => {
 
   useEffect(() => {
     if (isConnected && nftBalance !== undefined && (nftBalance as bigint) > 0n) {
-      router.replace("/profile/checkin/score");
+      router.replace("/profile/checkin");
     }
   }, [nftBalance, isConnected, router]);
 

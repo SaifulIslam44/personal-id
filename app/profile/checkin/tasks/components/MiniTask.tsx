@@ -16,10 +16,10 @@ export default function MiniTask() {
   const [isAddedToProfile, setIsAddedToProfile] = useState(false);
   const [verifyLoading, setVerifyLoading] = useState(false);
   
-  // নতুন স্টেট: ক্লেম এরর এবং টাইমার হ্যান্ডেল করার জন্য
+  
   const [retryTimer, setRetryTimer] = useState(0);
 
-  // ১. অন-চেইন চেক: রিওয়ার্ড ক্লেম করা হয়েছে কি না
+  
   const { data: isTaskDone, refetch: refetchTask } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: ABI,
@@ -86,13 +86,13 @@ export default function MiniTask() {
     }
   };
 
-  // ৫. রিওয়ার্ড ক্লেম লজিক (sendCallsAsync ব্যবহার করে)
+ 
   const handleClaim = async () => {
     if (!address || !isAddedToProfile) return;
     try {
       setIsClaiming(true);
       
-      // sendCallsAsync এর মাধ্যমে ট্রানজ্যাকশন কল
+      
       const id = await sendCallsAsync({
         calls: [
           {
@@ -104,7 +104,7 @@ export default function MiniTask() {
         ],
       });
 
-      // ট্রানজ্যাকশন আইডি আসলে রিফেচ করা হবে
+      
       if (id) {
         await refetchTask();
       }
@@ -112,7 +112,7 @@ export default function MiniTask() {
       setIsClaiming(false);
     } catch {
       setIsClaiming(false);
-      setRetryTimer(3); // ৩ সেকেন্ডের টাইমার সেট করা হলো
+      setRetryTimer(3); 
     }
   };
 

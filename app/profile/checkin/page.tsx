@@ -1153,12 +1153,12 @@ const handleShare = async () => {
     {spinLoading ? "Confirming..." : 
      isSpinning ? "SPINNING..." : 
      cooldown > 0 ? `Wait ${cooldown}s` : 
-     availablePoints >= 100 ? "SPIN (100 PIM)" : "Earn 100PIM to Unlocked"}
+     availablePoints >= 100 ? "SPIN (BURN 100 $PIM)" : "Earn 100PIM to Unlocked"}
 </button>
       </div>
 
       <div className={styles.pointsDisplayCompact}>
-        <div className={styles.pointsTitle}>AVAILABLE: <span className={styles.pointsValueSmall}>{availablePoints} PIM</span></div>
+        <div className={styles.pointsTitle}>AVAILABLE: <span className={styles.pointsValueSmall}>{availablePoints} $PIM</span></div>
         
         <div className={styles.pointsTitle}>ClAIMABLE: <span className={styles.pointsValueSmall}>{spinRewards} $USDC</span></div>
         <div className={styles.pointsLabelSmall}>(Daily Check-in = +50 PIM | Spin = Burn 100 PIM)</div>
