@@ -1,14 +1,15 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { useAccount, useReadContract, useWriteContract } from "wagmi";
+import { useAccount, useReadContract } from "wagmi";
+import { useSendCalls } from "wagmi/experimental"; // sendCalls এর জন্য ইম্পোর্ট
 import { ABI, CONTRACT_ADDRESS } from "@/lib/contract";
 import { sdk } from "@farcaster/miniapp-sdk";
 import styles from "../task.module.css";
 
 export default function MiniTask() {
   const { address } = useAccount();
-  const { writeContractAsync } = useWriteContract();
+  const { sendCallsAsync } = useSendCalls(); // sendCallsAsync ব্যবহার করা হয়েছে
 
   const [isClaiming, setIsClaiming] = useState(false);
   const [claimError, setClaimError] = useState(false);
@@ -85,21 +86,31 @@ export default function MiniTask() {
     }
   };
 
-  // ৫. রিওয়ার্ড ক্লেম লজিক (Retry Timer সহ)
+  // ৫. রিওয়ার্ড ক্লেম লজিক (sendCallsAsync ব্যবহার করে)
   const handleClaim = async () => {
     if (!address || !isAddedToProfile) return;
     try {
       setIsClaiming(true);
-      await writeContractAsync({
-        address: CONTRACT_ADDRESS,
-        abi: ABI,
-        functionName: "claimDirectTask",
-        args: ["add_miniapp"],
+      
+      // sendCallsAsync এর মাধ্যমে ট্রানজ্যাকশন কল
+      const id = await sendCallsAsync({
+        calls: [
+          {
+            to: CONTRACT_ADDRESS,
+            abi: ABI,
+            functionName: "claimDirectTask",
+            args: ["add_miniapp"],
+          },
+        ],
       });
-      await refetchTask();
+
+      // ট্রানজ্যাকশন আইডি আসলে রিফেচ করা হবে
+      if (id) {
+        await refetchTask();
+      }
+      
       setIsClaiming(false);
     } catch (err) {
-      console.error("Claim Error:", err);
       setIsClaiming(false);
       setRetryTimer(3); // ৩ সেকেন্ডের টাইমার সেট করা হলো
     }
@@ -113,7 +124,7 @@ export default function MiniTask() {
 
       <div className={styles.center}>
         <h3>Add Mini App</h3>
-        <p className={styles.desc}>Add to your Farcaster to claim rewards.</p>
+        <p className={styles.desc}>Add to your Farcaster to claim +50 PIM rewards.</p>
 
         {isTaskDone ? (
           <span className={styles.done}>✅ Completed</span>
