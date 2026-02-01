@@ -464,6 +464,7 @@ import Image from "next/image";
 import Task50 from "./components/Task50";
 import FollowTask from "./components/FollowTask";
 import DailyShareTask from "./components/DailyShareTask";
+import MiniTask from "./components/MiniTask";
 
 export default function TaskPage() {
   const { address, isConnected } = useAccount();
@@ -812,6 +813,9 @@ const isEligible2 = refCountNum >= 10;
 
 
 
+
+{/* ================= NEW: FOLLOW TASK (সব টাস্কের উপরে) ================= */}
+      <MiniTask />
 
 {/* ================= NEW: FOLLOW TASK (সব টাস্কের উপরে) ================= */}
       <DailyShareTask fid={fid} />
