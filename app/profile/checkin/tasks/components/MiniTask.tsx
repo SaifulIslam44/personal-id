@@ -14,6 +14,9 @@ export default function MiniTask() {
   const [claimError, setClaimError] = useState(false);
   const [isAddedToProfile, setIsAddedToProfile] = useState(false);
   const [verifyLoading, setVerifyLoading] = useState(false);
+  
+  // নতুন স্টেট: ক্লেম এরর এবং টাইমার হ্যান্ডেল করার জন্য
+  const [retryTimer, setRetryTimer] = useState(0);
 
   // ১. অন-চেইন চেক: রিওয়ার্ড ক্লেম করা হয়েছে কি না
   const { data: isTaskDone, refetch: refetchTask } = useReadContract({
@@ -23,6 +26,15 @@ export default function MiniTask() {
     args: address ? [address, "add_miniapp"] : undefined,
     query: { enabled: !!address },
   });
+
+  // টাইমার লজিক
+  useEffect(() => {
+    let t: NodeJS.Timeout;
+    if (retryTimer > 0) {
+      t = setTimeout(() => setRetryTimer(retryTimer - 1), 1000);
+    }
+    return () => clearTimeout(t);
+  }, [retryTimer]);
 
   // ২. প্রোফাইল স্ট্যাটাস চেক করার ফাংশন
   const checkAdditionStatus = useCallback(async () => {
@@ -42,7 +54,7 @@ export default function MiniTask() {
     }
   }, []);
 
-  // ৩. পোলিং: প্রতি ৩ সেকেন্ড অন্তর অটো-চেক করবে (থ্রি-ডট মেনু থেকে অ্যাড করলে ডিটেক্ট করার জন্য)
+  // ৩. পোলিং
   useEffect(() => {
     checkAdditionStatus();
     const interval = setInterval(checkAdditionStatus, 3000);
@@ -61,13 +73,8 @@ export default function MiniTask() {
         return;
       }
 
-      // পপআপ কল করার আগে সামান্য ডিলে (ইন্টারনাল স্টেট রিসেট)
       await new Promise(resolve => setTimeout(resolve, 100));
-
-      // সরাসরি SDK অ্যাকশন কল
       await sdk.actions.addFrame();
-      
-      // পপআপ ক্লোজ হওয়ার পর আবার ভেরিফাই
       await checkAdditionStatus();
     } catch (error: any) {
       console.log("Interaction Error:", error);
@@ -78,7 +85,7 @@ export default function MiniTask() {
     }
   };
 
-  // ৫. রিওয়ার্ড ক্লেম
+  // ৫. রিওয়ার্ড ক্লেম লজিক (Retry Timer সহ)
   const handleClaim = async () => {
     if (!address || !isAddedToProfile) return;
     try {
@@ -90,10 +97,11 @@ export default function MiniTask() {
         args: ["add_miniapp"],
       });
       await refetchTask();
+      setIsClaiming(false);
     } catch (err) {
       console.error("Claim Error:", err);
-    } finally {
       setIsClaiming(false);
+      setRetryTimer(3); // ৩ সেকেন্ডের টাইমার সেট করা হলো
     }
   };
 
@@ -110,8 +118,12 @@ export default function MiniTask() {
         {isTaskDone ? (
           <span className={styles.done}>✅ Completed</span>
         ) : isAddedToProfile ? (
-          <button className={styles.claimBtn} onClick={handleClaim} disabled={isClaiming}>
-            {isClaiming ? "Claiming..." : "Claim +50 PIM"}
+          <button 
+            className={retryTimer > 0 ? styles.retryBtn : styles.claimBtn} 
+            onClick={handleClaim} 
+            disabled={isClaiming || retryTimer > 0}
+          >
+            {isClaiming ? "Claiming..." : retryTimer > 0 ? `Retry in ${retryTimer}s` : "Claim +50 PIM"}
           </button>
         ) : (
           <button 
