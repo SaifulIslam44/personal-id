@@ -24,20 +24,17 @@ export default function MiniTask() {
     query: { enabled: !!address },
   });
 
-  // ২. Miniapp Context থেকে স্ট্যাটাস চেক
+  // ২. SDK Context থেকে স্ট্যাটাস চেক করার ফাংশন
   const checkAdditionStatus = async () => {
     setVerifyLoading(true);
     try {
-      // miniapp-sdk এর context থেকে চেক
       const context = await sdk.context;
-      
-      // context.client.added নিশ্চিত করে ইউজার অ্যাপটি অ্যাড করেছে কি না
+      // context.client.added চেক করবে অ্যাপটি প্রোফাইলে আছে কি না
       if (context?.client?.added) {
         setIsAddedToProfile(true);
         setClaimError(false);
       } else {
         setIsAddedToProfile(false);
-        setClaimError(true);
       }
     } catch (error) {
       console.error("SDK Context Error:", error);
@@ -46,21 +43,23 @@ export default function MiniTask() {
     }
   };
 
-  // ৩. Add Button হ্যান্ডলার
+  // ৩. useEffect ব্যবহার করে অ্যাপ ওপেন হওয়ার সময় স্ট্যাটাস চেক (এরর সমাধান)
+  useEffect(() => {
+    checkAdditionStatus();
+  }, []); // একবার রান হবে যখন কম্পোনেন্ট লোড হবে
+
+  // ৪. Add Button হ্যান্ডলার
   const handleAddClick = async () => {
     try {
-      // এটি সরাসরি miniapp ম্যানিফেস্ট অনুযায়ী পপআপ ট্রিগার করবে
       await sdk.actions.addFrame();
-      
-      // পপআপের পর স্ট্যাটাস রি-চেক
+      // পপআপ ক্লোজ হওয়ার পর আবার ভেরিফাই করা
       await checkAdditionStatus();
     } catch (error) {
       console.error("Add Action Error:", error);
-      // ডোমেইন ভেরিফিকেশন ফেইল করলে এখানে মেসেজ দেখাবে
     }
   };
 
-  // ৪. রিওয়ার্ড ক্লেম
+  // ৫. রিওয়ার্ড ক্লেম
   const handleClaim = async () => {
     if (!address || !isAddedToProfile) return;
     try {
