@@ -15,7 +15,7 @@ export default function MiniTask() {
   const [isAddedToProfile, setIsAddedToProfile] = useState(false);
   const [verifyLoading, setVerifyLoading] = useState(false);
 
-  // ১. অন-চেইন চেক
+  // ১. অন-চেইন চেক: রিওয়ার্ড ক্লেম করা হয়েছে কি না
   const { data: isTaskDone, refetch: refetchTask } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: ABI,
@@ -29,6 +29,7 @@ export default function MiniTask() {
     setVerifyLoading(true);
     try {
       const context = await sdk.context;
+      // context.client.added চেক করবে অ্যাপটি প্রোফাইলে আছে কি না
       if (context?.client?.added) {
         setIsAddedToProfile(true);
         setClaimError(false);
@@ -45,44 +46,37 @@ export default function MiniTask() {
     }
   }, []);
 
+  // ৩. পোলিং (Polling): প্রতি ৩ সেকেন্ড অন্তর চেক করবে ইউজার থ্রি-ডট মেনু থেকে অ্যাড করেছে কি না
   useEffect(() => {
     checkAdditionStatus();
+    const interval = setInterval(checkAdditionStatus, 3000);
+    return () => clearInterval(interval);
   }, [checkAdditionStatus]);
 
-  // ৩. Add Button হ্যান্ডলার - যা পপআপ বারবার ট্রিগার করবে
+  // ৪. Add Button হ্যান্ডলার
   const handleAddClick = async () => {
-    // আগের এরর রিসেট করুন যেন নতুন ক্লিকে পপআপ ব্লক না হয়
     setClaimError(false); 
     
     try {
-      // প্রথমে ফ্রেশ কনটেক্সট চেক করে নিন
       const alreadyAdded = await checkAdditionStatus();
       if (alreadyAdded) return;
 
-      // পপআপ কল করার আগে সামান্য সময় অপেক্ষা (Resetting internal state)
-      // এটি করার ফলে বারবার পপআপ ট্রিগার হওয়ার সম্ভাবনা বাড়ে
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      // সরাসরি পপআপ ট্রিগার করা
+      // সরাসরি SDK অ্যাকশন কল
       await sdk.actions.addFrame();
       
-      // পপআপ ক্লোজ হওয়ার পর আবার ভেরিফাই করুন
-      await checkAdditionStatus();
-    } catch (error: any) {
-      console.log("Add Action Interaction Details:", error);
-      
-      // ইউজার 'Not Now' দিলেও স্টেট ফ্রেশ রাখুন যেন আবার ক্লিক করতে পারে
-      setClaimError(true); 
-      setIsAddedToProfile(false);
-
-      // যদি ডোমেইন মেনিফেস্ট এরর থাকে
-      if (error?.message?.includes("invalid_domain_manifest")) {
-        console.error("Configuration Error: Please clear Warpcast cache.");
+      // পপআপ থেকে ইউজার ফিরে আসার পর স্ট্যাটাস চেক
+      const success = await checkAdditionStatus();
+      if (!success) {
+        setClaimError(true); 
       }
+    } catch (error: any) {
+      console.log("Interaction Error:", error);
+      setClaimError(true);
+      setIsAddedToProfile(false);
     }
   };
 
-  // ৪. রিওয়ার্ড ক্লেম
+  // ৫. রিওয়ার্ড ক্লেম
   const handleClaim = async () => {
     if (!address || !isAddedToProfile) return;
     try {
@@ -120,13 +114,12 @@ export default function MiniTask() {
         ) : (
           <div className={styles.actionGroup}>
             <button 
-              className={styles.verifyBtn} 
+              className={claimError ? styles.errorBtnInside : styles.verifyBtn} 
               onClick={handleAddClick} 
               disabled={verifyLoading}
             >
-              {verifyLoading ? "Checking..." : "Add Mini App"}
+              {verifyLoading ? "Checking..." : claimError ? "Please add the app first!" : "Add Mini App"}
             </button>
-            {claimError && <p className={styles.errorMsg}>Please add the app first!</p>}
           </div>
         )}
       </div>
