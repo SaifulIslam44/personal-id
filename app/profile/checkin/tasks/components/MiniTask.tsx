@@ -24,12 +24,11 @@ export default function MiniTask() {
     query: { enabled: !!address },
   });
 
-  // ২. SDK Context থেকে স্ট্যাটাস চেক করার ফাংশন (Memoized)
+  // ২. SDK Context থেকে স্ট্যাটাস চেক করার ফাংশন
   const checkAdditionStatus = useCallback(async () => {
     setVerifyLoading(true);
     try {
       const context = await sdk.context;
-      // context.client.added চেক করবে অ্যাপটি প্রোফাইলে আছে কি না
       if (context?.client?.added) {
         setIsAddedToProfile(true);
         setClaimError(false);
@@ -46,36 +45,40 @@ export default function MiniTask() {
     }
   }, []);
 
-  // ৩. অ্যাপ ওপেন হওয়ার সময় স্ট্যাটাস চেক
   useEffect(() => {
     checkAdditionStatus();
   }, [checkAdditionStatus]);
 
-  // ৪. Add Button হ্যান্ডলার
+  // ৩. Add Button হ্যান্ডলার - যেখানে বারবার পপআপ আসার লজিক দেওয়া হয়েছে
   const handleAddClick = async () => {
-    setClaimError(false); // নতুন করে ট্রাই করার সময় এরর মেসেজ রিমুভ করুন
+    // প্রতিবার ক্লিক করলে এরর মেসেজ আগে রিমুভ হবে
+    setClaimError(false); 
     
     try {
-      // প্রথমে চেক করুন অলরেডি অ্যাড হয়ে গেছে কি না (যাতে অকারণে পপআপ না আসে)
+      // প্রথমে চেক করুন অলরেডি অ্যাড হয়ে গেছে কি না
       const alreadyAdded = await checkAdditionStatus();
       if (alreadyAdded) return;
 
-      // পপআপ ট্রিগার করুন
+      // পপআপ ট্রিগার
+      // অনেক সময় আগের রিজেক্টেড স্টেটের কারণে পপআপ ব্লক হয়, তাই try-catch এর ভেতর সরাসরি কল
       await sdk.actions.addFrame();
       
-      // পপআপ ক্লোজ হওয়ার পর (ইউজার অ্যাড করুক বা না করুক) স্ট্যাটাস চেক করুন
+      // পপআপ ক্লোজ হওয়ার পর আবার স্ট্যাটাস চেক করুন
       const success = await checkAdditionStatus();
       if (!success) {
-        setClaimError(true); // ইউজার যদি Not Now দেয় তবে এরর দেখাবে
+        setClaimError(true); 
       }
     } catch (error) {
-      console.error("Add Action Error:", error);
-      // এখানে এরর মেসেজ সেট করা হয়েছে যাতে ইউজার আবার ক্লিক করতে পারে
+      // ইউজার 'Not Now' দিলে বা এরর হলে এখানে আসবে
+      console.log("Add Action Rejected or Failed", error);
       setClaimError(true);
+      
+      // গুরুত্বপূর্ণ: যদি SDK ব্লক হয়ে থাকে, তবে এটি ইউজারকে আবার সুযোগ দিবে
+      setIsAddedToProfile(false);
     }
   };
 
-  // ৫. রিওয়ার্ড ক্লেম
+  // ৪. রিওয়ার্ড ক্লেম
   const handleClaim = async () => {
     if (!address || !isAddedToProfile) return;
     try {

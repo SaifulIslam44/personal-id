@@ -814,11 +814,12 @@ const isEligible2 = refCountNum >= 10;
 
 
 
-{/* ================= NEW: FOLLOW TASK (সব টাস্কের উপরে) ================= */}
-      <MiniTask />
 
 {/* ================= NEW: FOLLOW TASK (সব টাস্কের উপরে) ================= */}
       <DailyShareTask fid={fid} />
+
+{/* ================= NEW: FOLLOW TASK (সব টাস্কের উপরে) ================= */}
+      <MiniTask />
 
 {/* ================= NEW: FOLLOW TASK (সব টাস্কের উপরে) ================= */}
       <FollowTask />
