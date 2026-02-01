@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAccount, useReadContract, useWriteContract } from "wagmi";
 import { ABI, CONTRACT_ADDRESS } from "@/lib/contract";
 import { sdk } from "@farcaster/miniapp-sdk";
@@ -24,8 +24,8 @@ export default function MiniTask() {
     query: { enabled: !!address },
   });
 
-  // ২. SDK Context থেকে স্ট্যাটাস চেক করার ফাংশন
-  const checkAdditionStatus = async () => {
+  // ২. SDK Context থেকে স্ট্যাটাস চেক করার ফাংশন (Memoized)
+  const checkAdditionStatus = useCallback(async () => {
     setVerifyLoading(true);
     try {
       const context = await sdk.context;
@@ -33,29 +33,45 @@ export default function MiniTask() {
       if (context?.client?.added) {
         setIsAddedToProfile(true);
         setClaimError(false);
+        return true;
       } else {
         setIsAddedToProfile(false);
+        return false;
       }
     } catch (error) {
       console.error("SDK Context Error:", error);
+      return false;
     } finally {
       setVerifyLoading(false);
     }
-  };
+  }, []);
 
-  // ৩. useEffect ব্যবহার করে অ্যাপ ওপেন হওয়ার সময় স্ট্যাটাস চেক (এরর সমাধান)
+  // ৩. অ্যাপ ওপেন হওয়ার সময় স্ট্যাটাস চেক
   useEffect(() => {
     checkAdditionStatus();
-  }, []); // একবার রান হবে যখন কম্পোনেন্ট লোড হবে
+  }, [checkAdditionStatus]);
 
   // ৪. Add Button হ্যান্ডলার
   const handleAddClick = async () => {
+    setClaimError(false); // নতুন করে ট্রাই করার সময় এরর মেসেজ রিমুভ করুন
+    
     try {
+      // প্রথমে চেক করুন অলরেডি অ্যাড হয়ে গেছে কি না (যাতে অকারণে পপআপ না আসে)
+      const alreadyAdded = await checkAdditionStatus();
+      if (alreadyAdded) return;
+
+      // পপআপ ট্রিগার করুন
       await sdk.actions.addFrame();
-      // পপআপ ক্লোজ হওয়ার পর আবার ভেরিফাই করা
-      await checkAdditionStatus();
+      
+      // পপআপ ক্লোজ হওয়ার পর (ইউজার অ্যাড করুক বা না করুক) স্ট্যাটাস চেক করুন
+      const success = await checkAdditionStatus();
+      if (!success) {
+        setClaimError(true); // ইউজার যদি Not Now দেয় তবে এরর দেখাবে
+      }
     } catch (error) {
       console.error("Add Action Error:", error);
+      // এখানে এরর মেসেজ সেট করা হয়েছে যাতে ইউজার আবার ক্লিক করতে পারে
+      setClaimError(true);
     }
   };
 
