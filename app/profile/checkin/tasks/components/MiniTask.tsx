@@ -26,10 +26,8 @@ export default function MiniTask() {
 
   // ২. প্রোফাইল স্ট্যাটাস চেক করার ফাংশন
   const checkAdditionStatus = useCallback(async () => {
-    setVerifyLoading(true);
     try {
       const context = await sdk.context;
-      // context.client.added চেক করবে অ্যাপটি প্রোফাইলে আছে কি না
       if (context?.client?.added) {
         setIsAddedToProfile(true);
         setClaimError(false);
@@ -41,12 +39,10 @@ export default function MiniTask() {
     } catch (error) {
       console.error("SDK Context Error:", error);
       return false;
-    } finally {
-      setVerifyLoading(false);
     }
   }, []);
 
-  // ৩. পোলিং (Polling): প্রতি ৩ সেকেন্ড অন্তর চেক করবে ইউজার থ্রি-ডট মেনু থেকে অ্যাড করেছে কি না
+  // ৩. পোলিং: প্রতি ৩ সেকেন্ড অন্তর অটো-চেক করবে (থ্রি-ডট মেনু থেকে অ্যাড করলে ডিটেক্ট করার জন্য)
   useEffect(() => {
     checkAdditionStatus();
     const interval = setInterval(checkAdditionStatus, 3000);
@@ -56,23 +52,29 @@ export default function MiniTask() {
   // ৪. Add Button হ্যান্ডলার
   const handleAddClick = async () => {
     setClaimError(false); 
+    setVerifyLoading(true);
     
     try {
       const alreadyAdded = await checkAdditionStatus();
-      if (alreadyAdded) return;
+      if (alreadyAdded) {
+        setVerifyLoading(false);
+        return;
+      }
+
+      // পপআপ কল করার আগে সামান্য ডিলে (ইন্টারনাল স্টেট রিসেট)
+      await new Promise(resolve => setTimeout(resolve, 100));
 
       // সরাসরি SDK অ্যাকশন কল
       await sdk.actions.addFrame();
       
-      // পপআপ থেকে ইউজার ফিরে আসার পর স্ট্যাটাস চেক
-      const success = await checkAdditionStatus();
-      if (!success) {
-        setClaimError(true); 
-      }
+      // পপআপ ক্লোজ হওয়ার পর আবার ভেরিফাই
+      await checkAdditionStatus();
     } catch (error: any) {
       console.log("Interaction Error:", error);
       setClaimError(true);
       setIsAddedToProfile(false);
+    } finally {
+      setVerifyLoading(false);
     }
   };
 
@@ -103,7 +105,7 @@ export default function MiniTask() {
 
       <div className={styles.center}>
         <h3>Add Mini App</h3>
-        <p className={styles.desc}>Add to your Farcaster to claim +50 PIM.</p>
+        <p className={styles.desc}>Add to your Farcaster to claim rewards.</p>
 
         {isTaskDone ? (
           <span className={styles.done}>✅ Completed</span>
@@ -112,15 +114,13 @@ export default function MiniTask() {
             {isClaiming ? "Claiming..." : "Claim +50 PIM"}
           </button>
         ) : (
-          <div className={styles.actionGroup}>
-            <button 
-              className={claimError ? styles.errorBtnInside : styles.verifyBtn} 
-              onClick={handleAddClick} 
-              disabled={verifyLoading}
-            >
-              {verifyLoading ? "Checking..." : claimError ? "Please add the app first!" : "Add Mini App"}
-            </button>
-          </div>
+          <button 
+            className={claimError ? styles.errorBtnInside : styles.verifyBtn} 
+            onClick={handleAddClick} 
+            disabled={verifyLoading}
+          >
+            {verifyLoading ? "Checking..." : claimError ? "Please add the app first!" : "Add Mini App"}
+          </button>
         )}
       </div>
 
