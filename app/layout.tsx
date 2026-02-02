@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
       'base:app_id': '694ab226c63ad876c908105e',
       "fc:frame": JSON.stringify({
         version: minikitConfig.miniapp.version,
-        imageUrl: minikitConfig.miniapp.heroImageUrl,
+        imageUrl: minikitConfig.miniapp.ogImageUrl,
         button: {
           title: `Join the ${minikitConfig.miniapp.name}`,
           action: {
