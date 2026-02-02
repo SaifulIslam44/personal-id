@@ -388,6 +388,218 @@
 
 
 
+// /* eslint-disable @next/next/no-img-element */
+// import { ImageResponse } from 'next/og';
+
+// export const runtime = 'edge'; // Edge runtime use kora valo OG er jonno
+
+// export async function GET(request: Request) {
+//   const { searchParams } = new URL(request.url);
+  
+//   const getParam = (key: string) => searchParams.get(key) || searchParams.get(`${key};`);
+  
+//   const safeDecode = (str: string | null) => {
+//     try { return str ? decodeURIComponent(str) : ''; } 
+//     catch { return str || ''; }
+//   };
+
+//   const username = safeDecode(getParam('username')) || 'User';
+//   const fid = getParam('fid') || '0';
+//   const score = getParam('score') || '0.00';
+//   const rank = safeDecode(getParam('rank')) || 'ACTIVE USER';
+  
+//   // 👇 Logic: URL e PFP na thakle FID diye fetch koro
+//   let pfpUrl = getParam('pfp');
+
+//   if (!pfpUrl && fid !== '0') {
+//     try {
+//         const neynarRes = await fetch(`https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`, {
+//             headers: {
+//                 'accept': 'application/json',
+//                 'api_key': process.env.NEYNAR_API_KEY || ''
+//             }
+//         });
+//         const data = await neynarRes.json();
+//         if (data.users && data.users.length > 0) {
+//             pfpUrl = data.users[0].pfp_url;
+//         }
+//     } catch (e) {
+//         console.error("Failed to fetch PFP in OG", e);
+//     }
+//   }
+
+//   // Fallback image
+//   if (!pfpUrl) pfpUrl = "https://placehold.co/120x120?text=User";
+
+//   return new ImageResponse(
+//     (
+//       <div style={{
+//         height: '100%',
+//         width: '100%',
+//         display: 'flex',
+//         flexDirection: 'column',
+//         alignItems: 'center',
+//         justifyContent: 'center',
+//         backgroundColor: '#020408',
+//       }}>
+//         <div style={{
+//           display: 'flex',
+//           flexDirection: 'column',
+//           alignItems: 'center',
+//           justifyContent: 'center',
+//           background: 'linear-gradient(165deg, #0e121a 0%, #020408 100%)',
+//           border: '3px solid rgba(240, 100, 47, 0.5)', 
+//           borderRadius: '40px',
+//           padding: '40px',
+//           width: '550px',
+//         }}>
+//           <div style={{ display: 'flex', color: '#f0642f', fontSize: '18px', marginBottom: '20px', fontWeight: '700' }}>
+//             🛡️ VERIFIED IDENTITY
+//           </div>
+
+//           <div style={{ display: 'flex', width: '120px', height: '120px', borderRadius: '100px', border: '4px solid #f0642f', overflow: 'hidden', marginBottom: '15px' }}>
+//              {/* PFP Render */}
+//              <img src={pfpUrl} width="120" height="120" style={{ objectFit: 'cover' }} alt="PFP" />
+//           </div>
+
+//           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '20px' }}>
+//             <h2 style={{ color: 'white', fontSize: '32px', margin: '0', fontWeight: '800' }}>{username}</h2>
+//             <p style={{ color: '#f0642f', fontSize: '20px', fontWeight: '700', margin: '5px 0' }}>FID: {fid}</p>
+//           </div>
+
+//           <div style={{ display: 'flex', height: '2px', width: '70%', background: 'rgba(255,255,255,0.1)', marginBottom: '20px' }}></div>
+
+//           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+//              <p style={{ color: '#8a94a8', fontSize: '14px', margin: '0' }}>ACTIVITY NEYNAR SCORE</p>
+//              <h1 style={{ color: 'white', fontSize: '90px', margin: '0', fontWeight: '900' }}>{score}</h1>
+//           </div>
+
+//           <div style={{ display: 'flex', background: 'rgba(74, 222, 128, 0.1)', color: '#4ade80', padding: '10px 25px', borderRadius: '50px', marginTop: '20px', fontWeight: '700' }}>
+//             ⚡ {rank}
+//           </div>
+//         </div>
+//       </div>
+//     ),
+//     { width: 1200, height: 630 }
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// /* eslint-disable @next/next/no-img-element */
+// import { ImageResponse } from 'next/og';
+
+// export const runtime = 'edge'; // Edge runtime use kora valo OG er jonno
+
+// export async function GET(request: Request) {
+//   const { searchParams } = new URL(request.url);
+  
+//   const getParam = (key: string) => searchParams.get(key) || searchParams.get(`${key};`);
+  
+//   const safeDecode = (str: string | null) => {
+//     try { return str ? decodeURIComponent(str) : ''; } 
+//     catch { return str || ''; }
+//   };
+
+//   const username = safeDecode(getParam('username')) || 'User';
+//   const fid = getParam('fid') || '0';
+//   const score = getParam('score') || '0.00';
+//   const rank = safeDecode(getParam('rank')) || 'ACTIVE USER';
+  
+//   // 👇 Logic: URL e PFP na thakle FID diye fetch koro
+//   let pfpUrl = getParam('pfp');
+
+//   if (!pfpUrl && fid !== '0') {
+//     try {
+//         const neynarRes = await fetch(`https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`, {
+//             headers: {
+//                 'accept': 'application/json',
+//                 'api_key': process.env.NEYNAR_API_KEY || ''
+//             }
+//         });
+//         const data = await neynarRes.json();
+//         if (data.users && data.users.length > 0) {
+//             pfpUrl = data.users[0].pfp_url;
+//         }
+//     } catch (e) {
+//         console.error("Failed to fetch PFP in OG", e);
+//     }
+//   }
+
+//   // Fallback image
+//   if (!pfpUrl) pfpUrl = "https://placehold.co/120x120?text=User";
+
+//   return new ImageResponse(
+//     (
+//       <div style={{
+//         height: '100%',
+//         width: '100%',
+//         display: 'flex',
+//         flexDirection: 'column',
+//         alignItems: 'center',
+//         justifyContent: 'center',
+//         backgroundColor: '#020408',
+//       }}>
+//         <div style={{
+//           display: 'flex',
+//           flexDirection: 'column',
+//           alignItems: 'center',
+//           justifyContent: 'center',
+//           background: 'linear-gradient(165deg, #0e121a 0%, #020408 100%)',
+//           border: '3px solid rgba(240, 100, 47, 0.5)', 
+//           borderRadius: '40px',
+//           padding: '40px',
+//           width: '550px',
+//         }}>
+//           <div style={{ display: 'flex', color: '#f0642f', fontSize: '18px', marginBottom: '20px', fontWeight: '700' }}>
+//             🛡️ VERIFIED IDENTITY
+//           </div>
+
+//           <div style={{ display: 'flex', width: '120px', height: '120px', borderRadius: '100px', border: '4px solid #f0642f', overflow: 'hidden', marginBottom: '15px' }}>
+//              {/* PFP Render */}
+//              <img src={pfpUrl} width="120" height="120" style={{ objectFit: 'cover' }} alt="PFP" />
+//           </div>
+
+//           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '20px' }}>
+//             <h2 style={{ color: 'white', fontSize: '32px', margin: '0', fontWeight: '800' }}>{username}</h2>
+//             <p style={{ color: '#f0642f', fontSize: '20px', fontWeight: '700', margin: '5px 0' }}>FID: {fid}</p>
+//           </div>
+
+//           <div style={{ display: 'flex', height: '2px', width: '70%', background: 'rgba(255,255,255,0.1)', marginBottom: '20px' }}></div>
+
+//           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+//              <p style={{ color: '#8a94a8', fontSize: '14px', margin: '0' }}>ACTIVITY NEYNAR SCORE</p>
+//              <h1 style={{ color: 'white', fontSize: '90px', margin: '0', fontWeight: '900' }}>{score}</h1>
+//           </div>
+
+//           <div style={{ display: 'flex', background: 'rgba(74, 222, 128, 0.1)', color: '#4ade80', padding: '10px 25px', borderRadius: '50px', marginTop: '20px', fontWeight: '700' }}>
+//             ⚡ {rank}
+//           </div>
+//         </div>
+//       </div>
+//     ),
+//     { width: 1200, height: 630 }
+//   );
+// }
+
+
+
+
 /* eslint-disable @next/next/no-img-element */
 import { ImageResponse } from 'next/og';
 
@@ -408,7 +620,7 @@ export async function GET(request: Request) {
   const score = getParam('score') || '0.00';
   const rank = safeDecode(getParam('rank')) || 'ACTIVE USER';
   
-  // 👇 Logic: URL e PFP na thakle FID diye fetch koro
+  // 👇 Logic: URL e PFP na thakle FID diye fetch koro (Ja chilo tai ache)
   let pfpUrl = getParam('pfp');
 
   if (!pfpUrl && fid !== '0') {
@@ -416,7 +628,7 @@ export async function GET(request: Request) {
         const neynarRes = await fetch(`https://api.neynar.com/v2/farcaster/user/bulk?fids=${fid}`, {
             headers: {
                 'accept': 'application/json',
-                'api_key': '088ADB7C-2B73-4676-95C6-6F775A495287' // Tomar API Key
+                'api_key': process.env.NEYNAR_API_KEY || ''
             }
         });
         const data = await neynarRes.json();
@@ -448,38 +660,51 @@ export async function GET(request: Request) {
           alignItems: 'center',
           justifyContent: 'center',
           background: 'linear-gradient(165deg, #0e121a 0%, #020408 100%)',
-          border: '3px solid rgba(240, 100, 47, 0.5)', 
-          borderRadius: '40px',
-          padding: '40px',
-          width: '550px',
+          border: '5px solid rgba(240, 100, 47, 0.5)', // Border ektu mota kora hoyeche
+          borderRadius: '60px', // Radius barano hoyeche
+          padding: '50px',
+          width: '900px',  // Size barano hoyeche square er jonno
+          height: '900px', // Square box er moto
+          boxShadow: '0 0 60px rgba(240, 100, 47, 0.2)' // Glow effect add kora hoyeche
         }}>
-          <div style={{ display: 'flex', color: '#f0642f', fontSize: '18px', marginBottom: '20px', fontWeight: '700' }}>
+          
+          <div style={{ display: 'flex', color: '#f0642f', fontSize: '28px', marginBottom: '30px', fontWeight: '800', letterSpacing: '2px' }}>
             🛡️ VERIFIED IDENTITY
           </div>
 
-          <div style={{ display: 'flex', width: '120px', height: '120px', borderRadius: '100px', border: '4px solid #f0642f', overflow: 'hidden', marginBottom: '15px' }}>
-             {/* PFP Render */}
-             <img src={pfpUrl} width="120" height="120" style={{ objectFit: 'cover' }} alt="PFP" />
+          <div style={{ display: 'flex', width: '200px', height: '200px', borderRadius: '200px', border: '6px solid #f0642f', overflow: 'hidden', marginBottom: '25px' }}>
+             {/* PFP Render - Size barano hoyeche 120 theke 200 */}
+             <img src={pfpUrl} width="200" height="200" style={{ objectFit: 'cover' }} alt="PFP" />
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '20px' }}>
-            <h2 style={{ color: 'white', fontSize: '32px', margin: '0', fontWeight: '800' }}>{username}</h2>
-            <p style={{ color: '#f0642f', fontSize: '20px', fontWeight: '700', margin: '5px 0' }}>FID: {fid}</p>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '30px' }}>
+            <h2 style={{ color: 'white', fontSize: '56px', margin: '0', fontWeight: '900', textAlign: 'center' }}>{username}</h2>
+            <p style={{ color: '#f0642f', fontSize: '32px', fontWeight: '700', margin: '10px 0' }}>FID: {fid}</p>
           </div>
 
-          <div style={{ display: 'flex', height: '2px', width: '70%', background: 'rgba(255,255,255,0.1)', marginBottom: '20px' }}></div>
+          <div style={{ display: 'flex', height: '3px', width: '60%', background: 'rgba(255,255,255,0.1)', marginBottom: '40px' }}></div>
 
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-             <p style={{ color: '#8a94a8', fontSize: '14px', margin: '0' }}>ACTIVITY NEYNAR SCORE</p>
-             <h1 style={{ color: 'white', fontSize: '90px', margin: '0', fontWeight: '900' }}>{score}</h1>
+             <p style={{ color: '#8a94a8', fontSize: '22px', margin: '0', letterSpacing: '1px' }}>ACTIVITY NEYNAR SCORE</p>
+             {/* Score font huge kora hoyeche */}
+             <h1 style={{ color: 'white', fontSize: '130px', margin: '10px 0', fontWeight: '900', lineHeight: '1' }}>{score}</h1>
           </div>
 
-          <div style={{ display: 'flex', background: 'rgba(74, 222, 128, 0.1)', color: '#4ade80', padding: '10px 25px', borderRadius: '50px', marginTop: '20px', fontWeight: '700' }}>
+          <div style={{ display: 'flex', background: 'rgba(74, 222, 128, 0.1)', color: '#4ade80', fontSize: '28px', padding: '15px 40px', borderRadius: '60px', marginTop: '30px', fontWeight: '800' }}>
             ⚡ {rank}
           </div>
         </div>
       </div>
     ),
-    { width: 1200, height: 630 }
+    // 👇 Eikhane Dimensions Change kora hoyeche Square er jonno
+    { width: 1080, height: 1080 }
   );
 }
+
+
+
+
+
+
+
+

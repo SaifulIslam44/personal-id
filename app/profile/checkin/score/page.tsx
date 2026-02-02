@@ -981,6 +981,49 @@ const fetchNeynarScore = async (fid: string) => {
 
 
 
+
+
+const handleShare = () => {
+   
+    if (!scoreLoaded || userData.fid === "0") {
+      // alert("Score still syncing, please wait...");
+      return;
+    }
+
+    const baseUrl = "https://mints.personalids.xyz";
+    const currentRank = getRankLabel(actualScore);
+    
+
+    const squareImageUrl = `${baseUrl}/api/og?username=${encodeURIComponent(userData.displayName)}&fid=${userData.fid}&score=${actualScore.toFixed(2)}&rank=${encodeURIComponent(currentRank)}&t=${Date.now()}`;
+    
+
+    const miniAppUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint";
+    
+    const shareText = `My Neynar Reputation Score is ${actualScore.toFixed(2)} ⚡🔵\n\nMint ID & Check Score to claim daily rewards! 🎁\n\n✅ Mint ID\n✅ Check Your Neynar Score\n💰 Win 0.01 $USDC + Lucky Bonuses upto 0.15 $USDC`;
+
+    
+    const castIntentUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(squareImageUrl)}&embeds[]=${encodeURIComponent(miniAppUrl)}`;
+
+    try {
+      
+      sdk.actions.openUrl(castIntentUrl);
+    } catch (error) {
+      console.error("Share error:", error);
+      
+      window.open(castIntentUrl, "_blank");
+    }
+  };
+
+
+
+
+
+
+
+
+
+
+
 // const handleShare = () => {
 //     if (!scoreLoaded || userData.fid === "0") {
 //       alert("Score still syncing, please wait...");
@@ -989,57 +1032,21 @@ const fetchNeynarScore = async (fid: string) => {
 
 //     const baseUrl = "https://mints.personalids.xyz";
 //     const currentRank = getRankLabel(actualScore);
-//     const frameUrl = `${baseUrl}/api/frame?username=${encodeURIComponent(userData.displayName)}&fid=${userData.fid}&score=${actualScore.toFixed(2)}&rank=${encodeURIComponent(currentRank)}&pfp=${encodeURIComponent(userData.pfpUrl)}&t=${Date.now()}`;
-//     const shareText = `My Neynar Reputation Score is ${actualScore.toFixed(2)} ⚡🔵\n\nMint ID & Check Score to claim daily rewards! 🎁\n\n✅ Mint ID\n✅ Check Score\n💰 Win 0.01 $USDC + Lucky Bonuses`;
+    
+//     // 👇 CHANGE: PFP parameter remove kore dewa hoyeche URL choto rakhte
+//     const frameUrl = `${baseUrl}/api/frame?username=${encodeURIComponent(userData.displayName)}&fid=${userData.fid}&score=${actualScore.toFixed(2)}&rank=${encodeURIComponent(currentRank)}&t=${Date.now()}`;
+    
+//     const shareText = `My Neynar Reputation Score is ${actualScore.toFixed(2)} ⚡🔵\n\nMint ID & Check Score to claim daily rewards! 🎁\n\n✅ Mint ID\n✅ Check Neynar Score\n💰 Win 0.01 $USDC + Lucky Bonuses`;
 
 //     try {
-//       // ✅ এখানে ফিক্স করা হয়েছে: সরাসরি টাইপ কাস্টিং করে এক্সেস করা হচ্ছে
-//       const castAction = {
-//         text: shareText,
-//         embeds: [frameUrl],
-//       };
-
-//       if ((window as any).farcaster?.sdk?.actions?.composeCast) {
-//         (window as any).farcaster.sdk.actions.composeCast(castAction);
-//       } else if ((miniApp as any).actions?.composeCast) {
-//         (miniApp as any).actions.composeCast(castAction);
-//       } else {
-//         // Fallback: শুধুমাত্র যদি SDK না পাওয়া যায়
-//         const castIntent = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(frameUrl)}`;
-//         window.open(castIntent, "_blank");
-//       }
+//       // ✅ SDK অ্যাকশন ব্যবহার করে সরাসরি শেয়ার উইন্ডো ওপেন করা হচ্ছে
+//       sdk.actions.openUrl(`https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(frameUrl)}`);
 //     } catch (error) {
 //       console.error("Share error:", error);
+//       const castIntent = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(frameUrl)}`;
+//       window.open(castIntent, "_blank");
 //     }
 //   };
-
-
-
-
-
-const handleShare = () => {
-    if (!scoreLoaded || userData.fid === "0") {
-      alert("Score still syncing, please wait...");
-      return;
-    }
-
-    const baseUrl = "https://mints.personalids.xyz";
-    const currentRank = getRankLabel(actualScore);
-    
-    // 👇 CHANGE: PFP parameter remove kore dewa hoyeche URL choto rakhte
-    const frameUrl = `${baseUrl}/api/frame?username=${encodeURIComponent(userData.displayName)}&fid=${userData.fid}&score=${actualScore.toFixed(2)}&rank=${encodeURIComponent(currentRank)}&t=${Date.now()}`;
-    
-    const shareText = `My Neynar Reputation Score is ${actualScore.toFixed(2)} ⚡🔵\n\nMint ID & Check Score to claim daily rewards! 🎁\n\n✅ Mint ID\n✅ Check Neynar Score\n💰 Win 0.01 $USDC + Lucky Bonuses`;
-
-    try {
-      // ✅ SDK অ্যাকশন ব্যবহার করে সরাসরি শেয়ার উইন্ডো ওপেন করা হচ্ছে
-      sdk.actions.openUrl(`https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(frameUrl)}`);
-    } catch (error) {
-      console.error("Share error:", error);
-      const castIntent = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(frameUrl)}`;
-      window.open(castIntent, "_blank");
-    }
-  };
 
 
 

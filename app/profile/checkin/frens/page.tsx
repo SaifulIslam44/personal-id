@@ -6,7 +6,7 @@ import { useAccount, useReadContract } from "wagmi";
 import { ABI, CONTRACT_ADDRESS } from "@/lib/contract";
 import { Share2, Copy, Moon, Sun, Check, Users } from "lucide-react";
 import { useMiniKit } from "@coinbase/onchainkit/minikit";
-import miniApp from "@farcaster/miniapp-sdk";
+import miniApp, { sdk } from "@farcaster/miniapp-sdk";
 import Image from "next/image"; // এটি নতুন যোগ করবেন
 
 export default function FrensPage() {
@@ -113,21 +113,23 @@ const handleShare = async () => {
     const inviteLink = getInviteLink();
     if (!inviteLink) return;
 
-    // ১. ডাইনামিক লিঙ্কটি ক্লিপবোর্ডে কপি করা
-    try {
-      await navigator.clipboard.writeText(inviteLink);
-      // আপনি চাইলে এখানে একটি টোস্ট বা মেসেজ দেখাতে পারেন যে লিঙ্ক কপি হয়েছে
-    } catch (err) {
-      console.error("Failed to copy link: ", err);
-    }
+    // ❌ CHANGE: কপি করার কোড এখান থেকে সরিয়ে দেওয়া হয়েছে।
+    // এখন আর শেয়ার বাটনে চাপ দিলে অটো কপি হবে না।
 
-    // ২. শেয়ার উইন্ডো ওপেন করা
     const text = "🔥 Join me on Personal ID Mint! Spin and earn USDC rewards 🚀";
-    const shareUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(inviteLink)}`;
+    const castIntentUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(inviteLink)}`;
     
-    window.open(shareUrl, "_blank");
+    try {
+      // ✅ SDK দিয়ে শেয়ার উইন্ডো ওপেন করার চেষ্টা করবে
+      sdk.actions.openUrl(castIntentUrl);
+    } catch (error) {
+      console.error("SDK Share error:", error);
+      // ⚠️ যদি SDK কাজ না করে, ব্রাউজারে ওপেন হবে
+      window.open(castIntentUrl, "_blank");
+    }
   };
 
+  // handleCopy ফাংশন আগের মতোই থাকবে (শুধুমাত্র এটাই কপি করবে)
   const handleCopy = () => {
     const inviteLink = getInviteLink();
     if (!inviteLink) return;
