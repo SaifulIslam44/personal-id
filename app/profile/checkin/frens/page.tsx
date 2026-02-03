@@ -110,24 +110,30 @@ const getInviteLink = () => {
 };
 
 const handleShare = async () => {
-    const inviteLink = getInviteLink();
-    if (!inviteLink) return;
+  const inviteLink = getInviteLink();
+  if (!inviteLink) return;
 
-    // ❌ CHANGE: কপি করার কোড এখান থেকে সরিয়ে দেওয়া হয়েছে।
-    // এখন আর শেয়ার বাটনে চাপ দিলে অটো কপি হবে না।
+  const text = "🔥 Join me on Personal ID Mint! Spin and earn $USDC rewards 🟦";
+  const castIntentUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(inviteLink)}`;
+  
+  
+  const isFarcaster = /warpcast|farcaster/i.test(navigator.userAgent);
 
-    const text = "🔥 Join me on Personal ID Mint! Spin and earn USDC rewards 🚀";
-    const castIntentUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(inviteLink)}`;
-    
-    try {
-      // ✅ SDK দিয়ে শেয়ার উইন্ডো ওপেন করার চেষ্টা করবে
-      sdk.actions.openUrl(castIntentUrl);
-    } catch (error) {
-      console.error("SDK Share error:", error);
-      // ⚠️ যদি SDK কাজ না করে, ব্রাউজারে ওপেন হবে
+  try {
+    if (isFarcaster) {
+      
+      await sdk.actions.openUrl(castIntentUrl);
+    } else {
+      
       window.open(castIntentUrl, "_blank");
     }
-  };
+  } catch (error) {
+    console.error("SDK Share error:", error);
+    
+    window.open(castIntentUrl, "_blank");
+  }
+};
+
 
   // handleCopy ফাংশন আগের মতোই থাকবে (শুধুমাত্র এটাই কপি করবে)
   const handleCopy = () => {

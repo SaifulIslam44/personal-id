@@ -322,27 +322,33 @@ export default function DailyShareTask({ fid }: { fid: any }) {
   }, [errorTimer, verifyError]);
 
 const handleShare = () => {
-    if (!fid) return;
+  if (!fid) return;
 
-    const appUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint";
-    // Text clean rakhlam, URL bananor somoy encode korbo
-    const text = "🔥 I just daily shared & earned 50 $PIM! Mint your ID now and earn you too!! 👇";
+  const appUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint";
+  const text = "🔥 I just daily shared & earned 50 $PIM! Mint your ID now and earn you too!! 👇";
+  
+  
+  const castIntentUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(`${appUrl}?fid=${fid}`)}`;
+
+  
+  const isFarcaster = /warpcast|farcaster/i.test(navigator.userAgent);
+
+  try {
+    if (isFarcaster) {
     
-    // URL ta variable e nite hobe jate duibhabei use kora jay
-    const castIntentUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(`${appUrl}?fid=${fid}`)}`;
-
-    try {
-      // ✅ SDK Action: Eta sorasori App er vitore Compose window open korbe
       sdk.actions.openUrl(castIntentUrl);
-    } catch (error) {
-      console.error("SDK Share error:", error);
+    } else {
       
-      // ⚠️ Fallback: Jodi SDK fail kore, tokhon Browser e open hobe
       window.open(castIntentUrl, "_blank");
     }
+  } catch (error) {
+    console.error("SDK Share error:", error);
+   
+    window.open(castIntentUrl, "_blank");
+  }
 
-    setHasShared(true);
-  };
+  setHasShared(true);
+};
 
   const handleVerify = async () => {
     if (!fid) return;

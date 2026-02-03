@@ -984,36 +984,38 @@ const fetchNeynarScore = async (fid: string) => {
 
 
 const handleShare = () => {
-   
-    if (!scoreLoaded || userData.fid === "0") {
-      // alert("Score still syncing, please wait...");
-      return;
-    }
+  if (!scoreLoaded || userData.fid === "0") {
+    return;
+  }
 
-    const baseUrl = "https://mints.personalids.xyz";
-    const currentRank = getRankLabel(actualScore);
-    
+  const baseUrl = "https://mints.personalids.xyz";
+  const currentRank = getRankLabel(actualScore);
+  
+  // URL configurations
+  const squareImageUrl = `${baseUrl}/api/og?username=${encodeURIComponent(userData.displayName)}&fid=${userData.fid}&score=${actualScore.toFixed(2)}&rank=${encodeURIComponent(currentRank)}&t=${Date.now()}`;
+  const miniAppUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint";
+  
+  const shareText = `My Neynar Reputation Score is ${actualScore.toFixed(2)} ⚡🔵\n\nMint ID & Check Score to claim daily rewards! 🎁\n\n✅ Mint ID\n✅ Check Your Neynar Score\n💰 Win 0.01 $USDC + Lucky Bonuses upto 0.15 $USDC`;
 
-    const squareImageUrl = `${baseUrl}/api/og?username=${encodeURIComponent(userData.displayName)}&fid=${userData.fid}&score=${actualScore.toFixed(2)}&rank=${encodeURIComponent(currentRank)}&t=${Date.now()}`;
-    
+  // Detect if running inside Farcaster/Warpcast
+  const isFarcaster = /warpcast|farcaster/i.test(navigator.userAgent);
+  
+  // Construct the cast intent URL
+  const castIntentUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(squareImageUrl)}&embeds[]=${encodeURIComponent(miniAppUrl)}`;
 
-    const miniAppUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint";
-    
-    const shareText = `My Neynar Reputation Score is ${actualScore.toFixed(2)} ⚡🔵\n\nMint ID & Check Score to claim daily rewards! 🎁\n\n✅ Mint ID\n✅ Check Your Neynar Score\n💰 Win 0.01 $USDC + Lucky Bonuses upto 0.15 $USDC`;
-
-    
-    const castIntentUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(squareImageUrl)}&embeds[]=${encodeURIComponent(miniAppUrl)}`;
-
-    try {
-      
+  try {
+    if (isFarcaster) {
+      // Farcaster environment-এর জন্য SDK ব্যবহার করা ভালো
       sdk.actions.openUrl(castIntentUrl);
-    } catch (error) {
-      console.error("Share error:", error);
-      
+    } else {
+      // Base App বা অন্য ব্রাউজারের জন্য সরাসরি উইন্ডো ওপেন
       window.open(castIntentUrl, "_blank");
     }
-  };
-
+  } catch (error) {
+    console.error("Share error:", error);
+    window.open(castIntentUrl, "_blank");
+  }
+};
 
 
 
