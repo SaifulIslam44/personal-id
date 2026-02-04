@@ -1,4 +1,6 @@
-/* ===== Bottom Navigation Layout ===== */
+/* ========================================= */
+/* 📂 BASE LAYOUT STYLES                    */
+/* ========================================= */
 
 .wrapper {
   min-height: 100vh;
@@ -6,157 +8,314 @@
   display: flex;
   flex-direction: column;
   transition: background 0.3s ease;
+  position: relative;
+  overflow-x: hidden;
 }
 
-/* Main content area */
 .content {
   flex: 1;
-  padding-bottom: 80px; 
+  padding-bottom: 90px; 
   background: #000;
   transition: background 0.3s ease;
 }
 
-/* ☀️ Light Mode Adjustment: এটি নিচের ব্ল্যাক অংশ দূর করবে */
+/* ☀️ Light Mode Base */
 :global(.light-mode) .wrapper,
 :global(.light-mode) .content {
   background: #f5f5f5 !important;
 }
 
-/* ===== Bottom Nav Bar ===== */
-/* .bottomNav {
+/* ========================================= */
+/* 🌟 ARC / FAN MENU STYLES (AUTO ALIGNED)  */
+/* ========================================= */
+
+.fanMenuContainer {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 64px;
-  background: linear-gradient(180deg, #0b1224, #070c1a);
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  border-top: 1px solid #0e1630;
-  z-index: 999;
-  transition: background 0.3s ease;
+  bottom: 80px; 
+  left: 50%;
+  transform: translateX(-50%);
+  /* 👇 Button gulo koto dure thakbe ta ei Width control korbe */
+  width: 290px; /* Ektu barano holo jate button gulo lege na jay */
+  height: 140px; 
+  z-index: 2000;
+  pointer-events: none;
+}
+
+/* Common Item Wrapper */
+.fanItem {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: popIn 0.3s ease-out forwards;
+}
+
+.fanItem:active {
+  transform: scale(0.95);
+}
+
+/* 🎨 Circle Button Styling */
+.fanCircle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(11, 18, 36, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+}
+
+
+/* .centerCircleStyle {
+  width: 66px; 
+  height: 66px;
+  border: 1px solid rgba(77, 163, 255, 0.5);
+  box-shadow: 0 0 25px rgba(0, 82, 255, 0.3);
+  background: linear-gradient(145deg, #0b152e, #0f1c3d);
 } */
 
+/* Label Text */
+.fanLabel {
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+  background: rgba(0,0,0,0.6);
+  padding: 3px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
 
-/* ===== Bottom Nav Bar ===== */
+/* --- 📍 AUTO POSITIONING LOGIC (Perfect Symmetry) --- */
+
+/* 1. Left Item (Leaderboard) */
+.posLeft {
+  bottom: 60px; /* Arc Height */
+  left: 0;
+  right: 0;
+ 
+  width: max-content;
+  z-index: 10;
+  transform-origin: bottom right; 
+}
+
+/* 2. Center Item (Score) */
+.posCenter {
+  bottom: 60px; /* Arc Height */
+  left: 0;
+  right: 0;
+  margin: 0 auto; /* ✨ Perfect Center Mechanism */
+  width: max-content;
+  z-index: 10;
+}
+
+/* 3. Right Item (Badges) */
+.posRight {
+  bottom: 60px; /* Arc Height */
+  
+  right: 20px;
+  
+  width: max-content;
+  z-index: 10;
+  transform-origin: bottom left;
+}
+
+.disabled {
+  opacity: 0.5;
+  filter: grayscale(100%);
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.5); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Overlay Background */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(3px);
+  z-index: 1500;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ========================================= */
+/* 👇 BOTTOM NAVIGATION BAR                 */
+/* ========================================= */
+
 .bottomNav {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 64px;
-  background: linear-gradient(180deg, #0b1224, #070c1a);
+  height: 70px; 
   
-  /* columns 4 theke 5 kore dao */
+  /* 💙 Deep Blue Transparent Background */
+  background: rgba(11, 25, 55, 0.4); 
+  
+  /* গ্লসি ইফেক্টের জন্য মেইন ব্লার এবং কালার ফিল্টার */
+  backdrop-filter: blur(25px) saturate(200%);
+  -webkit-backdrop-filter: blur(25px) saturate(200%);
+  
   display: grid;
-  grid-template-columns: repeat(5, 1fr); 
+  grid-template-columns: repeat(5, 1fr);
   
-  border-top: 1px solid #0e1630;
-  z-index: 999;
-  transition: background 0.3s ease;
+  /* গ্লাসের ধারের মতো চিকন নীল বর্ডার */
+  border-top: 1px solid rgba(77, 163, 255, 0.2); 
+  
+  z-index: 1600;
+  align-items: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* নেভবারের উপরে হালকা নীলাভ গ্লো */
+  box-shadow: 0 -5px 25px rgba(0, 82, 255, 0.15);
 }
-
-
-
-/* ☀️ Light Mode Nav: ন্যাভ বারকেও লাইট করা */
+/* ☀️ Light Mode Nav */
 :global(.light-mode) .bottomNav {
   background: #ffffff !important;
   border-top: 1px solid #e0e0e0;
 }
+:global(.light-mode) .fanCircle {
+  background: #fff;
+  border-color: #ddd;
+}
+:global(.light-mode) .fanLabel {
+  color: #333;
+  background: rgba(255,255,255,0.9);
+}
 
-/* ===== Tab Button ===== */
+/* Tab Button */
 .tabBtn {
   background: none;
   border: none;
-  color: #7b88b8;
+  color: #64748b;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 5px;
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
+  height: 100%;
+  padding-top: 5px;
 }
 
-/* ☀️ Light Mode Tab Color */
-:global(.light-mode) .tabBtn {
-  color: #888;
-}
+:global(.light-mode) .tabBtn { color: #94a3b8; }
 
-.tabBtn svg {
-  width: 22px;
-  height: 22px;
-  opacity: 0.85;
-}
+.tabBtn svg { width: 22px; height: 22px; transition: all 0.2s ease; }
 
-/* ===== Active Tab ===== */
-.active {
-  color: #4da3ff;
-}
+/* Active Tab */
+.active { color: #4da3ff; }
+:global(.light-mode) .active { color: #0052ff; }
 
-/* ☀️ Light Mode Active Color */
-:global(.light-mode) .active {
-  color: #0052ff;
-}
-
-.active svg {
-  filter: drop-shadow(0 0 8px rgba(77, 163, 255, 0.9));
+.active svg { 
+  transform: translateY(-2px);
+  filter: drop-shadow(0 0 8px rgba(77, 163, 255, 0.6)); 
 }
 
 /* Active indicator dot */
 .dot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   background: #4da3ff;
-  border-radius: 999px;
-  margin-top: 2px;
+  border-radius: 50%;
+  margin-top: 3px;
+  box-shadow: 0 0 5px #4da3ff;
+}
+:global(.light-mode) .dot { background: #0052ff; }
+
+/* ========================================= */
+/* 🏆 FLOATING LOGO BUTTON (CENTER)         */
+/* ========================================= */
+
+.centerFloatingBtn {
+  position: relative;
+  top: -25px; 
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 1700;
 }
 
-/* ☀️ Light Mode Dot */
-:global(.light-mode) .dot {
-  background: #0052ff;
+.logoContainer {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0b41ac, #0c57ec);
+  border: 6px solid #050914; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.3), 0 5px 10px rgba(0, 82, 255, 0.3);
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s ease;
 }
 
-/* ===== Mobile polish ===== */
-/* @media (max-width: 480px) {
-  .bottomNav {
-    height: 60px;
-  }
-  .content {
-    padding-bottom: 76px;
-  }
-  .tabBtn {
-    font-size: 10px;
-  }
-  .tabBtn svg {
-    width: 20px;
-    height: 20px;
-  }
-} */
+.menuOpenState .logoContainer {
+  transform: scale(0.9);
+  box-shadow: 0 0 25px rgba(0, 82, 255, 0.6);
+  border-color: #0b1224;
+  filter: brightness(1.2);
+}
 
+.logoImage {
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+}
 
+:global(.light-mode) .logoContainer {
+  border: 6px solid #ffffff; 
+  box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1), 0 0 10px rgba(0, 82, 255, 0.3);
+}
 
-/* ===== Mobile polish ===== */
+/* ========================================= */
+/* 📱 MOBILE RESPONSIVE TWEAKS              */
+/* ========================================= */
+
 @media (max-width: 480px) {
-  .bottomNav {
-    height: 60px;
-    /* ensure 5 columns on mobile too */
-    grid-template-columns: repeat(5, 1fr);
+  .bottomNav { height: 65px; }
+  .content { padding-bottom: 85px; }
+  
+  .tabBtn { font-size: 9px; gap: 3px; }
+  .tabBtn svg { width: 20px; height: 20px; }
+  
+  .logoContainer { width: 56px; height: 56px; border-width: 5px; }
+  .centerFloatingBtn { top: -20px; }
+  
+  /* Mobile Layout Control */
+  .fanMenuContainer {
+    width: 280px; /* Mobile e Width ektu komano jate screen er baire na jay */
+    bottom: 75px;
   }
-  .content {
-    padding-bottom: 76px;
-  }
-  .tabBtn {
-    font-size: 9px; /* Ektu font komiye dilam jate text overlap na kore */
-    gap: 2px;
-  }
-  .tabBtn svg {
-    width: 20px; /* Icon ektu chhoto kora holo logic onusare */
-    height: 20px;
-  }
-  .dot {
-    width: 4px;
-    height: 4px;
+  
+  .fanCircle { width: 50px; height: 50px; }
+  .centerCircleStyle { width: 60px; height: 60px; }
+  
+  /* Mobile Positioning (Inherits 0 from above, just tweaking height) */
+  .posLeft { bottom: 10px; }
+  .posRight { bottom: 10px; }
+  
+  /* Mobile Center Fix */
+  .posCenter { 
+    bottom: 55px; 
+    left: 0;
+    right: 0;
+    margin: 0 auto;
   }
 }

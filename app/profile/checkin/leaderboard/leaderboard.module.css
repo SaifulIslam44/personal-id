@@ -1,0 +1,332 @@
+/* leaderboard.module.css */
+
+.container {
+  min-height: 100vh;
+  background: #05070a;
+  color: #ffffff;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; 
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.lightMode {
+  background: #fcfcfc;
+  color: #000;
+}
+
+/* ===== Top Bar ===== */
+.topBar {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  margin-bottom: 10px;
+}
+
+.lightMode .topBar {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.profileSummary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.miniPfpWrapper {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  padding: 1.5px;
+  background: linear-gradient(45deg, #f0642f, #9c27b0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.miniPfp {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profileName {
+  font-size: 13px;
+  font-weight: 600;
+  color: #7b88b8;
+}
+
+.themeToggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* ===== Hero Header & Title ===== */
+.heroHeader {
+  text-align: center;
+  margin: 10px 0 25px;
+}
+
+.title {
+  font-size: 18px; /* এখান থেকে সাইজ আরও কমাতে চাইলে ১৬ বা ১৪ দিতে পারেন */
+  font-weight: 900;
+  text-transform: uppercase;
+  
+  /* কাপ আইকনগুলোর সাথে এলাইন করার জন্য */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  /* Glossy Animation Logic */
+  background: linear-gradient(to right, #ffffff 20%, #a0a0a0 40%, #ffffff 50%, #a0a0a0 60%, #ffffff 80%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: whiteGlossy 5s linear infinite;
+}
+
+/* কাপ আইকনের সাইজও টাইটেলের সাথে সামঞ্জস্য রেখে কমানো হয়েছে */
+.cupIcon {
+  -webkit-text-fill-color: initial;
+  font-size: 18px; 
+}
+
+/* Light Mode support */
+.lightMode .title {
+  background: linear-gradient(to right, #000 20%, #555 40%, #000 50%, #555 60%, #000 80%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.lightMode .cupIcon {
+  -webkit-text-fill-color: initial;
+}
+
+@keyframes whiteGlossy { 
+  to { background-position: 200% center; } 
+}
+
+/* Mobile Responsiveness */
+@media screen and (max-width: 400px) {
+  .title {
+    font-size: 16px;
+    gap: 5px;
+  }
+  .cupIcon {
+    font-size: 18px;
+  }
+}
+
+.subTitle {
+  font-size: 10px;
+  color: #7b88b8;
+  font-weight: 500;
+}
+
+/* ===== Leaderboard Board (No Outer Card) ===== */
+.compactBoard {
+  width: 100%; /* এটি পুরো উইডথ দখল করবে */
+  max-width: 100%; /* কোনো নির্দিষ্ট পিক্সেল দিয়ে আটকাবেন না */
+  margin: 15px 0; 
+  background: #0a0a0a;
+  border-radius: 16px;
+  border: 1px solid #1a1a1a;
+  overflow: hidden;
+  box-sizing: border-box; /* এটি প্যাডিংকে ভেতরে রাখবে */
+}
+
+.lightMode .compactBoard {
+  background: #ffffff;
+  border: 1px solid #eee;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.05);
+}
+
+
+.smallHeader {
+  display: grid;
+  grid-template-columns: 0.6fr 2.4fr 1fr;
+  padding: 12px 15px;
+  background: rgba(0, 112, 243, 0.08);
+  font-size: 9px;
+  font-weight: 800;
+  color: #7b88b8;
+  text-transform: uppercase;
+}
+
+.textRight {
+  text-align: right;
+  display: block; 
+  width: 100%;    
+  padding-right: 10px;
+}
+
+.smallRow {
+  display: grid;
+  grid-template-columns: 0.6fr 2.4fr 1fr;
+  padding: 12px 15px;
+  align-items: center;
+  border-bottom: 1px solid #111;
+}
+
+.lightMode .smallRow { border-bottom: 1px solid #f5f5f5; }
+
+.rankBadge {
+  font-size: 16px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.userInfoSmall {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  overflow: hidden;
+}
+
+.avatarMini {
+  width: 34px; 
+  height: 34px;
+  min-width: 34px;
+  min-height: 34px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #f09433, #dc2743, #bc1888);
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pfpRound {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #000;
+  border: 2px solid #0a0a0a;
+  display: block;
+}
+
+.lightMode .pfpRound { border-color: #fff; }
+
+.userText {
+  font-size: 13px;
+  color: #e0e0e0;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+}
+
+.lightMode .userText { color: #333; }
+
+.amountSmall {
+  text-align: right;
+  font-size: 12px;
+  font-weight: 800;
+  color: #4ade80;
+}
+
+.amountSmall small {
+  font-size: 9px;
+  opacity: 0.6;
+}
+
+.iconOrange { color: #f0642f; }
+.iconBlue { color: #4da3ff; }
+.loaderSmall, .emptySmall { text-align: center; padding: 40px; color: #666; font-size: 11px; font-style: italic; }
+
+
+
+
+
+
+
+
+
+
+
+
+.paginationWrapper {
+  display: flex;
+  justify-content: flex-end; /* ডান দিকে এলাইন করার জন্য */
+  padding: 15px;
+  background: transparent;
+}
+
+.paginationRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pBtn, .pBtnIcon, .pBtnActive, .pStatus {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  transition: all 0.2s;
+}
+
+.pBtnIcon {
+  padding: 6px 8px;
+}
+
+.pBtnActive {
+  color: #0052ff; /* Last বাটনের টেক্সট কালার নীল */
+}
+
+.pStatus {
+  background: #f8faff;
+  color: #4b5563;
+  padding: 6px 16px;
+  cursor: default;
+}
+
+.pBtn:disabled, .pBtnIcon:disabled, .pBtnActive:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ডার্ক মোডে বাটনগুলোর ব্যাকগ্রাউন্ড একটু ডার্ক করা */
+.pBtn, .pBtnIcon, .pBtnActive, .pStatus {
+  background: #1a1a1a; /* ডার্ক ব্যাকগ্রাউন্ড */
+  border: 1px solid #333;
+  color: #ccc;
+}
+
+.pStatus {
+  background: #0f172a; /* একটু আলাদা ডার্ক শেড */
+  color: #94a3b8;
+}
+
+/* যখন লাইট মোড একটিভ হবে তখন আবার সাদা হয়ে যাবে */
+:global(.light-mode) .pBtn, 
+:global(.light-mode) .pBtnIcon, 
+:global(.light-mode) .pStatus {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  color: #666;
+}

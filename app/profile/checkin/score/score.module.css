@@ -79,15 +79,67 @@
 /* ===== Hero Header (Compact) ===== */
 .heroHeader {
   text-align: center;
-  margin: 15px 0;
+  margin: 10px 0;
 }
 
-.mainTitle {
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -0.8px;
-  margin-bottom: 2px;
+.title {
+  font-size: 25px;
+  font-weight: 900;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  
+  /* White & Silver Glossy Gradient */
+  background: linear-gradient(
+    to right, 
+    #ffffff 20%, 
+    #a0a0a0 40%, 
+    #ffffff 50%, 
+    #a0a0a0 60%, 
+    #ffffff 80%
+  );
+  background-size: 200% auto;
+  
+  /* টেক্সটের ভেতরে গ্রেডিয়েন্ট দেখানোর জন্য */
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  
+  /* ধীরগতির গ্লসি সুইপ অ্যানিমেশন */
+  animation: whiteGlossy 5s linear infinite;
 }
+
+/* সাদা আভাটি ধীরগতিতে প্রবাহিত হওয়ার লজিক */
+@keyframes whiteGlossy {
+  0% {
+    background-position: 0% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* ডার্ক মোডে গ্লো ইফেক্ট */
+.container:not(.lightMode) .title {
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
+}
+
+/* লাইট মোডে অ্যাডজাস্টমেন্ট */
+.lightMode .title {
+  background: linear-gradient(
+    to right, 
+    #000000 20%, 
+    #555555 40%, 
+    #000000 50%, 
+    #555555 60%, 
+    #000000 80%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 
 .subTitle {
   font-size: 12px;
@@ -296,7 +348,7 @@
   margin-top: 20px;
   background: linear-gradient(90deg, #a77867, #d84315);
   border: none;
-  padding: 18px;
+  padding: 10px;
   border-radius: 18px;
   color: #fff;
   font-weight: 700;
@@ -317,3 +369,20 @@
 /* Utility Colors */
 .iconOrange { color: #f0642f; }
 .iconBlue { color: #4da3ff; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
