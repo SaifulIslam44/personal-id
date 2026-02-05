@@ -329,13 +329,13 @@ const { data: contractData } = useReadContract({
     syncLeaderboard();
   }, [contractData]);
 
-  // Pagination Logic
-  // যেহেতু কন্ট্রাক্ট থেকে প্রতিবার ১০ জন ডাটা আসছে, তাই leaderboard.length সবসময় ১০ বা তার কম হবে।
-  // ডাইনামিক টোটাল পেজের জন্য এখানে সাময়িকভাবে একটি বড় সংখ্যা (যেমন ৫০) দিতে পারেন, 
-  // যতক্ষণ না আপনি কন্ট্রাক্টে getTotalWinners ফাংশন যোগ করছেন।
-  const totalPages = 50; 
-  const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
-  // এখন আর .slice() করার প্রয়োজন নেই কারণ contractData সরাসরি ওই পেজের ডাটাই দিচ্ছে।
+
+const totalPages = leaderboard.length === itemsPerPage 
+                   ? currentPage + 1 
+                   : currentPage;
+
+const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
+
   const currentItems = leaderboard;
 
   if (!isMounted) return null;
