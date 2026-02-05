@@ -79,7 +79,7 @@ export default function ProfileLayout({
     { label: "Rewards", path: "/profile/checkin", icon: Gift },
     { label: "Task", path: "/profile/checkin/tasks", icon: ListChecks },
     { label: "Score", path: "MENU_TRIGGER", icon: null },
-    { label: "Frens", path: "/profile/checkin/frens", icon: Users },
+    { label: "Score", path: "/profile/checkin/score", icon: BarChart3 },
     { label: "Info", path: "/profile/checkin/info", icon: Info },
   ];
 
@@ -115,13 +115,13 @@ export default function ProfileLayout({
             {/* 2. CENTER ITEM: Score */}
             <div 
               className={`${styles.fanItem} ${styles.posCenter}`}
-              onClick={() => handleNavigation("/profile/checkin/score")}
+              onClick={() => handleNavigation("/profile/checkin/frens")}
             >
               {/* <div className={`${styles.fanCircle} ${styles.centerCircleStyle}`}> */}
               <div className={styles.fanCircle}>
-                <BarChart3 size={20} color="#4da3ff" />
+                <Users size={20} color="#4da3ff" />
               </div>
-              <span className={styles.fanLabel}>Score</span>
+              <span className={styles.fanLabel}>Frens</span>
             </div>
 
             {/* 3. RIGHT ITEM: Badges (Coming Soon) */}
