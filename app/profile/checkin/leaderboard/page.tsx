@@ -101,6 +101,7 @@ export default function LeaderboardPage() { // প্রোস্প সরি�
 
   return (
     <div className={`${styles.container} ${!isDarkMode ? styles.lightMode : ""}`}>
+      {/* Top Bar - Profile & Theme Toggle */}
       <nav className={styles.topBar}>
         <div className={styles.profileSummary}>
           <div className={styles.miniPfpWrapper}>
@@ -115,10 +116,11 @@ export default function LeaderboardPage() { // প্রোস্প সরি�
 
       <main className={styles.mainContent}>
         <header className={styles.heroHeader}>
-          <h1 className={styles.title}>🏆 WINNING LEADERBOARD 🏆</h1>
-          <p className={styles.subTitle}>Top earners and lucky winners of the Surprise Box</p>
+        <h1 className={styles.title}>🏆 WINING LEADERBOARD 🏆</h1>
+          <p className={styles.subTitle}>Top earners and lucky winners of the Spin & Leaderboard</p>
         </header>
 
+        {/* Board Section - Directly on Container */}
         <div className={styles.compactBoard}>
           <div className={styles.smallHeader}>
             <span>RANK</span>
@@ -133,12 +135,10 @@ export default function LeaderboardPage() { // প্রোস্প সরি�
               currentItems.map((user, index) => {
                 const actualRank = indexOfFirstItem + index;
                 const isCurrentUser = connectedAddress?.toLowerCase() === user.address.toLowerCase();
-
                 return (
-                  <div 
-                    key={user.address} 
+                  <div key={user.address} className={styles.smallRow}>
                     className={`${styles.smallRow} ${isCurrentUser ? styles.highlightRow : ""}`}
-                  >
+                    
                     <span className={styles.rankBadge}>
                       {actualRank === 0 ? "🥇" : actualRank === 1 ? "🥈" : actualRank === 2 ? "🥉" : `#${actualRank + 1}`}
                     </span>
@@ -168,16 +168,17 @@ export default function LeaderboardPage() { // প্রোস্প সরি�
             )}
           </div>
 
+          {/* Pagination Controls - UI matching your image */}
           {totalPages > 1 && (
             <div className={styles.paginationWrapper}>
                <div className={styles.paginationRight}>
-                  {/* <button 
+                  <button 
                     className={styles.pBtn} 
                     onClick={() => setCurrentPage(1)} 
                     disabled={currentPage === 1}
                   >
                     First
-                  </button> */}
+                  </button>
                   <button 
                     className={styles.pBtnIcon} 
                     onClick={() => setCurrentPage(prev => prev - 1)} 
@@ -195,13 +196,13 @@ export default function LeaderboardPage() { // প্রোস্প সরি�
                   >
                     <ChevronRight size={16} color="#0052ff" />
                   </button>
-                  {/* <button 
+                  <button 
                     className={styles.pBtnActive} 
                     onClick={() => setCurrentPage(totalPages)} 
                     disabled={currentPage === totalPages}
                   >
                     Last
-                  </button> */}
+                  </button>
                </div>
             </div>
           )}
@@ -210,6 +211,7 @@ export default function LeaderboardPage() { // প্রোস্প সরি�
     </div>
   );
 }
+
 
 
 
