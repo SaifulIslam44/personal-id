@@ -9,7 +9,7 @@ import { CONTRACT_ADDRESS, ABI } from "@/lib/contract";
 import Image from "next/image";
 import { Moon, Sun } from "lucide-react";
 import { useSendTransaction } from "wagmi"; 
-import { parseEther } from "viem"; 
+// import { parseEther } from "viem"; 
 import { Heart } from "lucide-react"; // হার্ট আইকনটির জন্য
 import { useReconnect } from 'wagmi';
 
@@ -28,6 +28,7 @@ export default function InfoPage() {
   const pfpUrl = user?.pfpUrl || "https://placehold.co/100x100?text=User";
   const fid = context?.user?.fid || frameContext?.user?.fid;
   const { reconnect } = useReconnect();
+  const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 
   
 useEffect(() => {
@@ -82,17 +83,25 @@ useEffect(() => {
   );
 
 
-  const handleDonate = async (amount: string) => {
-    try {
-      await sendTransactionAsync({
-        to: "0x1778fa7ad28B1fcDbB7a446aB721fcC8f9acA000", // আপনার অ্যাড্রেস
-        value: parseEther(amount), // অ্যামাউন্ট ইথারে কনভার্ট হবে
-      });
-      alert("Thank you for your donation!");
-    } catch (err) {
-      console.error("Donation failed:", err);
-    }
-  };
+const handleUsdcDonate = async (amount: string) => {
+  try {
+    // USDC এর ডেসিমেল ৬, তাই অ্যামাউন্টকে ১০ লক্ষ দিয়ে গুণ করা হচ্ছে
+    const usdcAmount = BigInt(Math.round(parseFloat(amount) * 1e6)); 
+
+    // আপনার নতুন ডনেট অ্যাড্রেস (0x8C8...8012) থেকে 0x বাদ দিয়ে ছোট হাতের অক্ষরে নেওয়া হয়েছে
+    const receiver = "8C8d41c66a059a62577Ab14F313f6ad13a6D8012".toLowerCase();
+
+    await sendTransactionAsync({
+      to: USDC_ADDRESS as `0x${string}`,
+      // ERC-20 transfer(address to, uint256 value) মেথড আইডি: 0xa9059cbb
+      data: `0xa9059cbb000000000000000000000000${receiver}00000000000000000000000000000000000000000000000000000000${usdcAmount.toString(16).padStart(64, '0')}` as `0x${string}`,
+    });
+
+    alert("Thank you for your USDC donation!");
+  } catch (err) {
+    console.error("USDC Donation failed:", err);
+  }
+};
 
   return (
     
@@ -166,16 +175,17 @@ useEffect(() => {
 
           {/* 🎁 Donation Section (আপনার creditsContainer এর পরেই এটি যোগ করুন) */}
           <div className={styles.donationSection}>
-            <h3 className={styles.donateTitle}>
-              <Heart size={16} fill="#ff4d4f" color="#ff4d4f" /> Support Developer
-            </h3>
-            <div className={styles.donateGrid}>
-              <button onClick={() => handleDonate("0.0012")}>$5</button>
-              <button onClick={() => handleDonate("0.0024")}>$10</button>
-              <button onClick={() => handleDonate("0.012")}>$50</button>
-              <button onClick={() => handleDonate("0.024")}>$100</button>
-            </div>
-          </div>
+  <h3 className={styles.donateTitle}>
+    <Heart size={16} fill="#ff4d4f" color="#ff4d4f" /> Support Developer (USDC)
+  </h3>
+  <div className={styles.donateGrid}>
+    {/* এখানে সরাসরি ডলার অ্যামাউন্ট পাঠাচ্ছেন */}
+    <button onClick={() => handleUsdcDonate("5")}>$5</button>
+    <button onClick={() => handleUsdcDonate("10")}>$10</button>
+    <button onClick={() => handleUsdcDonate("50")}>$50</button>
+    <button onClick={() => handleUsdcDonate("100")}>$100</button>
+  </div>
+</div>
         </>
 
         
