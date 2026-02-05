@@ -1,17 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAccount, useReadContract } from "wagmi";
+// wagmi থেকে সব প্রয়োজনীয় হুক একসাথে ইমপোর্ট করা হয়েছে
+import { 
+  useAccount, 
+  useReadContract, 
+  useWriteContract, // এটি ডনেশনের জন্য প্রয়োজন
+  useReconnect, 
+  useSendTransaction 
+} from "wagmi";
 import { useMiniKit } from "@coinbase/onchainkit/minikit";
 import miniApp from "@farcaster/miniapp-sdk";
+import Image from "next/image";
+import { Moon, Sun, Heart } from "lucide-react"; 
+// import { formatUnits, parseUnits } from "viem"; 
+
+// আপনার লোকাল ফাইল ইমপোর্ট
 import styles from "./info.module.css";
 import { CONTRACT_ADDRESS, ABI } from "@/lib/contract";
-import Image from "next/image";
-import { Moon, Sun } from "lucide-react";
-import { useSendTransaction } from "wagmi"; 
-// import { parseEther } from "viem"; 
-import { Heart } from "lucide-react"; // হার্ট আইকনটির জন্য
-import { useReconnect } from 'wagmi';
 
 
 export default function InfoPage() {
@@ -28,6 +34,7 @@ export default function InfoPage() {
   const pfpUrl = user?.pfpUrl || "https://placehold.co/100x100?text=User";
   const fid = context?.user?.fid || frameContext?.user?.fid;
   const { reconnect } = useReconnect();
+  const { writeContractAsync } = useWriteContract();
   const USDC_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 
   
@@ -85,16 +92,25 @@ useEffect(() => {
 
 const handleUsdcDonate = async (amount: string) => {
   try {
-    // USDC এর ডেসিমেল ৬, তাই অ্যামাউন্টকে ১০ লক্ষ দিয়ে গুণ করা হচ্ছে
-    const usdcAmount = BigInt(Math.round(parseFloat(amount) * 1e6)); 
+    const usdcAmount = BigInt(Math.round(parseFloat(amount) * 1e6));
 
-    // আপনার নতুন ডনেট অ্যাড্রেস (0x8C8...8012) থেকে 0x বাদ দিয়ে ছোট হাতের অক্ষরে নেওয়া হয়েছে
-    const receiver = "8C8d41c66a059a62577Ab14F313f6ad13a6D8012".toLowerCase();
-
-    await sendTransactionAsync({
-      to: USDC_ADDRESS as `0x${string}`,
-      // ERC-20 transfer(address to, uint256 value) মেথড আইডি: 0xa9059cbb
-      data: `0xa9059cbb000000000000000000000000${receiver}00000000000000000000000000000000000000000000000000000000${usdcAmount.toString(16).padStart(64, '0')}` as `0x${string}`,
+    // writeContractAsync ব্যবহার করলে ওয়ালেট সরাসরি USDC লোগো এবং অ্যামাউন্ট দেখাবে
+    await writeContractAsync({
+      address: USDC_ADDRESS as `0x${string}`,
+      abi: [
+        {
+          name: "transfer",
+          type: "function",
+          stateMutability: "nonpayable",
+          inputs: [
+            { name: "recipient", type: "address" },
+            { name: "amount", type: "uint256" },
+          ],
+          outputs: [{ name: "", type: "bool" }],
+        },
+      ],
+      functionName: "transfer",
+      args: ["0x8C8d41c66a059a62577Ab14F313f6ad13a6D8012", usdcAmount],
     });
 
     alert("Thank you for your USDC donation!");
