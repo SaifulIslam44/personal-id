@@ -231,7 +231,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useReadContract, useAccount } from "wagmi";
 import { formatUnits } from "viem";
 import { CONTRACT_ADDRESS, ABI } from "@/lib/contract";
@@ -258,27 +258,13 @@ export default function LeaderboardPage() {
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  const offset = (currentPage - 1) * itemsPerPage;
+  
+  // 'any' casting removed and offset handled safely
+  const offset = BigInt((currentPage - 1) * itemsPerPage);
   
   const [userData, setUserData] = useState({
     displayName: "User",
     pfpUrl: "https://placehold.co/100x100?text=User"
-  });
-
-  // ১. টোটাল পেজ বের করার জন্য ১ লাখ ডেটা পর্যন্ত চেক করা (View Call)
-  const { data: allWinnersData } = useReadContract({
-    address: CONTRACT_ADDRESS as `0x${string}`,
-    abi: ABI,
-    functionName: "getLeaderboard",
-    args: [BigInt(0), BigInt(100000)] as any, 
-  });
-
-  // ২. বর্তমান পেজের জন্য নির্দিষ্ট ১০ জন ডেটা আনা
-  const { data: contractData } = useReadContract({
-    address: CONTRACT_ADDRESS as `0x${string}`,
-    abi: ABI,
-    functionName: "getLeaderboard",
-    args: [BigInt(offset), BigInt(itemsPerPage)] as any, 
   });
 
   useEffect(() => {
@@ -301,28 +287,40 @@ export default function LeaderboardPage() {
     }).catch(() => {});
   }, []);
 
+  const { data: contractData } = useReadContract({
+    address: CONTRACT_ADDRESS as `0x${string}`,
+    abi: ABI,
+    functionName: "getLeaderboard",
+    args: [offset, BigInt(itemsPerPage)] as any, 
+  });
+
   useEffect(() => {
     const syncLeaderboard = async () => {
       if (contractData) {
-        const [addresses, amounts, isEnabled] = contractData as [string[], bigint[], boolean];
-        if (isEnabled && addresses.length > 0) {
+        const [addresses, amounts, isEnabled] = contractData as [readonly string[], readonly bigint[], boolean];
+        
+        if (isEnabled && addresses && addresses.length > 0) {
           setLoading(true);
+          
+          // Step 1: Map and Sort by winnings descending
           const rawWinners = addresses.map((addr, i) => ({
             address: addr.toLowerCase(),
             winnings: parseFloat(formatUnits(amounts[i], 6)),
-          })); // এখানে আর sort লাগবে না কারণ চেইন থেকেই সঠিক ডাটা আসবে
+          })).sort((a, b) => b.winnings - a.winnings);
 
           try {
             const res = await fetch(`/api/get-profiles?addresses=${addresses.join(",")}`);
             const profileMap = await res.json();
+            
             const finalData = rawWinners.map(winner => ({
               ...winner,
               profileName: profileMap[winner.address]?.profileName || `User_${winner.address.slice(-4)}`,
               pfp: profileMap[winner.address]?.pfp || "https://placehold.co/100x100?text=?"
             }));
+            
             setLeaderboard(finalData);
           } catch (e) {
-            console.error(e);
+            console.error("Profile fetch error:", e);
           }
           setLoading(false);
         } else {
@@ -333,13 +331,15 @@ export default function LeaderboardPage() {
     syncLeaderboard();
   }, [contractData]);
 
-  // ৩. ডাইনামিক টোটাল পেজ ক্যালকুলেশন
-  const totalWinnersCount = (allWinnersData?.[0] as string[])?.length || 0;
-  const totalPages = Math.max(1, Math.ceil(totalWinnersCount / itemsPerPage));
+  // Pagination logic
+  const totalPages = leaderboard.length === itemsPerPage 
+                    ? currentPage + 1 
+                    : currentPage;
 
-  // র‍্যাঙ্ক ঠিক রাখার জন্য ইন্ডেক্স
   const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
-  const currentItems = leaderboard;
+  
+  // Use useMemo for current items to ensure sorting stability
+  const currentItems = useMemo(() => leaderboard, [leaderboard]);
 
   if (!isMounted) return null;
 
@@ -359,8 +359,8 @@ export default function LeaderboardPage() {
 
       <main className={styles.mainContent}>
         <header className={styles.heroHeader}>
-          <h1 className={styles.title}>🏆 WINING LEADERBOARD 🏆</h1>
-          <p className={styles.subTitle}>Top earners and lucky winners of the Spin & Leaderboard</p>
+          <h1 className={styles.title}>🏆 WINNING LEADERBOARD 🏆</h1>
+          <p className={styles.subTitle}>Top earners and lucky winners of the Surprise Box</p>
         </header>
 
         <div className={styles.compactBoard}>
@@ -389,7 +389,14 @@ export default function LeaderboardPage() {
                     
                     <div className={styles.userInfoSmall}>
                       <div className={styles.avatarMini}>
-                        <Image src={user.pfp} alt="pfp" width={34} height={34} className={styles.pfpRound} unoptimized />
+                        <Image 
+                          src={user.pfp} 
+                          alt="pfp" 
+                          width={34} 
+                          height={34} 
+                          className={styles.pfpRound} 
+                          unoptimized 
+                        />
                       </div>
                       <span className={styles.userText}>{user.profileName}</span>
                     </div>
@@ -405,7 +412,8 @@ export default function LeaderboardPage() {
             )}
           </div>
 
-          <div className={styles.paginationWrapper}>
+          {totalPages > 1 && (
+            <div className={styles.paginationWrapper}>
                <div className={styles.paginationRight}>
                   <button 
                     className={styles.pBtn} 
@@ -440,6 +448,7 @@ export default function LeaderboardPage() {
                   </button>
                </div>
             </div>
+          )}
         </div>
       </main>
     </div>
