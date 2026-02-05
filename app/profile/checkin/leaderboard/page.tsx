@@ -260,7 +260,7 @@ export default function LeaderboardPage() {
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  const offset = (currentPage - 1) * itemsPerPage;
+  // const offset = (currentPage - 1) * itemsPerPage;
   
   const [userData, setUserData] = useState({
     displayName: "User",
@@ -291,7 +291,7 @@ export default function LeaderboardPage() {
     address: CONTRACT_ADDRESS as `0x${string}`,
     abi: ABI,
     functionName: "getLeaderboard",
-    args: [BigInt(offset), BigInt(itemsPerPage)] as any, 
+    args: [BigInt(0), BigInt(100000)] as any, 
   });
 
   useEffect(() => {
@@ -326,14 +326,16 @@ export default function LeaderboardPage() {
     syncLeaderboard();
   }, [contractData]);
 
-  const totalPages = leaderboard.length === itemsPerPage 
-                    ? currentPage + 1 
-                    : currentPage;
+// ৫৩ নম্বর লাইনের আশেপাশের কোডটি এভাবে পরিবর্তন করুন:
+const totalWinnersCount = (contractData?.[0] as string[])?.length || 0;
 
-  const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
-  const currentItems = leaderboard;
+// মোট উইনারকে প্রতি পেজের আইটেম (১০) দিয়ে ভাগ করে মোট পেজ বের করা
+const totalPages = Math.max(1, Math.ceil(totalWinnersCount / itemsPerPage));
 
-  if (!isMounted) return null;
+const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
+const currentItems = leaderboard;
+
+if (!isMounted) return null;
 
   return (
     <div className={`${styles.container} ${!isDarkMode ? styles.lightMode : ""}`}>
