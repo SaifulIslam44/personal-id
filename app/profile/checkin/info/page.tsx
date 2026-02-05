@@ -6,8 +6,7 @@ import {
   useAccount, 
   useReadContract, 
   useWriteContract, // এটি ডনেশনের জন্য প্রয়োজন
-  useReconnect, 
-  useSendTransaction 
+  useReconnect
 } from "wagmi";
 import { useMiniKit } from "@coinbase/onchainkit/minikit";
 import miniApp from "@farcaster/miniapp-sdk";
@@ -26,7 +25,7 @@ export default function InfoPage() {
   const [frameContext, setFrameContext] = useState<any>(null);
   const [hasNft, setHasNft] = useState(false);
   const [loading, setLoading] = useState(true);
-  const { sendTransactionAsync } = useSendTransaction();
+  // const { sendTransactionAsync } = useSendTransaction();
   // ২. নতুন স্টেট (ইউজার ইনফো এবং ডার্ক মোডের জন্য)
   const [isDarkMode, setIsDarkMode] = useState(true);
   const user = context?.user || frameContext?.user;
