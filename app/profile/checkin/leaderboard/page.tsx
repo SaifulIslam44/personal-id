@@ -230,16 +230,15 @@
 
 
 
-
 "use client";
 
 import { useState, useEffect } from "react";
-import { useReadContract } from "wagmi";
+import { useReadContract, useAccount } from "wagmi"; // useAccount যোগ করা হয়েছে
 import { formatUnits } from "viem";
 import { CONTRACT_ADDRESS, ABI } from "@/lib/contract";
 import styles from "./leaderboard.module.css";
 import Image from "next/image";
-import { Moon, Sun, ChevronLeft, ChevronRight } from "lucide-react"; // আইকন যোগ করা হয়েছে
+import { Moon, Sun, ChevronLeft, ChevronRight } from "lucide-react"; 
 import miniApp from "@farcaster/miniapp-sdk";
 
 interface WinnerData {
@@ -249,13 +248,14 @@ interface WinnerData {
   pfp: string;
 }
 
-export default function LeaderboardPage() { // প্রোস্প সরিয়ে দেওয়া হয়েছে
+export default function LeaderboardPage() { 
   const [leaderboard, setLeaderboard] = useState<WinnerData[]>([]);
   const [loading, setLoading] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
-  
-  // initialLightMode এর বদলে সরাসরি ডিফল্ট ভ্যালু সেট করুন
   const [isDarkMode, setIsDarkMode] = useState(true); 
+
+  // --- Highlight Feature: কানেক্টেড ইউজারের অ্যাড্রেস নেওয়া ---
+  const { address: connectedAddress } = useAccount();
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
@@ -267,7 +267,6 @@ export default function LeaderboardPage() { // প্রোস্প সরি�
     pfpUrl: "https://placehold.co/100x100?text=User"
   });
 
-  // Body class toggle for global styles
   useEffect(() => {
     if (!isDarkMode) {
       document.body.classList.add('light-mode');
@@ -288,14 +287,12 @@ export default function LeaderboardPage() { // প্রোস্প সরি�
     }).catch(() => {});
   }, []);
 
-const { data: contractData } = useReadContract({
-  address: CONTRACT_ADDRESS as `0x${string}`,
-  abi: ABI,
-  functionName: "getLeaderboard",
-  // এখানে টাইপ কাস্টিং ব্যবহার করা হয়েছে যাতে 'never' বা 'undefined' এরর না আসে
-  args: [BigInt(offset), BigInt(itemsPerPage)], 
-});
-
+  const { data: contractData } = useReadContract({
+    address: CONTRACT_ADDRESS as `0x${string}`,
+    abi: ABI,
+    functionName: "getLeaderboard",
+    args: [BigInt(offset), BigInt(itemsPerPage)] as any, 
+  });
 
   useEffect(() => {
     const syncLeaderboard = async () => {
@@ -322,27 +319,24 @@ const { data: contractData } = useReadContract({
           }
           setLoading(false);
         } else {
-          setLeaderboard([]); // যদি ডাটা না থাকে লিস্ট খালি করার জন্য
+          setLeaderboard([]); 
         }
       }
     };
     syncLeaderboard();
   }, [contractData]);
 
+  const totalPages = leaderboard.length === itemsPerPage 
+                    ? currentPage + 1 
+                    : currentPage;
 
-const totalPages = leaderboard.length === itemsPerPage 
-                   ? currentPage + 1 
-                   : currentPage;
-
-const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
-
+  const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
   const currentItems = leaderboard;
 
   if (!isMounted) return null;
 
   return (
     <div className={`${styles.container} ${!isDarkMode ? styles.lightMode : ""}`}>
-      {/* Top Bar - Profile & Theme Toggle */}
       <nav className={styles.topBar}>
         <div className={styles.profileSummary}>
           <div className={styles.miniPfpWrapper}>
@@ -357,11 +351,10 @@ const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
 
       <main className={styles.mainContent}>
         <header className={styles.heroHeader}>
-        <h1 className={styles.title}>🏆 WINING LEADERBOARD 🏆</h1>
+          <h1 className={styles.title}>🏆 WINING LEADERBOARD 🏆</h1>
           <p className={styles.subTitle}>Top earners and lucky winners of the Spin & Leaderboard</p>
         </header>
 
-        {/* Board Section - Directly on Container */}
         <div className={styles.compactBoard}>
           <div className={styles.smallHeader}>
             <span>RANK</span>
@@ -375,8 +368,16 @@ const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
             ) : currentItems.length > 0 ? (
               currentItems.map((user, index) => {
                 const actualRank = indexOfFirstItem + index;
+
+                // --- Highlight Feature: বর্তমান ইউজারের রো চেক করা ---
+                const isCurrentUser = connectedAddress?.toLowerCase() === user.address.toLowerCase();
+
                 return (
-                  <div key={user.address} className={styles.smallRow}>
+                  <div 
+                    key={user.address} 
+                    // --- Highlight Feature: কন্ডিশনাল ক্লাস যোগ করা ---
+                    className={`${styles.smallRow} ${isCurrentUser ? styles.highlightRow : ""}`}
+                  >
                     <span className={styles.rankBadge}>
                       {actualRank === 0 ? "🥇" : actualRank === 1 ? "🥈" : actualRank === 2 ? "🥉" : `#${actualRank + 1}`}
                     </span>
@@ -406,7 +407,6 @@ const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
             )}
           </div>
 
-          {/* Pagination Controls - UI matching your image */}
           {totalPages > 1 && (
             <div className={styles.paginationWrapper}>
                <div className={styles.paginationRight}>

@@ -330,3 +330,30 @@
   border: 1px solid #e0e0e0;
   color: #666;
 }
+
+
+
+
+/* --- Highlight Feature: Transparent Glossy Blue Style --- */
+.highlightRow {
+  background: rgba(0, 82, 255, 0.15) !important; /* হালকা গ্লসি ব্লু ব্যাকগ্রাউন্ড */
+  backdrop-filter: blur(8px); /* গ্লাস ইফেক্ট বা ঝাপসা ভাব */
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 82, 255, 0.3); /* ব্লু বর্ডার */
+  border-left: 5px solid #0052ff !important; /* বাম পাশে গাড় নীল বর্ডার */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* হালকা শ্যাডো গভীরতার জন্য */
+  border-radius: 8px;
+  margin: 4px 0;
+  transition: all 0.3s ease;
+}
+
+/* টেক্সট একটু গ্লো করার জন্য (ঐচ্ছিক) */
+.highlightRow .userText {
+  color: #60a5fa !important;
+  font-weight: 700;
+}
+
+.highlightRow .amountSmall {
+  color: #60a5fa !important;
+  font-weight: 700;
+}
