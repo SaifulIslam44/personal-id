@@ -229,11 +229,10 @@
 
 
 
-
 "use client";
 
 import { useState, useEffect } from "react";
-import { useReadContract, useAccount } from "wagmi"; // useAccount যোগ করা হয়েছে
+import { useReadContract, useAccount } from "wagmi";
 import { formatUnits } from "viem";
 import { CONTRACT_ADDRESS, ABI } from "@/lib/contract";
 import styles from "./leaderboard.module.css";
@@ -254,17 +253,32 @@ export default function LeaderboardPage() {
   const [isMounted, setIsMounted] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true); 
 
-  // --- Highlight Feature: কানেক্টেড ইউজারের অ্যাড্রেস নেওয়া ---
   const { address: connectedAddress } = useAccount();
 
   // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  // const offset = (currentPage - 1) * itemsPerPage;
+  const offset = (currentPage - 1) * itemsPerPage;
   
   const [userData, setUserData] = useState({
     displayName: "User",
     pfpUrl: "https://placehold.co/100x100?text=User"
+  });
+
+  // ১. টোটাল পেজ বের করার জন্য ১ লাখ ডেটা পর্যন্ত চেক করা (View Call)
+  const { data: allWinnersData } = useReadContract({
+    address: CONTRACT_ADDRESS as `0x${string}`,
+    abi: ABI,
+    functionName: "getLeaderboard",
+    args: [BigInt(0), BigInt(100000)] as any, 
+  });
+
+  // ২. বর্তমান পেজের জন্য নির্দিষ্ট ১০ জন ডেটা আনা
+  const { data: contractData } = useReadContract({
+    address: CONTRACT_ADDRESS as `0x${string}`,
+    abi: ABI,
+    functionName: "getLeaderboard",
+    args: [BigInt(offset), BigInt(itemsPerPage)] as any, 
   });
 
   useEffect(() => {
@@ -287,13 +301,6 @@ export default function LeaderboardPage() {
     }).catch(() => {});
   }, []);
 
-  const { data: contractData } = useReadContract({
-    address: CONTRACT_ADDRESS as `0x${string}`,
-    abi: ABI,
-    functionName: "getLeaderboard",
-    args: [BigInt(0), BigInt(100000)] as any, 
-  });
-
   useEffect(() => {
     const syncLeaderboard = async () => {
       if (contractData) {
@@ -303,7 +310,7 @@ export default function LeaderboardPage() {
           const rawWinners = addresses.map((addr, i) => ({
             address: addr.toLowerCase(),
             winnings: parseFloat(formatUnits(amounts[i], 6)),
-          })).sort((a, b) => b.winnings - a.winnings);
+          })); // এখানে আর sort লাগবে না কারণ চেইন থেকেই সঠিক ডাটা আসবে
 
           try {
             const res = await fetch(`/api/get-profiles?addresses=${addresses.join(",")}`);
@@ -326,16 +333,15 @@ export default function LeaderboardPage() {
     syncLeaderboard();
   }, [contractData]);
 
-// ৫৩ নম্বর লাইনের আশেপাশের কোডটি এভাবে পরিবর্তন করুন:
-const totalWinnersCount = (contractData?.[0] as string[])?.length || 0;
+  // ৩. ডাইনামিক টোটাল পেজ ক্যালকুলেশন
+  const totalWinnersCount = (allWinnersData?.[0] as string[])?.length || 0;
+  const totalPages = Math.max(1, Math.ceil(totalWinnersCount / itemsPerPage));
 
-// মোট উইনারকে প্রতি পেজের আইটেম (১০) দিয়ে ভাগ করে মোট পেজ বের করা
-const totalPages = Math.max(1, Math.ceil(totalWinnersCount / itemsPerPage));
+  // র‍্যাঙ্ক ঠিক রাখার জন্য ইন্ডেক্স
+  const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
+  const currentItems = leaderboard;
 
-const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
-const currentItems = leaderboard;
-
-if (!isMounted) return null;
+  if (!isMounted) return null;
 
   return (
     <div className={`${styles.container} ${!isDarkMode ? styles.lightMode : ""}`}>
@@ -370,14 +376,11 @@ if (!isMounted) return null;
             ) : currentItems.length > 0 ? (
               currentItems.map((user, index) => {
                 const actualRank = indexOfFirstItem + index;
-
-                // --- Highlight Feature: বর্তমান ইউজারের রো চেক করা ---
                 const isCurrentUser = connectedAddress?.toLowerCase() === user.address.toLowerCase();
 
                 return (
                   <div 
                     key={user.address} 
-                    // --- Highlight Feature: কন্ডিশনাল ক্লাস যোগ করা ---
                     className={`${styles.smallRow} ${isCurrentUser ? styles.highlightRow : ""}`}
                   >
                     <span className={styles.rankBadge}>
@@ -386,14 +389,7 @@ if (!isMounted) return null;
                     
                     <div className={styles.userInfoSmall}>
                       <div className={styles.avatarMini}>
-                        <Image 
-                          src={user.pfp} 
-                          alt="pfp" 
-                          width={34} 
-                          height={34} 
-                          className={styles.pfpRound} 
-                          unoptimized 
-                        />
+                        <Image src={user.pfp} alt="pfp" width={34} height={34} className={styles.pfpRound} unoptimized />
                       </div>
                       <span className={styles.userText}>{user.profileName}</span>
                     </div>
@@ -409,8 +405,7 @@ if (!isMounted) return null;
             )}
           </div>
 
-          {totalPages > 1 && (
-            <div className={styles.paginationWrapper}>
+          <div className={styles.paginationWrapper}>
                <div className={styles.paginationRight}>
                   <button 
                     className={styles.pBtn} 
@@ -445,7 +440,6 @@ if (!isMounted) return null;
                   </button>
                </div>
             </div>
-          )}
         </div>
       </main>
     </div>
