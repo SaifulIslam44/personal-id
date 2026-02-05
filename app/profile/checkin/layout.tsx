@@ -78,8 +78,8 @@ export default function ProfileLayout({
   const tabs = [
     { label: "Rewards", path: "/profile/checkin", icon: Gift },
     { label: "Task", path: "/profile/checkin/tasks", icon: ListChecks },
-    { label: "Score", path: "MENU_TRIGGER", icon: null },
-    { label: "Frens", path: "/profile/checkin/score", icon: BarChart3 },
+    { label: "Menus", path: "MENU_TRIGGER", icon: null },
+    { label: "Score", path: "/profile/checkin/score", icon: BarChart3 },
     { label: "Info", path: "/profile/checkin/info", icon: Info },
   ];
 
@@ -141,7 +141,7 @@ export default function ProfileLayout({
         {tabs.map((t) => {
           const active = pathname === t.path;
 
-          if (t.label === "Score") {
+          if (t.label === "Menus") {
             return (
               <button
                 key={t.label}
