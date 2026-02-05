@@ -79,7 +79,7 @@ export default function ProfileLayout({
     { label: "Rewards", path: "/profile/checkin", icon: Gift },
     { label: "Task", path: "/profile/checkin/tasks", icon: ListChecks },
     { label: "Score", path: "MENU_TRIGGER", icon: null },
-    { label: "Score", path: "/profile/checkin/score", icon: BarChart3 },
+    { label: "Frens", path: "/profile/checkin/score", icon: BarChart3 },
     { label: "Info", path: "/profile/checkin/info", icon: Info },
   ];
 
