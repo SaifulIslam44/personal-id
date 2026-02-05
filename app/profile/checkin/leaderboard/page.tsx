@@ -260,7 +260,7 @@ export default function LeaderboardPage() {
   const itemsPerPage = 10;
   
   // 'any' casting removed and offset handled safely
-  const offset = BigInt((currentPage - 1) * itemsPerPage);
+  // const offset = BigInt((currentPage - 1) * itemsPerPage);
   
   const [userData, setUserData] = useState({
     displayName: "User",
@@ -291,7 +291,7 @@ export default function LeaderboardPage() {
     address: CONTRACT_ADDRESS as `0x${string}`,
     abi: ABI,
     functionName: "getLeaderboard",
-    args: [offset, BigInt(itemsPerPage)] as any, 
+    args: [0, BigInt(10000)] as any, 
   });
 
   useEffect(() => {
