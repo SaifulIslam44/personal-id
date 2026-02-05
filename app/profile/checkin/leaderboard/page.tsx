@@ -415,13 +415,13 @@ export default function LeaderboardPage() {
           {totalPages > 1 && (
             <div className={styles.paginationWrapper}>
                <div className={styles.paginationRight}>
-                  <button 
+                  {/* <button 
                     className={styles.pBtn} 
                     onClick={() => setCurrentPage(1)} 
                     disabled={currentPage === 1}
                   >
                     First
-                  </button>
+                  </button> */}
                   <button 
                     className={styles.pBtnIcon} 
                     onClick={() => setCurrentPage(prev => prev - 1)} 
@@ -439,13 +439,13 @@ export default function LeaderboardPage() {
                   >
                     <ChevronRight size={16} color="#0052ff" />
                   </button>
-                  <button 
+                  {/* <button 
                     className={styles.pBtnActive} 
                     onClick={() => setCurrentPage(totalPages)} 
                     disabled={currentPage === totalPages}
                   >
                     Last
-                  </button>
+                  </button> */}
                </div>
             </div>
           )}
