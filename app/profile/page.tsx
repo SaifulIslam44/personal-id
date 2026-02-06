@@ -259,7 +259,7 @@ import { useMiniKit } from "@coinbase/onchainkit/minikit";
 import { useRouter } from "next/navigation";
 import { useAccount, useReadContract } from "wagmi";
 import { useSendCalls } from "wagmi";
-import { getAddress, isAddress, parseEther } from "viem";
+import { getAddress, isAddress } from "viem";
 import miniApp from "@farcaster/miniapp-sdk";
 import Image from "next/image";
 
@@ -286,6 +286,12 @@ export default function ProfilePage() {
   const [hasShared, setHasShared] = useState(false);
  
   const { sendCalls, isPending } = useSendCalls();
+
+  const { data: currentMintFee } = useReadContract({
+    abi: ABI,
+    address: CONTRACT_ADDRESS as `0x${string}`,
+    functionName: "mintFee",
+  });
 
 useEffect(() => {
   const loadContext = async () => {
@@ -399,7 +405,8 @@ const savedRef = localStorage.getItem("referrer_address");
               functionName: "mintID",
               // args: [metadataURL],
               args: [metadataURL, finalReferrer, BigInt(user.fid)],
-              value: parseEther("0"),
+              // value: parseEther("0"),
+              value: currentMintFee as bigint,
             },
           ],
        
