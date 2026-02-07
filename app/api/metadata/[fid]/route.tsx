@@ -125,13 +125,193 @@
 
 
 
+// /** @jsxImportSource react */
+// /* eslint-disable @next/next/no-img-element */
+// import { ImageResponse } from 'next/og';
+// import { NextRequest } from 'next/server';
+
+// export const runtime = 'edge';
+// export const dynamic = 'force-dynamic'; 
+
+// export async function GET(
+//   req: NextRequest,
+//   { params }: { params: Promise<{ fid: string }> }
+// ) {
+//   const { fid } = await params;
+//   const url = new URL(req.url);
+
+//   try {
+//     // 🔹 পরিবর্তন ১: fetch এ cache: 'no-store' যোগ করা হয়েছে যাতে Warpcast থেকে সবসময় ফ্রেশ ডাটা আসে
+//     const res = await fetch(`https://api.warpcast.com/v2/user-by-fid?fid=${fid}`, {
+//       cache: 'no-store',
+//       headers: { 'Cache-Control': 'no-cache' }
+//     });
+    
+//     const json = await res.json();
+//     const user = json.result.user;
+
+//     const userName = user.displayName || "Base User";
+//     const userHandle = user.username ? `@${user.username}` : "";
+//     const pfpUrl = user.pfp.url || "https://wrpcd.xyz/pfp/default.png";
+//     // const pfpUrl = user.pfp?.url || "https://i.imgur.com/8RK9Zf3.png";
+
+//     const isJson = url.pathname.endsWith('.json') || req.headers.get('accept')?.includes('json');
+
+//     if (isJson) {
+//       return new Response(JSON.stringify({
+//         name: `Onchain ID #${fid}`,
+//         description: `Official ID for ${userName}`,
+//         image: `${process.env.NEXT_PUBLIC_URL || 'http://' + req.headers.get('host')}/api/metadata/${fid}/image.png`,
+//         attributes: [
+//           { trait_type: "FID", value: fid },
+//           { trait_type: "Name", value: userName }
+//         ]
+//       }), { 
+//         headers: { 
+//           'Content-Type': 'application/json',
+//           'Cache-Control': 'no-store, max-age=0' // মেটাডাটা ক্যাশ বন্ধ করা হয়েছে
+//         } 
+//       });
+//     }
+
+//     return new ImageResponse(
+//       (
+//         <div
+//           style={{
+//             display: 'flex',
+//             flexDirection: 'row',
+//             backgroundColor: '#121212',
+//             width: '900px',
+//             height: '400px',
+//             color: 'white',
+//             alignItems: 'center',
+//             padding: '40px',
+//             border: '6px solid #0052FF',
+//             borderRadius: '0px',
+//             position: 'relative',
+//           }}
+//         >
+//           {/* Profile Section */}
+//           <div style={{ display: 'flex', position: 'relative' }}>
+//             <img
+//               src={pfpUrl}
+//               alt="Profile"
+//               style={{
+//                 width: 240,
+//                 height: 240,
+//                 borderRadius: 40,
+//                 objectFit: 'cover',
+//                 border: '8px solid #0052FF',
+//               }}
+//             />
+//           </div>
+
+//           {/* User Details Section */}
+//           <div
+//             style={{
+//               display: 'flex',
+//               flexDirection: 'column',
+//               marginLeft: 40,
+//               flex: 1,
+//             }}
+//           >
+//             <div style={{ display: 'flex', fontSize: 55, fontWeight: 'bold', letterSpacing: '-1px' }}>
+//               {userName}
+//             </div>
+//             <div style={{ display: 'flex', fontSize: 32, color: '#0052FF', marginTop: 5 }}>
+//               {userHandle}
+//             </div>
+//             <div style={{ display: 'flex', fontSize: 26, color: '#666', marginTop: 15, fontWeight: '500' }}>
+//               FID: {fid}
+//             </div>
+
+//             <div style={{ display: 'flex', marginTop: 35 }}>
+//               <div
+//                 style={{
+//                   display: 'flex',
+//                   backgroundColor: '#0052FF',
+//                   color: 'white',
+//                   padding: '12px 30px',
+//                   borderRadius: 100,
+//                   fontSize: 22,
+//                   fontWeight: 'bold',
+//                 }}
+//               >
+//                 Onchain Identity
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Premium Badge Design for Base App User */}
+//           <div
+//             style={{
+//               display: 'flex',
+//               position: 'absolute',
+//               bottom: 40,
+//               right: 40,
+//               padding: '10px 24px',
+//               backgroundColor: '#0052FF15',
+//               border: '2px solid #0052FF',
+//               borderRadius: '12px',
+//               alignItems: 'center',
+//               justifyContent: 'center',
+//               boxShadow: '0 0 20px rgba(0, 82, 255, 0.2)',
+//             }}
+//           >
+//             <span
+//               style={{
+//                 fontSize: 20,
+//                 color: '#0052FF',
+//                 fontWeight: '900',
+//                 textTransform: 'uppercase',
+//                 letterSpacing: '2px',
+//               }}
+//             >
+//               VERIFIED PIM USER
+//             </span>
+//           </div>
+//         </div>
+//       ),
+//       {
+//         width: 900,
+//         height: 400,
+//         // 🔹 পরিবর্তন ২: এখানে ক্যাশ কন্ট্রোল হেডার যোগ করা হয়েছে যাতে ব্রাউজার ইমেজ ক্যাশ না করে
+//         headers: {
+//           'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+//           'Pragma': 'no-cache',
+//           'Expires': '0',
+//         },
+//       }
+//     );
+
+//   } catch (e) {
+//     console.error("Error:", e);
+//     return new Response("Failed to generate image", { status: 500 });
+//   }
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /** @jsxImportSource react */
 /* eslint-disable @next/next/no-img-element */
 import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
 
 export const runtime = 'edge';
-export const dynamic = 'force-dynamic'; 
+// 🔹 ৫ দিনের জন্য ক্যাশ সেট করা হয়েছে (৫ দিন * ২৪ ঘণ্টা * ৩৬০০ সেকেন্ড = ৪৩২০০০)
+export const revalidate = 432000; 
 
 export async function GET(
   req: NextRequest,
@@ -141,19 +321,22 @@ export async function GET(
   const url = new URL(req.url);
 
   try {
-    // 🔹 পরিবর্তন ১: fetch এ cache: 'no-store' যোগ করা হয়েছে যাতে Warpcast থেকে সবসময় ফ্রেশ ডাটা আসে
+    // 🔹 Warpcast ডাটা ৫ দিনের জন্য ক্যাশ করবে
     const res = await fetch(`https://api.warpcast.com/v2/user-by-fid?fid=${fid}`, {
-      cache: 'no-store',
-      headers: { 'Cache-Control': 'no-cache' }
+      next: { revalidate: 432000 } 
     });
     
     const json = await res.json();
-    const user = json.result.user;
+    
+    // এরর হ্যান্ডলিং (যাতে ভুল FID আসলে CPU নষ্ট না হয়)
+    if (!json.result || !json.result.user) {
+        return new Response("User not found", { status: 404 });
+    }
 
+    const user = json.result.user;
     const userName = user.displayName || "Base User";
     const userHandle = user.username ? `@${user.username}` : "";
-    const pfpUrl = user.pfp.url || "https://wrpcd.xyz/pfp/default.png";
-    // const pfpUrl = user.pfp?.url || "https://i.imgur.com/8RK9Zf3.png";
+    const pfpUrl = user.pfp?.url || "https://wrpcd.xyz/pfp/default.png";
 
     const isJson = url.pathname.endsWith('.json') || req.headers.get('accept')?.includes('json');
 
@@ -161,7 +344,7 @@ export async function GET(
       return new Response(JSON.stringify({
         name: `Onchain ID #${fid}`,
         description: `Official ID for ${userName}`,
-        image: `${process.env.NEXT_PUBLIC_URL || 'http://' + req.headers.get('host')}/api/metadata/${fid}/image.png`,
+        image: `${process.env.NEXT_PUBLIC_URL || 'https://' + req.headers.get('host')}/api/metadata/${fid}/image.png`,
         attributes: [
           { trait_type: "FID", value: fid },
           { trait_type: "Name", value: userName }
@@ -169,7 +352,8 @@ export async function GET(
       }), { 
         headers: { 
           'Content-Type': 'application/json',
-          'Cache-Control': 'no-store, max-age=0' // মেটাডাটা ক্যাশ বন্ধ করা হয়েছে
+          // 🔹 ব্রাউজার এবং Vercel এজ নেটওয়ার্ক ৫ দিন পর্যন্ত এই ডাটা ক্যাশ রাখবে
+          'Cache-Control': 'public, s-maxage=432000, stale-while-revalidate=86400'
         } 
       });
     }
@@ -206,80 +390,26 @@ export async function GET(
             />
           </div>
 
-          {/* User Details Section */}
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              marginLeft: 40,
-              flex: 1,
-            }}
-          >
-            <div style={{ display: 'flex', fontSize: 55, fontWeight: 'bold', letterSpacing: '-1px' }}>
-              {userName}
-            </div>
-            <div style={{ display: 'flex', fontSize: 32, color: '#0052FF', marginTop: 5 }}>
-              {userHandle}
-            </div>
-            <div style={{ display: 'flex', fontSize: 26, color: '#666', marginTop: 15, fontWeight: '500' }}>
-              FID: {fid}
-            </div>
-
+          <div style={{ display: 'flex', flexDirection: 'column', marginLeft: 40, flex: 1 }}>
+            <div style={{ display: 'flex', fontSize: 55, fontWeight: 'bold', letterSpacing: '-1px' }}>{userName}</div>
+            <div style={{ display: 'flex', fontSize: 32, color: '#0052FF', marginTop: 5 }}>{userHandle}</div>
+            <div style={{ display: 'flex', fontSize: 26, color: '#666', marginTop: 15, fontWeight: '500' }}>FID: {fid}</div>
             <div style={{ display: 'flex', marginTop: 35 }}>
-              <div
-                style={{
-                  display: 'flex',
-                  backgroundColor: '#0052FF',
-                  color: 'white',
-                  padding: '12px 30px',
-                  borderRadius: 100,
-                  fontSize: 22,
-                  fontWeight: 'bold',
-                }}
-              >
-                Onchain Identity
-              </div>
+              <div style={{ display: 'flex', backgroundColor: '#0052FF', color: 'white', padding: '12px 30px', borderRadius: 100, fontSize: 22, fontWeight: 'bold' }}>Onchain Identity</div>
             </div>
           </div>
 
-          {/* Premium Badge Design for Base App User */}
-          <div
-            style={{
-              display: 'flex',
-              position: 'absolute',
-              bottom: 40,
-              right: 40,
-              padding: '10px 24px',
-              backgroundColor: '#0052FF15',
-              border: '2px solid #0052FF',
-              borderRadius: '12px',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 0 20px rgba(0, 82, 255, 0.2)',
-            }}
-          >
-            <span
-              style={{
-                fontSize: 20,
-                color: '#0052FF',
-                fontWeight: '900',
-                textTransform: 'uppercase',
-                letterSpacing: '2px',
-              }}
-            >
-              VERIFIED PIM USER
-            </span>
+          <div style={{ display: 'flex', position: 'absolute', bottom: 40, right: 40, padding: '10px 24px', backgroundColor: '#0052FF15', border: '2px solid #0052FF', borderRadius: '12px', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 20px rgba(0, 82, 255, 0.2)' }}>
+            <span style={{ fontSize: 20, color: '#0052FF', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '2px' }}>VERIFIED PIM USER</span>
           </div>
         </div>
       ),
       {
         width: 900,
         height: 400,
-        // 🔹 পরিবর্তন ২: এখানে ক্যাশ কন্ট্রোল হেডার যোগ করা হয়েছে যাতে ব্রাউজার ইমেজ ক্যাশ না করে
         headers: {
-          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0',
+          // 🔹 ইমেজটিও ৫ দিনের জন্য ক্যাশ করা হলো
+          'Cache-Control': 'public, s-maxage=432000, stale-while-revalidate=86400',
         },
       }
     );

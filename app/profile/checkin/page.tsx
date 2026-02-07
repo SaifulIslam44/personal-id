@@ -640,6 +640,7 @@ import { formatUnits } from "viem";
 import { CONTRACT_ADDRESS, ABI } from "@/lib/contract";
 import Image from "next/image";
 import { Moon, Sun } from "lucide-react";
+import { APP_CONFIG } from "@/lib/appconfig";
 import styles from "./checkin.module.css";
 import { useConnect, useWriteContract } from "wagmi";
 import { sdk } from "@farcaster/miniapp-sdk";
@@ -1169,19 +1170,18 @@ const handleShare = async () => {
         Reward Pool: <strong>{currentSupply} USDC</strong>
       </div>
 
+    {/* শুধু এই অংশটি কন্ডিশনাল রাখুন */}
+    {APP_CONFIG.showNotice ? (
       <div className={styles.noticeContainer}>
-  <div className={styles.scrollingWrapper}>
-    <span className={styles.noticeText}>
-      ⚠️Notice: Spin section temporary disabled due to this week rewards pool over. Wait for the next week and keep collect $PIM 🟦🟦🟦
-    </span>
-    {/* সেম লিখাটি আবার নিচে দিন যেন লুপ নিরবচ্ছিন্ন থাকে */}
-    <span className={styles.noticeText}>
-      ⚠️Notice: Spin section temporary disabled due to this week rewards pool over. Wait for the next week and keep collect $PIM 🟦🟦🟦
-    </span>
-  </div>
-</div>
-
-      {/* <h1 className={styles.title}>Check-in & Spin to Earn</h1> */}
+        <div className={styles.scrollingWrapper}>
+          <span className={styles.noticeText}>{APP_CONFIG.noticeMessage}</span>
+          <span className={styles.noticeText}>{APP_CONFIG.noticeMessage}</span>
+        </div>
+      </div>
+    ) : (
+      /* নোটিশ বন্ধ থাকলে এই টাইটেলটি দেখাবে */
+      <h1 className={styles.title}>Check-in & Spin to Earn</h1>
+    )}
 
       <div className={styles.spinSection}>
         <div className={styles.wheelContainer}>
