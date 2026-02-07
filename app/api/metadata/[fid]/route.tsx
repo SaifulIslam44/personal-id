@@ -301,16 +301,12 @@
 
 
 
-
-
-
 /** @jsxImportSource react */
 /* eslint-disable @next/next/no-img-element */
 import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
 
 export const runtime = 'edge';
-// 🔹 ৫ দিনের জন্য ক্যাশ সেট করা হয়েছে (৫ দিন * ২৪ ঘণ্টা * ৩৬০০ সেকেন্ড = ৪৩২০০০)
 export const revalidate = 432000; 
 
 export async function GET(
@@ -321,14 +317,12 @@ export async function GET(
   const url = new URL(req.url);
 
   try {
-    // 🔹 Warpcast ডাটা ৫ দিনের জন্য ক্যাশ করবে
     const res = await fetch(`https://api.warpcast.com/v2/user-by-fid?fid=${fid}`, {
       next: { revalidate: 432000 } 
     });
     
     const json = await res.json();
     
-    // এরর হ্যান্ডলিং (যাতে ভুল FID আসলে CPU নষ্ট না হয়)
     if (!json.result || !json.result.user) {
         return new Response("User not found", { status: 404 });
     }
@@ -336,7 +330,11 @@ export async function GET(
     const user = json.result.user;
     const userName = user.displayName || "Base User";
     const userHandle = user.username ? `@${user.username}` : "";
-    const pfpUrl = user.pfp?.url || "https://wrpcd.xyz/pfp/default.png";
+
+    // 🔹 এখানে ডিফল্ট ইমেজ সেট করা হয়েছে। 
+    // যদি Warpcast থেকে pfp.url না আসে, তবে এই লিংকটি ব্যবহার হবে।
+    const defaultPfp = "https://wrpcd.xyz/pfp/default.png"; 
+    const pfpUrl = user.pfp?.url && user.pfp.url !== "" ? user.pfp.url : defaultPfp;
 
     const isJson = url.pathname.endsWith('.json') || req.headers.get('accept')?.includes('json');
 
@@ -352,7 +350,6 @@ export async function GET(
       }), { 
         headers: { 
           'Content-Type': 'application/json',
-          // 🔹 ব্রাউজার এবং Vercel এজ নেটওয়ার্ক ৫ দিন পর্যন্ত এই ডাটা ক্যাশ রাখবে
           'Cache-Control': 'public, s-maxage=432000, stale-while-revalidate=86400'
         } 
       });
@@ -380,6 +377,10 @@ export async function GET(
             <img
               src={pfpUrl}
               alt="Profile"
+              // 🔹onError হ্যান্ডলিং: যদি pfpUrl কাজ না করে, তবে ব্রাউজার স্বয়ংক্রিয়ভাবে ডিফল্ট ইমেজটি দেখাবে
+              onError={(e: any) => {
+                e.currentTarget.src = defaultPfp;
+              }}
               style={{
                 width: 240,
                 height: 240,
@@ -408,7 +409,6 @@ export async function GET(
         width: 900,
         height: 400,
         headers: {
-          // 🔹 ইমেজটিও ৫ দিনের জন্য ক্যাশ করা হলো
           'Cache-Control': 'public, s-maxage=432000, stale-while-revalidate=86400',
         },
       }
@@ -416,6 +416,7 @@ export async function GET(
 
   } catch (e) {
     console.error("Error:", e);
+    // 🔹 এরর আসলে একটি সিম্পল রেসপন্স দিন যাতে CPU প্রসেসিং না ঝুলে থাকে
     return new Response("Failed to generate image", { status: 500 });
   }
 }

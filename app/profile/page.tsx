@@ -312,7 +312,7 @@ useEffect(() => {
     pfpUrl: context?.user?.pfpUrl || frameContext?.user?.pfpUrl,
   };
 
-  const profileImage = user?.pfpUrl || "";
+  const profileImage = user?.pfpUrl || "https://wrpcd.xyz/pfp/default.png";
 
   const { data: nftBalance, isLoading: isBalanceLoading } = useReadContract({
     abi: ABI,

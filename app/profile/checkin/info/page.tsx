@@ -30,7 +30,7 @@ export default function InfoPage() {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const user = context?.user || frameContext?.user;
   const displayName = user?.displayName || user?.username || "User";
-  const pfpUrl = user?.pfpUrl || "https://placehold.co/100x100?text=User";
+  const pfpUrl = user?.pfpUrl || "https://wrpcd.xyz/pfp/default.png";
   const fid = context?.user?.fid || frameContext?.user?.fid;
   const { reconnect } = useReconnect();
   const { writeContractAsync } = useWriteContract();
@@ -148,7 +148,8 @@ const handleUsdcDonate = async (amount: string) => {
         <div className={styles.onlyCardWrapper}>
           {/* এখানে শুধুমাত্র ইমেজটি লোড হবে */}
           <Image
-            src={`/api/metadata/${fid}?refresh=true`} 
+            // src={`/api/metadata/${fid}?refresh=true`} 
+            src={`/api/metadata/${fid}`}
             alt="Verified ID Card" 
             className={styles.justTheImage}
             width={600} 
