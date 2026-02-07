@@ -283,14 +283,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px;
-  min-height: 100vh;
+  padding: 5px 5px 0px 5px; /* নিচের প্যাডিং ২০ পিক্সেল ফিক্সড করে দেওয়া হয়েছে */
+  min-height: auto; /* ১০০ ভিএইচ এর বদলে অটো করে দেখুন */
   background-color: #000;
   color: #fff;
   font-family: 'Inter', sans-serif;
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
-
 .title {
   font-size: 20px;
   font-weight: 900;
@@ -389,8 +389,8 @@
 
 .wheelContainer { 
   position: relative; 
-  width: 210px; 
-  height: 210px; 
+  width: 180px; 
+  height: 180px; 
   display: flex; 
   justify-content: center; 
   align-items: center; 
@@ -523,7 +523,7 @@
   border-radius: 10px; 
   font-size: 12px; 
   text-align: center; 
-  margin-bottom: 10px;
+  margin-bottom: 0px;
 }
 .statusBoxEligible { 
   background: rgba(0, 255, 128, 0.05); 
@@ -555,7 +555,7 @@
 
 .checkInButtonActive, .checkInButtonDisabled, .claimActive, .rewardButton {
   flex: 1; 
-  padding: 16px 5px; 
+  padding: 10px 5px; 
   border-radius: 14px; 
   font-size: 13px; 
   font-weight: 900; 
@@ -728,4 +728,179 @@
   border: none;
   font-weight: bold;
   cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+
+
+.lightMode {
+  background: #fcfcfc !important;
+  color: #000 !important;
+}
+
+/* ===== Top Bar Style ===== */
+.topBar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px 5px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  margin-bottom: 0px;
+}
+
+.lightMode .topBar {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.profileSummary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.miniPfpWrapper {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  padding: 1.5px;
+  background: linear-gradient(45deg, #f0642f, #9c27b0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.miniPfp {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.profileName {
+  font-size: 13px;
+  font-weight: 600;
+  color: #7b88b8;
+}
+
+.themeToggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.iconBlue { color: #4da3ff; }
+.iconOrange { color: #f0642f; }
+
+
+
+
+/* ১. এভেইল্যাবল এবং ক্লেইমেবল বক্স (Points Display) */
+.lightMode .pointsDisplayCompact {
+  background: #f0f2f5 !important; /* হালকা গ্রে ব্যাকগ্রাউন্ড */
+  color: #000 !important;
+  border: 1px solid #e0e0e0;
+}
+
+.lightMode .pointsValueSmall {
+  color: #0052ff !important; /* ভ্যালুগুলো নীল দেখাবে */
+}
+
+/* ২. লাস্ট চেক-ইন কার্ড (Streak Card) */
+.lightMode .streakCard {
+  background: rgba(0, 0, 0, 0.05) !important;
+  color: #333 !important;
+}
+
+/* ৩. চেক-ইন ডান বাটন (Disabled state) */
+.lightMode .checkInButtonDisabled {
+  background: #e0e0e0 !important;
+  color: #888 !important;
+}
+
+/* ৪. টাইটেল কালার */
+.lightMode .title {
+  color: #000 !important;
+}
+
+/* ৫. নোটিশ বার (যদি এটিও ডার্ক থাকে) */
+.lightMode .noticeContainer {
+  background: rgba(0, 122, 255, 0.1) !important;
+  border-color: rgba(0, 122, 255, 0.2);
+}
+.lightMode .noticeText {
+  color: #0052ff !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.noticeContainer {
+  width: 100%;
+  margin: 0px 0;
+  background: rgba(0, 122, 255, 0.08);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(0, 122, 255, 0.2);
+  border-bottom: 1px solid rgba(0, 122, 255, 0.2);
+  overflow: hidden;
+  padding: 5px 0;
+  display: flex;
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.scrollingWrapper {
+  display: flex;
+  white-space: nowrap;
+  animation: continuousScroll 25s linear infinite;
+}
+
+.noticeText {
+  font-size: 14px;
+  font-weight: 600;
+  color: #58a6ff; 
+  padding: 0 40px; /* প্রতিটি টেক্সটের মাঝে গ্যাপ */
+  display: flex;
+  align-items: center;
+}
+
+@keyframes continuousScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%); /* অর্ধেক স্লাইড হওয়া মানেই লুপ পূর্ণ হওয়া */
+  }
 }

@@ -29,7 +29,7 @@
   border-radius: 50px;
   border: 1px solid rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
-  margin-bottom: 10px;
+  margin-bottom: 0px;
 }
 
 .lightMode .topBar {
@@ -76,13 +76,14 @@
 /* ===== Hero Header & Title ===== */
 .heroHeader {
   text-align: center;
-  margin: 10px 0 25px;
+  margin: 10px 0 10px;
 }
 
 .title {
   font-size: 18px; /* এখান থেকে সাইজ আরও কমাতে চাইলে ১৬ বা ১৪ দিতে পারেন */
   font-weight: 900;
   text-transform: uppercase;
+
   
   /* কাপ আইকনগুলোর সাথে এলাইন করার জন্য */
   display: flex;
@@ -131,11 +132,12 @@
   }
 }
 
-.subTitle {
+/* .subTitle {
   font-size: 10px;
   color: #7b88b8;
   font-weight: 500;
-}
+  margin-bottom: 0px;
+} */
 
 /* ===== Leaderboard Board (No Outer Card) ===== */
 .compactBoard {
@@ -357,3 +359,131 @@
   color: #60a5fa !important;
   font-weight: 700;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* --- Premium Compact Reward Section --- */
+.rewardSection {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0px 0px;
+  margin: 5px 0 15px 0;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.rewardHeader {
+  text-align: center;
+  margin-bottom: 5px;
+}
+
+.rewardHeader h3 {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  /* Premium Golden Gradient */
+  background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fcf6ba, #aa771c);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+}
+
+.rewardHeader p {
+  font-size: 9.5px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 2px;
+}
+
+.rewardCards {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
+
+.premiumCard {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 4px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+}
+
+.premiumCard:hover {
+  transform: translateY(-2px);
+}
+
+.tier {
+  font-size: 9px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+}
+
+.prize {
+  font-size: 8px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* Luxury Accents */
+.premiumCard:nth-child(1) { border-bottom: 1.5px solid #ffd700; }
+.premiumCard:nth-child(2) { border-bottom: 1.5px solid #c0c0c0; }
+.premiumCard:nth-child(3) { border-bottom: 1.5px solid #cd7f32; }
+
+/* --- Light Mode Adjustments --- */
+:global(.light-mode) .rewardSection {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+:global(.light-mode) .rewardHeader h3 {
+  /* Darker Golden for Light Background Visibility */
+  background: linear-gradient(to right, #a67c00, #bf9b30, #6d4c00);
+  -webkit-background-clip: text;
+}
+
+:global(.light-mode) .rewardHeader p {
+  color: #555555;
+  font-weight: 500;
+}
+
+:global(.light-mode) .premiumCard {
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+:global(.light-mode) .tier {
+  color: #666666; /* Clearly visible */
+}
+
+:global(.light-mode) .prize {
+  color: #111111; /* Sharp and readable */
+}
+
+:global(.light-mode) .premiumCard:nth-child(1) { border-bottom: 2px solid #ffbb00; }
+:global(.light-mode) .premiumCard:nth-child(2) { border-bottom: 2px solid #999999; }
+:global(.light-mode) .premiumCard:nth-child(3) { border-bottom: 2px solid #a05a2c; }

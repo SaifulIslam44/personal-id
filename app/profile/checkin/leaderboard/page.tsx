@@ -359,8 +359,30 @@ export default function LeaderboardPage() {
       <main className={styles.mainContent}>
         <header className={styles.heroHeader}>
           <h1 className={styles.title}>🏆 WINNING LEADERBOARD 🏆</h1>
-          <p className={styles.subTitle}>Top earners and lucky winners of the Surprise Box</p>
+          {/* <p className={styles.subTitle}>Top earners and lucky winners of the Surprise Box</p> */}
         </header>
+
+        <div className={styles.rewardSection}>
+  <div className={styles.rewardHeader}>
+    <h3>Monthly Championship Rewards</h3>
+    <p>Top 3 monthly earners will receive exclusive $PIM bonuses</p>
+  </div>
+
+  <div className={styles.rewardCards}>
+    <div className={styles.premiumCard}>
+      <span className={styles.tier}>🥇 1st</span>
+      <span className={styles.prize}>1,000 $PIM</span>
+    </div>
+    <div className={styles.premiumCard}>
+      <span className={styles.tier}>🥈 2nd</span>
+      <span className={styles.prize}>500 $PIM</span>
+    </div>
+    <div className={styles.premiumCard}>
+      <span className={styles.tier}>🥉 3rd</span>
+      <span className={styles.prize}>300 $PIM</span>
+    </div>
+  </div>
+</div>
 
         <div className={styles.compactBoard}>
           <div className={styles.smallHeader}>

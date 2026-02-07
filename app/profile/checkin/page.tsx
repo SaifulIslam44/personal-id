@@ -638,6 +638,8 @@ import { useState, useEffect } from "react";
 import { useAccount, useReadContract, useSendCalls } from "wagmi";
 import { formatUnits } from "viem";
 import { CONTRACT_ADDRESS, ABI } from "@/lib/contract";
+import Image from "next/image";
+import { Moon, Sun } from "lucide-react";
 import styles from "./checkin.module.css";
 import { useConnect, useWriteContract } from "wagmi";
 import { sdk } from "@farcaster/miniapp-sdk";
@@ -665,6 +667,12 @@ export default function CheckInPage() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 const [lastClaimedAmount, setLastClaimedAmount] = useState("0");
 
+const [isDarkMode, setIsDarkMode] = useState(true);
+  const [userData, setUserData] = useState({
+    displayName: "User",
+    pfpUrl: "https://placehold.co/100x100?text=User"
+  });
+
 
 
 
@@ -682,6 +690,28 @@ const [lastClaimedAmount, setLastClaimedAmount] = useState("0");
     { val: "0.15",    centerDeg: 257.14 }, 
     { val: "0.02", centerDeg: 308.57 }
   ];
+
+useEffect(() => {
+    if (!isDarkMode) {
+      document.body.classList.add('light-mode');
+    } else {
+      document.body.classList.remove('light-mode');
+    }
+  }, [isDarkMode]);
+
+
+  useEffect(() => {
+    sdk.context.then((ctx) => {
+      if (ctx?.user) {
+        setUserData({
+          displayName: ctx.user.displayName || ctx.user.username || "User",
+          pfpUrl: ctx.user.pfpUrl || "https://placehold.co/100x100?text=User"
+        });
+      }
+    }).catch(() => {});
+  }, []);
+
+
 
   useEffect(() => {
     setIsMounted(true);
@@ -1104,14 +1134,54 @@ const handleShare = async () => {
   }
 
   return (
-    <div className={styles.container}>
+    // <div className={styles.container}>
+
+    <div className={`${styles.container} ${!isDarkMode ? styles.lightMode : ""}`}>
+      {/* --- টপ বার সেকশন --- */}
+      <nav className={styles.topBar}>
+        <div className={styles.profileSummary}>
+          <div className={styles.miniPfpWrapper}>
+            <Image 
+              src={userData.pfpUrl} 
+              alt="PFP" 
+              className={styles.miniPfp} 
+              width={28} 
+              height={28} 
+              unoptimized 
+            />
+          </div>
+          <span className={styles.profileName}>{userData.displayName}</span>
+        </div>
+        <button className={styles.themeToggle} onClick={() => setIsDarkMode(!isDarkMode)}>
+          {isDarkMode ? 
+            <Moon size={18} className={styles.iconBlue} /> : 
+            <Sun size={18} className={styles.iconOrange} />
+          }
+        </button>
+      </nav>
+
+
+
+      
       <div className={styles.supplyHeader}>
         <span className={styles.supplyDot}></span>
         {/* Reward Pool: <strong>{currentSupply} DEGEN</strong> */}
         Reward Pool: <strong>{currentSupply} USDC</strong>
       </div>
 
-      <h1 className={styles.title}>Check-in & Spin to Earn</h1>
+      <div className={styles.noticeContainer}>
+  <div className={styles.scrollingWrapper}>
+    <span className={styles.noticeText}>
+      ⚠️Notice: Spin section temporary disabled due to this week rewards pool over. Wait for the next week and keep collect $PIM 🟦🟦🟦
+    </span>
+    {/* সেম লিখাটি আবার নিচে দিন যেন লুপ নিরবচ্ছিন্ন থাকে */}
+    <span className={styles.noticeText}>
+      ⚠️Notice: Spin section temporary disabled due to this week rewards pool over. Wait for the next week and keep collect $PIM 🟦🟦🟦
+    </span>
+  </div>
+</div>
+
+      {/* <h1 className={styles.title}>Check-in & Spin to Earn</h1> */}
 
       <div className={styles.spinSection}>
         <div className={styles.wheelContainer}>
