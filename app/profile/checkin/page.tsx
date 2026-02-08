@@ -737,7 +737,7 @@ useEffect(() => {
     query: { enabled: !!address },
   });
 
-  const { data: contractTokenBalance, refetch: refetchSupply } = useReadContract({
+  const { data: _contractTokenBalance, refetch: refetchSupply } = useReadContract({
     address: USDC_TOKEN_ADDRESS as `0x${string}`,
     abi: [{ constant: true, inputs: [{ name: "_owner", type: "address" }], name: "balanceOf", outputs: [{ name: "balance", type: "uint256" }], type: "function" }],
     functionName: "balanceOf",
@@ -763,7 +763,12 @@ useEffect(() => {
   const lastCheckIn = lastCheckInData ? Number(lastCheckInData) : 0;
   // const currentSupply = contractTokenBalance ? Math.floor(Number(formatEther(contractTokenBalance as bigint))) : 0;
   // const currentSupply = contractTokenBalance ? Math.floor(Number(formatUnits(contractTokenBalance as bigint, 6))) : 0;
-const currentSupply = contractTokenBalance ? parseFloat(formatUnits(contractTokenBalance as bigint, 6)).toFixed(2) : "0.00";
+
+
+
+
+  //uncomment it
+// const currentSupply = contractTokenBalance ? parseFloat(formatUnits(contractTokenBalance as bigint, 6)).toFixed(2) : "0.00";
 
   const availablePoints = userPoints ? Number(userPoints) : 0;
   // const spinRewards = pendingSpinRewards ? formatUnits(pendingSpinRewards as bigint, 18) : "0";
