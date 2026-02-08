@@ -280,10 +280,10 @@ export default function ProfilePage() {
          
 
   // ✅ States
-  const [isFollowed, setIsFollowed] = useState(false);
+  // const [isFollowed, setIsFollowed] = useState(false);
   const [manualStatus, setManualStatus] = useState("");
   const [loading, setLoading] = useState(false);
-  const [hasShared, setHasShared] = useState(false);
+  // const [hasShared, setHasShared] = useState(false);
  
   const { sendCalls, isPending } = useSendCalls();
 
@@ -312,7 +312,7 @@ useEffect(() => {
     pfpUrl: context?.user?.pfpUrl || frameContext?.user?.pfpUrl,
   };
 
-  const profileImage = user?.pfpUrl || "https://wrpcd.xyz/pfp/default.png";
+  const profileImage = user?.pfpUrl || "https://placehold.co/100x100?text=?";
 
   const { data: nftBalance, isLoading: isBalanceLoading } = useReadContract({
     abi: ABI,
@@ -330,36 +330,36 @@ useEffect(() => {
 
 
 
-  const handleShare = () => {
-    // const baseDomain = "https://base.app/app/mints.personalids.xyz"; 
-    const baseDomain = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint"; 
-    const farcasterMiniAppUrl =
-      "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint";
-    const isFarcaster = /warpcast|farcaster/i.test(navigator.userAgent);
-    const text =
-  "🔥 Mint your Personal Onchain ID & claim +50 PIM rewards instantly! 🚀 Use your PIM to spin for USDC rewards (100 PIM per spin, tokens burn after use). Don't miss out! 👇";
+  // const handleShare = () => {
+  //   // const baseDomain = "https://base.app/app/mints.personalids.xyz"; 
+  //   const baseDomain = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint"; 
+  //   const farcasterMiniAppUrl =
+  //     "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint";
+  //   const isFarcaster = /warpcast|farcaster/i.test(navigator.userAgent);
+  //   const text =
+  // "🔥 Mint your Personal Onchain ID & claim +50 PIM rewards instantly! 🚀 Use your PIM to spin for USDC rewards (100 PIM per spin, tokens burn after use). Don't miss out! 👇";
 
 
-    if (isFarcaster) {
-      const shareUrl =
-        "https://warpcast.com/~/compose?" +
-        "text=" +
-        encodeURIComponent(text) +
-        "&embeds[]=" +
-        encodeURIComponent(farcasterMiniAppUrl);
-      window.open(shareUrl, "_blank");
-    } else {
-      const shareUrl =
-        "https://warpcast.com/~/compose?text=" +
-        encodeURIComponent(text) +
-        "&embeds[]=" +
-        encodeURIComponent(baseDomain);
-      window.open(shareUrl, "_blank");
-    }
+  //   if (isFarcaster) {
+  //     const shareUrl =
+  //       "https://warpcast.com/~/compose?" +
+  //       "text=" +
+  //       encodeURIComponent(text) +
+  //       "&embeds[]=" +
+  //       encodeURIComponent(farcasterMiniAppUrl);
+  //     window.open(shareUrl, "_blank");
+  //   } else {
+  //     const shareUrl =
+  //       "https://warpcast.com/~/compose?text=" +
+  //       encodeURIComponent(text) +
+  //       "&embeds[]=" +
+  //       encodeURIComponent(baseDomain);
+  //     window.open(shareUrl, "_blank");
+  //   }
 
 
-    setHasShared(true);
-  };
+  //   setHasShared(true);
+  // };
 
 
 // ✅ Handle Mint using SendCalls
@@ -386,7 +386,7 @@ const savedRef = localStorage.getItem("referrer_address");
     // setManualStatus("ℹ️ Minting Profile (Direct)");
   }
 
-  console.log("🚀 Minting with Referrer:", finalReferrer);
+  // console.log("🚀 Minting with Referrer:", finalReferrer);
 
   try {
     const metadataURL = `${window.location.origin}/api/metadata/${user.fid}`;
@@ -424,7 +424,7 @@ const savedRef = localStorage.getItem("referrer_address");
             setTimeout(() => router.push("/profile/checkin"), 2000);
           },
           onError: (err) => {
-            console.error(err);
+            // console.error(err);
             setManualStatus(
               err.message.includes("rejected")
                 ? "Transaction Declined"
@@ -434,9 +434,9 @@ const savedRef = localStorage.getItem("referrer_address");
           },
         }
       );
-    } catch (err) {
-      console.error("Mint Error:", err);
-      setManualStatus("Error occurred");
+    } catch {
+      
+      setManualStatus("Mint Error");
       setLoading(false);
     }
   };
@@ -483,7 +483,7 @@ const savedRef = localStorage.getItem("referrer_address");
         </div>
       </div>
 
-          {(!isFollowed || !hasShared) && ( 
+          {/* {(!isFollowed || !hasShared) && ( 
           // {(!isFollowed) && (
         <div className={styles.taskBox}>
           <h4>Task Required</h4>
@@ -515,10 +515,10 @@ const savedRef = localStorage.getItem("referrer_address");
             Share on Base or Farcaster
           </button> 
         </div>
-      )}
+      )} */}
 
-       {isFollowed && hasShared && ( 
-        // {isFollowed && (
+       {/* {isFollowed && hasShared && ( 
+        {isFollowed && ( */}
         <div className={styles.mintWrapper}>
           <button
             className={styles.mintButton}
@@ -536,7 +536,7 @@ const savedRef = localStorage.getItem("referrer_address");
             <p className={styles.manualStatusText}>{manualStatus}</p>
           )}
         </div>
-      )}
+      {/* )} */}
     </div>
   );
 }
