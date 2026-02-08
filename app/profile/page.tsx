@@ -324,7 +324,7 @@ useEffect(() => {
 
   useEffect(() => {
     if (isConnected && nftBalance !== undefined && (nftBalance as bigint) > 0n) {
-      router.replace("/profile/checkin");
+      router.replace("/profile/checkin/giveaway");
     }
   }, [nftBalance, isConnected, router]);
 
@@ -421,7 +421,7 @@ const savedRef = localStorage.getItem("referrer_address");
           onSuccess: (data) => {
             setManualStatus("Mint Successful! Redirecting...");
             console.log("Bundle ID:", data);
-            setTimeout(() => router.push("/profile/checkin"), 2000);
+            setTimeout(() => router.push("/profile/checkin/giveaway"), 2000);
           },
           onError: (err) => {
             // console.error(err);

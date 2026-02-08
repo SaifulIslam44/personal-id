@@ -1164,11 +1164,11 @@ const handleShare = async () => {
 
 
       
-      <div className={styles.supplyHeader}>
+      {/* <div className={styles.supplyHeader}>
         <span className={styles.supplyDot}></span>
-        {/* Reward Pool: <strong>{currentSupply} DEGEN</strong> */}
+        Reward Pool: <strong>{currentSupply} DEGEN</strong>
         Reward Pool: <strong>{currentSupply} USDC</strong>
-      </div>
+      </div> */}
 
     {/* শুধু এই অংশটি কন্ডিশনাল রাখুন */}
     {APP_CONFIG.showNotice ? (
