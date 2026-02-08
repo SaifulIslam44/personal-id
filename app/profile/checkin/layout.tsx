@@ -62,7 +62,7 @@
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import styles from "./tabs.module.css";
-import { Gift, ListChecks, Users, Info, Trophy, BarChart3, Clock } from "lucide-react";
+import { Gift, ListChecks, Users, Info, Trophy, BarChart3 } from "lucide-react";
 import Image from "next/image";
 
 export default function ProfileLayout({
@@ -125,12 +125,15 @@ export default function ProfileLayout({
             </div>
 
             {/* 3. RIGHT ITEM: Badges (Coming Soon) */}
-            <div className={`${styles.fanItem} ${styles.posRight} ${styles.disabled}`}>
-              <div className={styles.fanCircle}>
-                <Clock size={20} color="#9ca3af" />
-              </div>
-              <span className={styles.fanLabel}>Soon</span>
-            </div>
+           <div 
+  className={`${styles.fanItem} ${styles.posRight}`} 
+  onClick={() => handleNavigation("/profile/checkin/giveaway")}
+>
+  <div className={styles.fanCircle}>
+    <Gift size={20} color="#ff4d4d" /> {/* লাল বা আপনার পছন্দের কালার দিতে পারেন */}
+  </div>
+  <span className={styles.fanLabel}>Airdrop</span>
+</div>
 
           </div>
         </>
