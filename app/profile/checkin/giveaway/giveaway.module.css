@@ -383,3 +383,84 @@
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @keyframes slideIn { from { transform: translateY(10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+
+
+
+
+
+
+
+
+
+
+/* --- History Accordion Styles (Matches Leaderboard Header) --- */
+.historyHeaderContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03); /* তোমার ডিজাইনের কার্ড ব্যাকগ্রাউন্ড */
+  padding: 10px 14px; /* Leaderboard Header এর মতো প্যাডিং */
+  border-radius: 12px; /* তোমার ডিজাইনের বর্ডার রেডিয়াস */
+  border: 1px solid rgba(255, 255, 255, 0.08); /* কার্ড বর্ডার */
+  cursor: pointer;
+  margin-bottom: 8px; /* আইটেমগুলোর মাঝে গ্যাপ */
+  transition: all 0.2s ease;
+}
+
+.historyHeaderContainer:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.historyTitle {
+  font-size: 0.9rem; /* leaderboardTitle এর সাইজ */
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-primary);
+}
+
+/* ডানপাশের ব্যাজ (Status Badge) */
+.historyStatusBadge {
+  background: rgba(255, 255, 255, 0.08); /* endDateBadge এর মতো */
+  color: var(--text-secondary);
+  font-size: 0.7rem; /* endDateBadge ফন্ট সাইজ */
+  padding: 4px 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* লিস্ট কন্টেইনার অ্যানিমেশন */
+.historyListContainer {
+  margin-top: -4px;
+  margin-bottom: 16px;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  overflow: hidden;
+  animation: slideIn 0.3s ease-out;
+  background: rgba(0, 0, 0, 0.2); /* ওপেন হলে একটু ডার্ক ব্যাকগ্রাউন্ড */
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: none;
+  padding: 8px;
+}
+
+/* Light Mode Support */
+:global(body.light-mode) .historyHeaderContainer {
+  background: white;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+:global(body.light-mode) .historyStatusBadge {
+  background: rgba(0, 0, 0, 0.05);
+  color: #555;
+  border-color: rgba(0,0,0,0.05);
+}
+:global(body.light-mode) .historyListContainer {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.05);
+}

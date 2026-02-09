@@ -85,7 +85,7 @@ export async function GET(request: Request) {
           api_key: NEYNAR_API_KEY || "",
         },
         // Next.js সার্ভার সাইড ক্যাশিং
-        next: { revalidate: 86400 } 
+        next: { revalidate: 886400 } 
       }
     );
 
