@@ -722,7 +722,7 @@ export default function GiveawayPage(props: any) {
   const [isEnded, setIsEnded] = useState(false);
   const [isWarpcast, setIsWarpcast] = useState(false);
 
-  const tokenSymbol = "$JESSE"; // অথবা যেই টোকেন দিচ্ছেন
+  const tokenSymbol = "$USDC"; // অথবা যেই টোকেন দিচ্ছেন
 
   // Fetch Latest ID from Blockchain
   const { data: latestId } = useReadContract({
@@ -811,14 +811,14 @@ export default function GiveawayPage(props: any) {
   const isFull = Number(current || 0) >= Number(max || 0);
     
   // Amounts USDC
-  // const rewardAmountRaw = amount ? Number(formatUnits(amount, 6)) : 0;
-  // const rewardAmountFormatted = rewardAmountRaw.toString();
-  // const totalWonFormatted = formatUnits(totalWon || 0n, 6);
+  const rewardAmountRaw = amount ? Number(formatUnits(amount, 6)) : 0;
+  const rewardAmountFormatted = rewardAmountRaw.toString();
+  const totalWonFormatted = formatUnits(totalWon || 0n, 6);
 
   //Ammount 18 Decimal Token
-  const rewardAmountRaw = amount ? Number(formatUnits(amount, 18)) : 0;
-  const rewardAmountFormatted = rewardAmountRaw.toString();
-  const totalWonFormatted = formatUnits(totalWon || 0n, 18);
+  // const rewardAmountRaw = amount ? Number(formatUnits(amount, 18)) : 0;
+  // const rewardAmountFormatted = rewardAmountRaw.toString();
+  // const totalWonFormatted = formatUnits(totalWon || 0n, 18);
 
   // Logic for Active/Ended State
   const isActiveGiveaway = active && !isEnded && !isFull;
