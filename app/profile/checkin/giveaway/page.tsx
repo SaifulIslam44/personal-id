@@ -707,7 +707,7 @@ const HistoryAccordionItem = ({ giveawayId }: { giveawayId: number }) => {
     query: { enabled: isOpen }
   });
 
-  const [_tokenAddr, amount, current, max, endTime] = (details as any) || [];
+  const [_tokenAddr, amount, _current, _max, endTime] = (details as any) || [];
   
   // 🔥🔥 Token Logic for History Items 🔥🔥
   const { decimals, tokenSymbol } = useMemo(() => {
@@ -1130,7 +1130,7 @@ export default function GiveawayPage(props: any) {
         {isActiveGiveaway ? (
             <div className={styles.giveawayCard}>
               <div className={styles.liveTag}><span className={styles.pulseDot}></span> LIVE DROP</div>
-              <h2 className={styles.cardTitle}>EXCLUSIVE DROP</h2>
+              <h2 className={styles.cardTitle}>EXCLUSIVE MINI DROP</h2>
               <div className={styles.timerWrapper}>
                  <div className={styles.timerDigit}>{String(timeLeft.hours).padStart(2, '0')}</div><span className={styles.timerSep}>:</span>
                  <div className={styles.timerDigit}>{String(timeLeft.mins).padStart(2, '0')}</div><span className={styles.timerSep}>:</span>
