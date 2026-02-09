@@ -1255,7 +1255,7 @@ Mint your identity and unlock full access rewards, task, leaderboard, airdrop an
             <div className={styles.actionZone}>
               <div className={styles.balanceHeader}>
                 <span className={styles.totalLabel}>Total Earnings</span>
-                <span className={styles.statValue}>{rewardAmountFormatted} {tokenSymbol}</span>
+                <span className={styles.statValue}>{totalWonFormatted} {tokenSymbol}</span>
               </div>
               <div className={styles.progressTrack}>
                  <div className={`${styles.step} ${count > 0 ? styles.stepActive : ''}`}>1</div>
