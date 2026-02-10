@@ -710,16 +710,16 @@ const HistoryAccordionItem = ({ giveawayId }: { giveawayId: number }) => {
   const [_tokenAddr, amount, _current, _max, endTime] = (details as any) || [];
   
   // 🔥🔥 Token Logic for History Items 🔥🔥
-const { decimals, tokenSymbol } = useMemo(() => {
-    // 1. JESSE Token (Only for ID 4)
+  const { decimals, tokenSymbol } = useMemo(() => {
     if (giveawayId === 4) return { decimals: 18, tokenSymbol: "$JESSE" };
-
-    if ([8, 10, 11, 12].includes(giveawayId)) { 
-        return { decimals: 18, tokenSymbol: "$DEGEN" };
-    }
+   // 👇 নতুন এই লাইনটা অ্যাড করো (ধরো নতুন ইভেন্ট আইডি ৬)
+    if (giveawayId === 8) return { decimals: 18, tokenSymbol: "$DEGEN" };
+    if (giveawayId === 10) return { decimals: 18, tokenSymbol: "$DEGEN" };
+    if (giveawayId === 11) return { decimals: 18, tokenSymbol: "$DEGEN" };
+    if (giveawayId === 12) return { decimals: 18, tokenSymbol: "$DEGEN" };
     return { decimals: 6, tokenSymbol: "$USDC" };
   }, [giveawayId]);
-  
+
   const rewardAmountRaw = amount ? Number(formatUnits(amount, decimals)) : 0;
   
   const formattedEndDate = useMemo(() => {
