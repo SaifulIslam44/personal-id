@@ -1049,7 +1049,7 @@ const { decimals, tokenSymbol } = useMemo(() => {
   const handleShare = () => {
     const shareAmount = Number(totalWonFormatted) > 0 ? totalWonFormatted : rewardAmountFormatted;
     const appUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint";
-    const text = `I just claimed ${shareAmount} $${tokenSymbol} from the Exclusive Drop in the Airdrop section on Personal ID Mint 💸\nThis was a time-limited & user-limited FCFS airdrop (first come, first served)💙🟦`;
+    const text = `I just claimed ${shareAmount} ${tokenSymbol} from the Exclusive Drop in the Airdrop section on Personal ID Mint 💸\nThis was a time-limited & user-limited FCFS airdrop (first come, first served)💙🟦`;
     const castIntentUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(`${appUrl}?fid=${userData.fid}`)}`;
     try { sdk.actions.openUrl(castIntentUrl); } catch { window.open(castIntentUrl, "_blank"); }
     setHasShared(true);
