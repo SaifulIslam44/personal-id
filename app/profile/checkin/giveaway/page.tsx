@@ -710,15 +710,22 @@ const HistoryAccordionItem = ({ giveawayId }: { giveawayId: number }) => {
   const [_tokenAddr, amount, _current, _max, endTime] = (details as any) || [];
   
   // 🔥🔥 Token Logic for History Items 🔥🔥
-  const { decimals, tokenSymbol } = useMemo(() => {
+const { decimals, tokenSymbol } = useMemo(() => {
+    // 1. JESSE Token (Only for ID 4)
     if (giveawayId === 4) return { decimals: 18, tokenSymbol: "$JESSE" };
-   // 👇 নতুন এই লাইনটা অ্যাড করো (ধরো নতুন ইভেন্ট আইডি ৬)
-    if (giveawayId === 8) return { decimals: 18, tokenSymbol: "$DEGEN" };
-    if (giveawayId === 10) return { decimals: 18, tokenSymbol: "$DEGEN" };
-    if (giveawayId === 11) return { decimals: 18, tokenSymbol: "$DEGEN" };
-    if (giveawayId === 12) return { decimals: 18, tokenSymbol: "$DEGEN" };
+
+    // 2. DEGEN Token (For IDs 8, 10, 11, 12)
+    // 👇 এই লাইনটা দেখো, এখানে ব্র্যাকেটের ভেতর সব আইডি কমা দিয়ে বসিয়ে দাও
+    if ([8, 10, 11, 12].includes(giveawayId)) { 
+        return { decimals: 18, tokenSymbol: "$DEGEN" };
+    }
+
+    // 3. Default (USDC) for everything else (1, 2, 3, 5, 7, 9...)
     return { decimals: 6, tokenSymbol: "$USDC" };
   }, [giveawayId]);
+
+
+
 
   const rewardAmountRaw = amount ? Number(formatUnits(amount, decimals)) : 0;
   
@@ -886,13 +893,21 @@ export default function GiveawayPage(props: any) {
   const isFull = Number(current || 0) >= Number(max || 0);
   const isActiveGiveaway = active && !isEnded && !isFull;
   
+
+
+  
   // 🔥🔥 FIX: Token Symbol & Decimals for MAIN Card 🔥🔥
-  const { decimals, tokenSymbol } = useMemo(() => {
-    if (activeGiveawayId === 4) return { decimals: 18, tokenSymbol: "$JESSE" };
-    // 👇 এখানেও সেম লাইনটা অ্যাড করো
-    if (activeGiveawayId === 8) return { decimals: 18, tokenSymbol: "$DEGEN" };
-    return { decimals: 6, tokenSymbol: "$USDC" };
-  }, [activeGiveawayId]);
+const { decimals, tokenSymbol } = useMemo(() => {
+  if (activeGiveawayId === 4) return { decimals: 18, tokenSymbol: "$JESSE" };
+  if ([8, 10, 11, 12].includes(activeGiveawayId)) {
+    return { decimals: 18, tokenSymbol: "$DEGEN" };
+  }
+  return { decimals: 6, tokenSymbol: "$USDC" };
+}, [activeGiveawayId]);
+
+
+
+
 
   const rewardAmountRaw = amount ? Number(formatUnits(amount, decimals)) : 0;
   const rewardAmountFormatted = decimals === 6 ? rewardAmountRaw.toString() : rewardAmountRaw.toFixed(3);
