@@ -632,6 +632,729 @@
 
 
 
+// "use client";
+
+// import { useState, useEffect } from "react";
+// import { useAccount, useReadContract, useSendCalls } from "wagmi";
+// import { formatUnits } from "viem";
+// import { CONTRACT_ADDRESS, ABI } from "@/lib/contract";
+// import Image from "next/image";
+// import { Moon, Sun } from "lucide-react";
+// import { APP_CONFIG } from "@/lib/appconfig";
+// import styles from "./checkin.module.css";
+// import { useConnect, useWriteContract } from "wagmi";
+// import { sdk } from "@farcaster/miniapp-sdk";
+
+
+// const USDC_TOKEN_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
+
+// export default function CheckInPage() {
+//   const { address, isConnected, isReconnecting, isConnecting } = useAccount();
+//   const [message, setMessage] = useState("");
+//   const [justCheckedIn, setJustCheckedIn] = useState(false);
+//   const [loading, setLoading] = useState(false);
+//   const [spinLoading, setSpinLoading] = useState(false); // চেক-ইন বাটনের মতো কাজ করার জন্য নতুন স্টেট
+//   const [claimLoading, setClaimLoading] = useState(false);
+//   const [isSpinning, setIsSpinning] = useState(false);
+//   const [rotation, setRotation] = useState(0); 
+//   const [isMounted, setIsMounted] = useState(false);
+//   const [tempRewards, setTempRewards] = useState<string | null>(null);
+//   const [oldRewardsRaw, setOldRewardsRaw] = useState<bigint>(BigInt(0));
+//   const [cooldown, setCooldown] = useState(0); 
+//   const { sendCalls } = useSendCalls(); 
+//   const { connect, connectors } = useConnect();
+//   const { writeContract } = useWriteContract();
+
+//   const [showSuccessModal, setShowSuccessModal] = useState(false);
+// const [lastClaimedAmount, setLastClaimedAmount] = useState("0");
+
+// const [isDarkMode, setIsDarkMode] = useState(true);
+//   const [userData, setUserData] = useState({
+//     displayName: "User",
+//     pfpUrl: "https://placehold.co/100x100?text=User"
+//   });
+
+
+
+
+
+
+//   const USDC_LOGO = "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=032";
+
+//   // ইমেজ এবং ডিফল্ট পজিশন অনুযায়ী ডিগ্রি (0.008 = 0deg)
+//   const wheelSlices = [
+//     { val: "0.04", centerDeg: 0 }, 
+//     { val: "0.01", centerDeg: 51.43 }, 
+//     { val: "0.03", centerDeg: 102.86 }, 
+//     { val: "0.05",   centerDeg: 154.29 }, 
+//     { val: "0.1",   centerDeg: 205.71 }, 
+//     { val: "0.15",    centerDeg: 257.14 }, 
+//     { val: "0.02", centerDeg: 308.57 }
+//   ];
+
+// useEffect(() => {
+//     if (!isDarkMode) {
+//       document.body.classList.add('light-mode');
+//     } else {
+//       document.body.classList.remove('light-mode');
+//     }
+//   }, [isDarkMode]);
+
+
+//   useEffect(() => {
+//     sdk.context.then((ctx) => {
+//       if (ctx?.user) {
+//         setUserData({
+//           displayName: ctx.user.displayName || ctx.user.username || "User",
+//           pfpUrl: ctx.user.pfpUrl || "https://placehold.co/100x100?text=User"
+//         });
+//       }
+//     }).catch(() => {});
+//   }, []);
+
+
+
+//   useEffect(() => {
+//     setIsMounted(true);
+//     if (!isConnected && connectors.length > 0) {
+//       connect({ connector: connectors[0] });
+//     }
+//   }, [isConnected, connect, connectors]);
+
+//   useEffect(() => {
+//   if (cooldown > 0) {
+//     const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+//     return () => clearTimeout(timer);
+//   }
+// }, [cooldown]); // যখনই cooldown পরিবর্তন হবে এটি কাজ করবে
+
+//   // স্মার্ট কন্ট্রাক্ট রিড লজিক
+//   const { data: lastCheckInData, refetch: refetchTime } = useReadContract({
+//     address: CONTRACT_ADDRESS as `0x${string}`,
+//     abi: ABI,
+//     functionName: "lastCheckIn",
+//     args: [address as `0x${string}`],
+//     query: { enabled: !!address },
+//   });
+
+//   const { data: _contractTokenBalance, refetch: refetchSupply } = useReadContract({
+//     address: USDC_TOKEN_ADDRESS as `0x${string}`,
+//     abi: [{ constant: true, inputs: [{ name: "_owner", type: "address" }], name: "balanceOf", outputs: [{ name: "balance", type: "uint256" }], type: "function" }],
+//     functionName: "balanceOf",
+//     args: [CONTRACT_ADDRESS as `0x${string}`],
+//   });
+
+//   const { data: userPoints, refetch: refetchPoints } = useReadContract({
+//     address: CONTRACT_ADDRESS as `0x${string}`,
+//     abi: ABI,
+//     functionName: "getUserPoints",
+//     args: [address as `0x${string}`],
+//     query: { enabled: !!address },
+//   });
+
+//   const { data: pendingSpinRewards, refetch: refetchSpinRewards } = useReadContract({
+//     address: CONTRACT_ADDRESS as `0x${string}`,
+//     abi: ABI,
+//     functionName: "getPendingRewards",
+//     args: [address as `0x${string}`],
+//     query: { enabled: !!address },
+//   });
+
+//   const lastCheckIn = lastCheckInData ? Number(lastCheckInData) : 0;
+//   // const currentSupply = contractTokenBalance ? Math.floor(Number(formatEther(contractTokenBalance as bigint))) : 0;
+//   // const currentSupply = contractTokenBalance ? Math.floor(Number(formatUnits(contractTokenBalance as bigint, 6))) : 0;
+
+
+
+
+//   //uncomment it
+// // const currentSupply = contractTokenBalance ? parseFloat(formatUnits(contractTokenBalance as bigint, 6)).toFixed(2) : "0.00";
+
+//   const availablePoints = userPoints ? Number(userPoints) : 0;
+//   // const spinRewards = pendingSpinRewards ? formatUnits(pendingSpinRewards as bigint, 18) : "0";
+//   // const spinRewards = pendingSpinRewards ? formatUnits(pendingSpinRewards as bigint, 6) : "0";
+// //  const spinRewards = pendingSpinRewards ? formatUnits(pendingSpinRewards as bigint, 18) : "0";
+// // const spinRewards = pendingSpinRewards ? formatUnits(pendingSpinRewards as bigint, 6) : "0";
+// const spinRewards = (isSpinning && tempRewards) 
+//     ? formatUnits(oldRewardsRaw, 6) // স্পিন শেষ না হওয়া পর্যন্ত পুরাতন ব্যালেন্স দেখাবে
+//     : (pendingSpinRewards ? formatUnits(pendingSpinRewards as bigint, 6) : "0");
+  
+
+//   const canCheckIn = () => {
+//     if (!isMounted) return false;
+//     if (justCheckedIn) return false;
+//     if (lastCheckIn === 0) return true;
+//     const dayInSeconds = 24 * 60 * 60;
+//     const currentTime = Math.floor(Date.now() / 1000);
+//     return currentTime >= lastCheckIn + dayInSeconds;
+//   };
+
+// const handleCheckIn = async () => {
+//     if (!canCheckIn() || !address) return;
+//     setLoading(true);
+//     sendCalls({
+//       calls: [{ to: CONTRACT_ADDRESS as `0x${string}`, abi: ABI, functionName: "dailyCheckIn", args: [] }],
+//     }, {
+//       onSuccess: () => {
+//         setMessage("Success! Syncing points...");
+        
+        
+//         setTimeout(async () => {
+//           await refetchTime(); 
+//           await refetchPoints(); 
+//           setJustCheckedIn(true);
+//           setMessage("Success! +50 PIM earned.");
+//           setLoading(false);
+//         }, 5000); 
+//       },
+//       onError: () => { 
+//         setMessage("Check-in Failed."); 
+//         setLoading(false); 
+//       },
+//     });
+//   };
+
+// //   const handleSpin = async () => {
+// //     if (availablePoints < 100 || isSpinning || spinLoading || cooldown > 0) return;
+// //     const currentRewards = pendingSpinRewards ? (pendingSpinRewards as bigint) : BigInt(0);
+// //     setOldRewardsRaw(currentRewards);
+    
+// //     setSpinLoading(true); // ওয়ালেট কনফার্মেশনের সময় বাটন টেক্সট বদলানোর জন্য
+// //     setMessage("Please confirm in your wallet...");
+
+
+
+// // sendCalls({
+  
+// //   chainId: 8453, 
+// //   calls: [
+// //     {
+// //       to: CONTRACT_ADDRESS as `0x${string}`,
+// //       abi: ABI,
+// //       functionName: "spinWheel",
+// //       args: [],
+// //     }
+// //   ],
+// //   capabilities: {
+// //     paymasterService: {
+// //       url: "https://api.developer.coinbase.com/rpc/v1/base/QgLBDzBBarpt7Ob9FpVSjk24cbzDsDeF",
+// //     },
+// //   },
+// // }, {
+// //       onSuccess: async () => {
+// //         setSpinLoading(false); // কনফার্মেশন সফল হলে লোডিং বন্ধ
+// //         // setMessage("Spinning... Good Luck!");
+// //         setMessage("Wait Checking Blockchain Confimation. Good Luck!");
+
+// //         let attempts = 0;
+// //         const checkInterval = setInterval(async () => {
+// //           const { data: newData } = await refetchSpinRewards();
+// //           const totalNewRewards = newData ? (newData as bigint) : BigInt(0);
+// //           const winAmountRaw = totalNewRewards - currentRewards;
+// //           attempts++;
+
+// //           if (winAmountRaw > BigInt(0) || attempts >= 15) {
+// //     clearInterval(checkInterval);
+// //     setIsSpinning(true);
+    
+// //     const winAmountStr = formatUnits(winAmountRaw, 6);
+// //     // সরাসরি রিফেচ করা ডাটা দেখানোর বদলে সাময়িকভাবে সেভ করুন
+// //     setTempRewards(formatUnits(totalNewRewards, 6)); 
+
+// //     const slice = wheelSlices.find(s => Math.abs(parseFloat(s.val) - parseFloat(winAmountStr)) < 0.0001);
+
+// //     if (slice) {
+// //         const currentOffset = rotation % 360; 
+// //         const finalRotation = rotation + 3600 + (360 - currentOffset) + (360 - slice.centerDeg); 
+// //         setRotation(finalRotation);
+
+// //         setTimeout(() => {
+// //             setIsSpinning(false);
+// //             // অ্যানিমেশন শেষ হওয়ার পর ক্লেইমএবল ব্যালেন্স আপডেট করুন
+// //             refetchSpinRewards(); 
+// //             setTempRewards(null); // টেম্পোরারি ডাটা ক্লিয়ার করুন
+            
+// //             setMessage(`Congratulations! You won ${winAmountStr} USDC`);
+// //             refetchPoints(); refetchSupply();
+// //             setCooldown(10);
+// //         }, 8000); // চাকা ঘোরার সময় (৮ সেকেন্ড)
+// //     } else {
+// //               // setIsSpinning(false);
+// //               // setMessage(`Win: ${winAmountStr} USDC`);
+// //             }
+// //           } 
+// //           // যদি ৩০ সেকেন্ড পার হয়ে যায় (attempts >= 30)
+// //           else if (attempts >= 10) {
+// //             clearInterval(checkInterval);
+// //             setIsSpinning(false);
+// //             setSpinLoading(false);
+// //             setMessage("Blockchain Confirmation Failed. Please try again.");
+// //           }
+// //         }, 3000);
+// //       },
+// //       onError: () => { setSpinLoading(false); setIsSpinning(false); setMessage("Spin failed."); }
+// //     });
+// //   };
+
+
+
+
+
+
+
+
+
+
+
+
+
+//   const handleSpin = async () => {
+//     if (availablePoints < 100 || isSpinning || spinLoading || cooldown > 0) return;
+//     const currentRewards = pendingSpinRewards ? (pendingSpinRewards as bigint) : BigInt(0);
+//     setOldRewardsRaw(currentRewards);
+    
+//     setSpinLoading(true); // ওয়ালেট কনফার্মেশনের সময় বাটন টেক্সট বদলানোর জন্য
+//     setMessage("Please confirm in your wallet...");
+
+//    writeContract({
+//         address: CONTRACT_ADDRESS as `0x${string}`,
+//         abi: ABI,
+//         functionName: "spinWheel",
+//         args: [],
+//         gas: BigInt(150000), 
+//     }, {
+//       onSuccess: async () => {
+//         setSpinLoading(false); // কনফার্মেশন সফল হলে লোডিং বন্ধ
+//         // setMessage("Spinning... Good Luck!");
+//         setMessage("Wait Checking Blockchain Confimation. Good Luck!");
+
+//         let attempts = 0;
+//         const checkInterval = setInterval(async () => {
+//           const { data: newData } = await refetchSpinRewards();
+//           const totalNewRewards = newData ? (newData as bigint) : BigInt(0);
+//           const winAmountRaw = totalNewRewards - currentRewards;
+//           attempts++;
+
+//           if (winAmountRaw > BigInt(0) || attempts >= 15) {
+//     clearInterval(checkInterval);
+//     setIsSpinning(true);
+    
+//     const winAmountStr = formatUnits(winAmountRaw, 6);
+//     // সরাসরি রিফেচ করা ডাটা দেখানোর বদলে সাময়িকভাবে সেভ করুন
+//     setTempRewards(formatUnits(totalNewRewards, 6)); 
+
+//     const slice = wheelSlices.find(s => Math.abs(parseFloat(s.val) - parseFloat(winAmountStr)) < 0.0001);
+
+//     if (slice) {
+//         const currentOffset = rotation % 360; 
+//         const finalRotation = rotation + 3600 + (360 - currentOffset) + (360 - slice.centerDeg); 
+//         setRotation(finalRotation);
+
+//         setTimeout(() => {
+//             setIsSpinning(false);
+//             // অ্যানিমেশন শেষ হওয়ার পর ক্লেইমএবল ব্যালেন্স আপডেট করুন
+//             refetchSpinRewards(); 
+//             setTempRewards(null); // টেম্পোরারি ডাটা ক্লিয়ার করুন
+            
+//             setMessage(`Congratulations! You won ${winAmountStr} USDC`);
+//             refetchPoints(); refetchSupply();
+//             setCooldown(10);
+//         }, 8000); // চাকা ঘোরার সময় (৮ সেকেন্ড)
+//     } else {
+//               // setIsSpinning(false);
+//               // setMessage(`Win: ${winAmountStr} USDC`);
+//             }
+//           } 
+//           // যদি ৩০ সেকেন্ড পার হয়ে যায় (attempts >= 30)
+//           else if (attempts >= 10) {
+//             clearInterval(checkInterval);
+//             setIsSpinning(false);
+//             setSpinLoading(false);
+//             setMessage("Blockchain Confirmation Failed. Please try again.");
+//           }
+//         }, 3000);
+//       },
+//       onError: () => { setSpinLoading(false); setIsSpinning(false); setMessage("Spin failed."); }
+//     });
+//   };
+
+
+
+
+
+
+
+
+
+
+
+
+
+//   // const handleClaimReward = async () => {
+//   //   if (Number(spinRewards) <= 0) return;
+//   //   setClaimLoading(true);
+    
+//   //   sendCalls({
+//   //     calls: [{ to: CONTRACT_ADDRESS as `0x${string}`, abi: ABI, functionName: "claimSpinRewards", args: [] }],
+//   //   }, {
+//   //     onSuccess: async () => {
+//   //       setMessage(`Claim Successful! Syncing balance...`);
+        
+//   //       // ২ সেকেন্ড অপেক্ষা করা যাতে ব্লকচেইন ডাটা আপডেট করতে পারে
+//   //       setTimeout(async () => {
+//   //         await refetchSpinRewards();
+//   //         await refetchSupply();
+//   //         setMessage(`Claim Successful! Rewards sent to wallet.`);
+//   //         setClaimLoading(false);
+//   //       }, 5000); 
+//   //     },
+//   //     onError: () => { 
+//   //       setMessage("Claim failed."); 
+//   //       setClaimLoading(false); 
+//   //     },
+//   //   });
+//   // };
+
+
+
+
+// const handleClaimReward = async () => {
+//     if (Number(spinRewards) <= 0) return;
+//     const amountToClaim = spinRewards;
+//     setClaimLoading(true);
+    
+
+//     sendCalls({
+//       calls: [{ to: CONTRACT_ADDRESS as `0x${string}`, abi: ABI, functionName: "claimSpinRewards", args: [] }],
+//     }, {
+//       onSuccess: async () => {
+//         setTimeout(async () => {
+//           await refetchSpinRewards();
+//           await refetchSupply();
+          
+//           setLastClaimedAmount(amountToClaim); // অ্যামাউন্ট সেট করা
+//           setShowSuccessModal(true);           // পপআপ দেখানো
+          
+//           setClaimLoading(false);
+//           setMessage(`Claim Successful!`);
+//         }, 5000); 
+//       },
+//       onError: () => { 
+//         setMessage("Claim failed."); 
+//         setClaimLoading(false); 
+//       },
+//     });
+// };
+
+
+// const fetchEngagedUsers = async (fid: number): Promise<string[]> => {
+//   try {
+//     const response = await fetch(`/api/get-friends?fid=${fid}`);
+//     if (!response.ok) return [];
+//     const data = await response.json();
+//     return data.usernames || [];
+//   } catch (error) {
+//     console.error("Fetch Error details:", error);
+//     return [];
+//   }
+// };
+
+// const handleShare = async () => {
+//   let userFid: number | null = null;
+
+//   try {
+//     const context = await sdk.context; 
+//     userFid = context?.user?.fid || null;
+
+//     if (!userFid) {
+//       const urlParams = new URLSearchParams(window.location.search);
+//       const fidFromUrl = urlParams.get("fid");
+//       if (fidFromUrl) userFid = parseInt(fidFromUrl);
+//     }
+
+//     const shareUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint";
+
+//     if (!userFid) {
+//       // ইমোজিটি একদম লাইনের শুরুতে দেওয়া হয়েছে
+//       const simpleText = `I just claimed ${lastClaimedAmount} $USDC from the Daily Spin! 🎡✨
+
+// 🔵 Join me on Personal ID and earn too!`;
+      
+//       sdk.actions.openUrl(`https://warpcast.com/~/compose?text=${encodeURIComponent(simpleText)}&embeds[]=${encodeURIComponent(shareUrl)}`);
+//       return;
+//     }
+
+//     const friends = await fetchEngagedUsers(userFid);
+//     const mentions = friends.map((u: string) => `@${u}`).join(' ');
+    
+//     const tagLine = mentions ? `
+
+// ✅ You can try this guys ${mentions}` : "";
+    
+//     // এখানেও জয়েন মেসেজের আগে ইমোজিটি যোগ করে দিলাম
+//     const shareText = `I just claimed ${lastClaimedAmount} $USDC from the Daily Spin! 🎡✨
+
+// 🔵 Join me on Personal ID and earn too!${tagLine}`;
+    
+//     sdk.actions.openUrl(`https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(shareUrl)}`);
+
+//   } catch (error) {
+//     console.error("Share error:", error);
+//     const fallbackText = `I just claimed ${lastClaimedAmount} $USDC from the Daily Spin! 🎡✨
+
+// 🔵 Join me on Personal ID and earn too!`;
+//     sdk.actions.openUrl(`https://warpcast.com/~/compose?text=${encodeURIComponent(fallbackText)}`);
+//   }
+// };
+
+// // const handleShare = () => {
+// //   const shareText = `I just claimed ${lastClaimedAmount} $USDC from the Daily Spin! 🎡✨ Join me on personal id and earn too! \n\n🔵I just taged you @stlifestyle.base.eth `;
+// //   const shareUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint";
+  
+// //   // সরাসরি Farcaster-এর কাস্ট (Post) করার লিঙ্ক
+// //   const farcasterUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(shareText)}&embeds[]=${encodeURIComponent(shareUrl)}`;
+  
+// //   window.open(farcasterUrl, '_blank');
+// // };
+
+
+
+
+
+
+//   if (!isMounted) return null;
+
+//   const lastDateStr = (lastCheckIn > 0 || justCheckedIn)
+//     ? (justCheckedIn ? "Just Now" : new Date(lastCheckIn * 1000).toLocaleString()) 
+//     : "Never";
+
+//   if (isReconnecting || isConnecting) {
+//     return (
+//       <div className={styles.container}>
+//         <div className={styles.loadingWrapper}>
+//           <div className={styles.loadingSpinner}></div>
+//           <h2 className={styles.loadingText}>Syncing Wallet State...</h2>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     // <div className={styles.container}>
+
+//     <div className={`${styles.container} ${!isDarkMode ? styles.lightMode : ""}`}>
+//       {/* --- টপ বার সেকশন --- */}
+//       <nav className={styles.topBar}>
+//         <div className={styles.profileSummary}>
+//           <div className={styles.miniPfpWrapper}>
+//             <Image 
+//               src={userData.pfpUrl} 
+//               alt="PFP" 
+//               className={styles.miniPfp} 
+//               width={28} 
+//               height={28} 
+//               unoptimized 
+//             />
+//           </div>
+//           <span className={styles.profileName}>{userData.displayName}</span>
+//         </div>
+//         <button className={styles.themeToggle} onClick={() => setIsDarkMode(!isDarkMode)}>
+//           {isDarkMode ? 
+//             <Moon size={18} className={styles.iconBlue} /> : 
+//             <Sun size={18} className={styles.iconOrange} />
+//           }
+//         </button>
+//       </nav>
+
+
+
+      
+//       {/* <div className={styles.supplyHeader}>
+//         <span className={styles.supplyDot}></span>
+//         Reward Pool: <strong>{currentSupply} DEGEN</strong>
+//         Reward Pool: <strong>{currentSupply} USDC</strong>
+//       </div> */}
+
+//     {/* শুধু এই অংশটি কন্ডিশনাল রাখুন */}
+//     {APP_CONFIG.showNotice ? (
+//       <div className={styles.noticeContainer}>
+//         <div className={styles.scrollingWrapper}>
+//           <span className={styles.noticeText}>{APP_CONFIG.noticeMessage}</span>
+//           <span className={styles.noticeText}>{APP_CONFIG.noticeMessage}</span>
+//         </div>
+//       </div>
+//     ) : (
+//       /* নোটিশ বন্ধ থাকলে এই টাইটেলটি দেখাবে */
+//       <h1 className={styles.title}>Check-in & Spin to Earn</h1>
+//     )}
+
+//       <div className={styles.spinSection}>
+//         <div className={styles.wheelContainer}>
+//           <div 
+//             className={styles.wheel} 
+//             style={{ 
+//               transform: `rotate(${rotation}deg)`, 
+//               transition: isSpinning ? 'transform 8s cubic-bezier(0.15, 0, 0.1, 1)' : 'none' 
+//             }}
+//           >
+//             {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+//               <div key={i} className={`${styles.segment} ${styles[`s${i}`]}`}>
+//                 <div className={styles.rewardBox}>
+//                   <span className={styles.rewardValue}>{wheelSlices[i-1].val}</span>
+//                   {/* eslint-disable-next-line @next/next/no-img-element */}
+// <img 
+//   src={USDC_LOGO} 
+//   alt="usdc" 
+//   width="24" 
+//   height="24" 
+//   className={styles.tokenLogoLarge} 
+// />
+//                 </div>
+//               </div>
+//             ))}
+//           </div>
+//           <div className={styles.wheelInner}>{isSpinning ? "🌀" : "🎡"}</div>
+//         </div>
+//         <button 
+//     className={(availablePoints >= 100 && cooldown === 0 && !isSpinning && !spinLoading) 
+//         ? styles.spinButton 
+//         : styles.spinButtonLocked
+//     } 
+    
+//     onClick={handleSpin} 
+    
+//     disabled={isSpinning || spinLoading || availablePoints < 100 || cooldown > 0}
+// >
+//     {spinLoading ? "Confirming..." : 
+//      isSpinning ? "SPINNING..." : 
+//      cooldown > 0 ? `Wait ${cooldown}s` : 
+//      availablePoints >= 100 ? "SPIN (BURN 100 $PIM)" : "Earn 100PIM to Unlocked"}
+// </button>
+//       </div>
+
+//       <div className={styles.pointsDisplayCompact}>
+//         <div className={styles.pointsTitle}>AVAILABLE: <span className={styles.pointsValueSmall}>{availablePoints} $PIM</span></div>
+        
+//         <div className={styles.pointsTitle}>ClAIMABLE: <span className={styles.pointsValueSmall}>{spinRewards} $USDC</span></div>
+//         <div className={styles.pointsLabelSmall}>(Daily Check-in = +50 PIM | Spin = Burn 100 PIM)</div>
+//       </div>
+
+//       <div className={styles.streakCard}>
+//         <div className={styles.streakLabel}>Last Check-in: <span className={styles.dateText}>{lastDateStr}</span></div>
+//       </div>
+
+//       <div className={canCheckIn() ? styles.statusBoxEligible : styles.statusBoxNotEligible}>
+//         <p>{canCheckIn() ? "You are eligible for check-in!" : "Come back tomorrow for next check-in."}</p>
+//       </div>
+
+//       {message && <p className={styles.messageBox}>{message}</p>}
+
+//       <div className={styles.actionRow}>
+//         <button
+//           className={canCheckIn() ? styles.checkInButtonActive : styles.checkInButtonDisabled}
+//           onClick={handleCheckIn}
+//           disabled={loading || !canCheckIn()}
+//         >
+//           {loading ? "Checking..." : canCheckIn() ? "CHECK IN +50PIM" : "CHECKIN DONE"}
+//         </button>
+        
+//         <button 
+//           className={Number(spinRewards) > 0 ? styles.claimActive : styles.rewardButton} 
+//           onClick={handleClaimReward}
+//           disabled={claimLoading || Number(spinRewards) <= 0}
+//         >
+//           {claimLoading ? "Claiming..." : Number(spinRewards) > 0 ? "CLAIM" : "CLAIM LOCKED"}
+//         </button>
+
+//       </div>
+
+// {/* Success Modal */}
+// {showSuccessModal && (
+//   <div className={styles.modalOverlay}>
+//     <div className={styles.modalContent}>
+//       <button className={styles.closeButton} onClick={() => setShowSuccessModal(false)}>×</button>
+      
+//       <div className={styles.successIcon}>
+//         <div className={styles.checkMark}>L</div>
+//       </div>
+
+//       <h2 className={styles.modalTitle}>Claim Successful!</h2>
+//       <p className={styles.modalSubTitle}>
+//         {lastClaimedAmount} $USDC sent to your wallet.
+//       </p>
+
+//       <div className={styles.modalActionRow}>
+//         <button className={styles.shareBtn} onClick={handleShare}>
+//   Share
+// </button>
+//         {/* <button 
+//           className={styles.buyBtn} 
+//           onClick={() => setShowSuccessModal(false)}
+//         >
+//           Done
+//         </button> */}
+//       </div>
+//     </div>
+//   </div>
+// )}
+
+
+
+//     </div>
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// New Code:
+
+
+
+
+
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -667,6 +1390,9 @@ export default function CheckInPage() {
 
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 const [lastClaimedAmount, setLastClaimedAmount] = useState("0");
+
+const CHECKIN_TASK_ID = "daily_checkin";
+const [isCheckInLocked, setIsCheckInLocked] = useState(true);
 
 const [isDarkMode, setIsDarkMode] = useState(true);
   const [userData, setUserData] = useState({
@@ -729,13 +1455,20 @@ useEffect(() => {
 }, [cooldown]); // যখনই cooldown পরিবর্তন হবে এটি কাজ করবে
 
   // স্মার্ট কন্ট্রাক্ট রিড লজিক
-  const { data: lastCheckInData, refetch: refetchTime } = useReadContract({
+const { data: lastCheckInData, refetch: refetchTime } = useReadContract({
     address: CONTRACT_ADDRESS as `0x${string}`,
     abi: ABI,
-    functionName: "lastCheckIn",
-    args: [address as `0x${string}`],
+    functionName: "getDailyTaskLastClaim", // Name changed
+    args: [address as `0x${string}`, CHECKIN_TASK_ID], // ID added
     query: { enabled: !!address },
   });
+
+  const { data: resetHourData } = useReadContract({
+    address: CONTRACT_ADDRESS as `0x${string}`,
+    abi: ABI,
+    functionName: "getResetHour",
+  });
+
 
   const { data: _contractTokenBalance, refetch: refetchSupply } = useReadContract({
     address: USDC_TOKEN_ADDRESS as `0x${string}`,
@@ -761,9 +1494,36 @@ useEffect(() => {
   });
 
   const lastCheckIn = lastCheckInData ? Number(lastCheckInData) : 0;
+  const resetHour = resetHourData !== undefined ? Number(resetHourData) : 6;
   // const currentSupply = contractTokenBalance ? Math.floor(Number(formatEther(contractTokenBalance as bigint))) : 0;
   // const currentSupply = contractTokenBalance ? Math.floor(Number(formatUnits(contractTokenBalance as bigint, 6))) : 0;
 
+
+  // --- UTC 6 AM Reset Calculation (New) ---
+  useEffect(() => {
+    const calculateStatus = () => {
+      const now = new Date();
+      const nowUTC = new Date(now.toUTCString());
+
+      const currentCycleStartUTC = new Date(now.toUTCString());
+      if (nowUTC.getUTCHours() < resetHour) {
+        currentCycleStartUTC.setUTCDate(currentCycleStartUTC.getUTCDate() - 1);
+      }
+      currentCycleStartUTC.setUTCHours(resetHour, 0, 0, 0);
+
+      const lastClaimMs = lastCheckIn * 1000;
+
+      if (lastCheckIn !== 0 && lastClaimMs >= currentCycleStartUTC.getTime()) {
+        setIsCheckInLocked(true);
+      } else {
+        setIsCheckInLocked(false);
+      }
+    };
+
+    calculateStatus();
+    const interval = setInterval(calculateStatus, 60000); 
+    return () => clearInterval(interval);
+  }, [lastCheckIn, resetHour, justCheckedIn]);
 
 
 
@@ -780,29 +1540,35 @@ const spinRewards = (isSpinning && tempRewards)
     : (pendingSpinRewards ? formatUnits(pendingSpinRewards as bigint, 6) : "0");
   
 
-  const canCheckIn = () => {
+const canCheckIn = () => {
     if (!isMounted) return false;
     if (justCheckedIn) return false;
-    if (lastCheckIn === 0) return true;
-    const dayInSeconds = 24 * 60 * 60;
-    const currentTime = Math.floor(Date.now() / 1000);
-    return currentTime >= lastCheckIn + dayInSeconds;
+    return !isCheckInLocked; // Updated logic
   };
 
 const handleCheckIn = async () => {
     if (!canCheckIn() || !address) return;
     setLoading(true);
     sendCalls({
-      calls: [{ to: CONTRACT_ADDRESS as `0x${string}`, abi: ABI, functionName: "dailyCheckIn", args: [] }],
+      calls: [{ 
+        to: CONTRACT_ADDRESS as `0x${string}`, 
+        abi: ABI, 
+        functionName: "claimDailyTaskReward", // Function name changed
+        args: [CHECKIN_TASK_ID] // Args changed
+      }],
     }, {
-      onSuccess: () => {
+      onSuccess: async () => { // Async added
         setMessage("Success! Syncing points...");
         
+        // Instant refetch added
+        await refetchTime(); 
+        await refetchPoints();
         
         setTimeout(async () => {
           await refetchTime(); 
           await refetchPoints(); 
           setJustCheckedIn(true);
+          setIsCheckInLocked(true); // Lock state update
           setMessage("Success! +50 PIM earned.");
           setLoading(false);
         }, 5000); 
