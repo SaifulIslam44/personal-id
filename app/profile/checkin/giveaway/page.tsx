@@ -1130,7 +1130,7 @@ export default function GiveawayPage(props: any) {
         {isActiveGiveaway ? (
             <div className={styles.giveawayCard}>
               <div className={styles.liveTag}><span className={styles.pulseDot}></span> LIVE DROP</div>
-              <h2 className={styles.cardTitle}>EXCLUSIVE MINI DROP</h2>
+              <h2 className={styles.cardTitle}>EXCLUSIVE MINI DROP #{activeGiveawayId}</h2>
               <div className={styles.timerWrapper}>
                  <div className={styles.timerDigit}>{String(timeLeft.hours).padStart(2, '0')}</div><span className={styles.timerSep}>:</span>
                  <div className={styles.timerDigit}>{String(timeLeft.mins).padStart(2, '0')}</div><span className={styles.timerSep}>:</span>

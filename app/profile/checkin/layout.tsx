@@ -80,7 +80,8 @@ export default function ProfileLayout({
     { label: "Task", path: "/profile/checkin/tasks", icon: ListChecks },
     { label: "Menus", path: "MENU_TRIGGER", icon: null },
     { label: "Score", path: "/profile/checkin/score", icon: BarChart3 },
-    { label: "Info", path: "/profile/checkin/info", icon: Info },
+    // { label: "Info", path: "/profile/checkin/info", icon: Info },
+    { label: "Info", path: "#", icon: Info, disabled: true },
   ];
 
   const handleNavigation = (path: string) => {
