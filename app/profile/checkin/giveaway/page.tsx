@@ -713,7 +713,7 @@ const HistoryAccordionItem = ({ giveawayId }: { giveawayId: number }) => {
   const { decimals, tokenSymbol } = useMemo(() => {
     if (giveawayId === 4) return { decimals: 18, tokenSymbol: "$JESSE" };
    // 👇 নতুন এই লাইনটা অ্যাড করো (ধরো নতুন ইভেন্ট আইডি ৬)
-    // if (giveawayId === 6) return { decimals: 18, tokenSymbol: "$DEGEN" };
+    if (giveawayId === 8) return { decimals: 18, tokenSymbol: "$DEGEN" };
     return { decimals: 6, tokenSymbol: "$USDC" };
   }, [giveawayId]);
 
@@ -887,7 +887,7 @@ export default function GiveawayPage(props: any) {
   const { decimals, tokenSymbol } = useMemo(() => {
     if (activeGiveawayId === 4) return { decimals: 18, tokenSymbol: "$JESSE" };
     // 👇 এখানেও সেম লাইনটা অ্যাড করো
-    // if (activeGiveawayId === 6) return { decimals: 18, tokenSymbol: "$DEGEN" };
+    if (activeGiveawayId === 8) return { decimals: 18, tokenSymbol: "$DEGEN" };
     return { decimals: 6, tokenSymbol: "$USDC" };
   }, [activeGiveawayId]);
 
@@ -1031,7 +1031,7 @@ export default function GiveawayPage(props: any) {
   const handleShare = () => {
     const shareAmount = Number(totalWonFormatted) > 0 ? totalWonFormatted : rewardAmountFormatted;
     const appUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint";
-    const text = `I just claimed ${shareAmount} $${tokenSymbol} from the Exclusive Drop in the Airdrop section on Personal ID Mint 💸\nThis was a time-limited & user-limited FCFS airdrop (first come, first served).\n\nMint your identity and unlock full access rewards, task, leaderboard, airdrop and info section💙🟦`;
+    const text = `I just claimed ${shareAmount} $${tokenSymbol} from the Exclusive Drop in the Airdrop section on Personal ID Mint 💸\nThis was a time-limited & user-limited FCFS airdrop (first come, first served)💙🟦`;
     const castIntentUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(`${appUrl}?fid=${userData.fid}`)}`;
     try { sdk.actions.openUrl(castIntentUrl); } catch { window.open(castIntentUrl, "_blank"); }
     setHasShared(true);
@@ -1228,7 +1228,8 @@ export default function GiveawayPage(props: any) {
         </div>
 
         {/* --- PREVIOUS HISTORY SECTION (Accordions) - HIDDEN IF ACTIVE --- */}
-        {!isActiveGiveaway && previousHistoryIds.length > 0 && (
+        {/* !isActiveGiveaway &&  */}
+        {previousHistoryIds.length > 0 && (
            <div style={{ marginTop: 10 }}>
               {previousHistoryIds.map((id) => (
                  <HistoryAccordionItem key={id} giveawayId={id} />
