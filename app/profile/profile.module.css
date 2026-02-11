@@ -1,308 +1,318 @@
- .container {
+/* profile.module.css */
+
+.container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   min-height: 100vh;
-  padding: 24px;
-  background-color: #4e9afd42; 
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding: 10px;
+  background-color: #05070a; /* Deep Premium Dark */
+  color: #ffffff;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Light Mode */
+.lightMode {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+/* ===== Top Bar (Compact) ===== */
+/* ===== Top Bar (Updated) ===== */
+.topBar {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  justify-content: space-between; /* ৩টি আইটেমকে সমান দূরত্বে রাখবে */
+  align-items: center;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 50px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  margin-top: 5px;
+  margin-bottom: 20px;
+  gap: 10px; /* আইটেমগুলোর মাঝে গ্যাপ */
+}
+
+.lightMode .topBar {
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* ✅ Back Button Styling */
+.backButton {
+  background: transparent;
+  border: none;
+  color: #94a3b8; /* হালকা ধূসর রঙ */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.backButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.lightMode .backButton {
+  color: #64748b;
+}
+
+.lightMode .backButton:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #000000;
+}
+
+/* Profile Summary (একটু ফিক্স করা হয়েছে যাতে মাঝখানে থাকে) */
+.profileSummary { 
+  display: flex; 
+  align-items: center; 
+  gap: 8px; 
+  flex: 1; /* এটি মাঝখানের জায়গা নিবে */
+  justify-content: left; /* সেন্টারে রাখার জন্য */
+}
+
+.miniPfpWrapper {
+  width: 26px; height: 26px; border-radius: 50%;
+  padding: 1px;
+  background: linear-gradient(135deg, #0052ff, #7c3aed);
+}
+
+.miniPfp { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+.profileName { font-size: 12px; font-weight: 600; color: #94a3b8; }
+.themeToggle { background: none; border: none; cursor: pointer; display: flex; align-items: center; }
+.iconBlue { color: #60a5fa; } .iconOrange { color: #f97316; }
+
+
+/* ... (Previous CSS remains same) ... */
+
+/* ===== Header Section ===== */
+.headerSection {
+  text-align: center;
+  margin-bottom: 25px;
+  max-width: 360px;
 }
 
 .title {
-  position: relative;
-  width: 100%;
-  margin: 15px 0;
-  padding: 25px 12px;
-
-
-  background-color: #1951b9;
-  border-radius: 28px;
-  box-shadow: 0 14px 30px rgba(10, 84, 243, 0.25);
-
-  text-align: center;
-  font-size: 26px;
-  font-weight: 900;
-
-  color: #ffffff; 
-  overflow: hidden;
-
-
-   background: linear-gradient(
-    90deg,
-    #ffffff,
-    #93c5fd,
-    #ffffff
-  );
-  background-size: 300% auto;
-
-  color: transparent;
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0 0 10px 0;
+  background: linear-gradient(90deg, #fff, #93c5fd, #fff);
+  background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
-
-  animation: textMove 3s linear infinite;
+  color: transparent;
+  animation: shine 3s linear infinite;
+  letter-spacing: -0.5px;
 }
 
-@keyframes textMove {
-  0% {
-    background-position: 0% center;
-  }
-  100% {
-    background-position: 200% center;
-  }
+.lightMode .title {
+  background: linear-gradient(90deg, #1e293b, #3b82f6, #1e293b);
+  -webkit-background-clip: text;
+  background-clip: text;
 }
 
+.subtitle {
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.6;
+  margin: 0;
+  font-weight: 500;
+  padding: 0 5px;
+}
+
+.lightMode .subtitle { color: #64748b; }
+
+/* ✅ New Style for Referral Note */
+.referralNote {
+  display: block; /* নতুন লাইনে দেখাবে */
+  margin-top: 4px;
+  font-size: 11px;
+  color: #60a5fa; /* হালকা নীল কালার (Warning/Info ভাব আনার জন্য) */
+  font-weight: 400;
+  font-style: italic;
+  opacity: 0.9;
+}
+
+.lightMode .referralNote {
+  color: #2563eb;
+}
+
+@keyframes shine { to { background-position: 200% center; } }
+
+/* ... (Rest of the CSS remains same) ... */
 
 
-
-.card {
-  background: #ffffff;
+/* ===== PREMIUM COMPACT CARD ===== */
+.premiumCard {
   width: 100%;
-  max-width: 360px;
-  border-radius: 28px;
-  padding: 30px;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); 
+  max-width: 360px; /* উইডথ কমানো হয়েছে */
+  background: #0f0f0f; 
+  border: 2px solid #0052ff; 
+  border-radius: 18px;
+  padding: 18px; /* প্যাডিং কমানো হয়েছে */
+  position: relative;
+  box-shadow: 0 0 25px rgba(0, 82, 255, 0.12);
   display: flex;
   flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.lightMode .premiumCard {
+  background: #ffffff;
+  border: 2px solid #3b82f6;
+  box-shadow: 0 10px 30px rgba(59, 130, 246, 0.1);
+}
+
+.cardContent {
+  display: flex;
+  flex-direction: row;
   align-items: center;
-  margin-bottom: 40px;
-  position: relative;
+  gap: 16px;
+}
+
+/* বাম পাশের ছবি (Compact) */
+.pfpContainer {
+  flex-shrink: 0;
+}
+
+.cardPfp {
+  width: 85px; /* ইমেজের সাইজ কমানো হয়েছে (আগে 100 ছিল) */
+  height: 85px;
+  border-radius: 16px; 
+  object-fit: cover;
+  border: 2px solid #0052ff;
+}
+
+/* ডান পাশের তথ্য */
+.cardDetails {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
   overflow: hidden;
 }
 
-.card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 8px;
-  background-color: #0052ff;
-}
-
-.avatarWrapper {
-  margin-bottom: 20px;
-  margin-top: 10px;
-}
-
-.avatar {
-  width: 110px;
-  height: 110px;
-  border-radius: 24px;
-  object-fit: cover;
-  border: 4px solid #f3f4f6;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-.info {
-  text-align: center;
-  width: 100%;
-}
-
-.info h3 {
-  font-size: 22px;
+.cardName {
+  font-size: 18px; /* ফন্ট সাইজ 20 থেকে 18 করা হয়েছে */
   font-weight: 700;
-  color: #111827;
-  margin: 0 0 8px 0;
+  color: #ffffff;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.3px;
 }
+.lightMode .cardName { color: #0f172a; }
 
-.fid {
-  font-size: 14px;
-  color: #6b7280;
-  margin-bottom: 5px;
+.cardHandle {
+  font-size: 13px;
+  color: #3b82f6; 
+  margin: 3px 0 6px 0;
   font-weight: 500;
 }
 
-.wallet {
-  font-size: 13px;
-  color: #9ca3af;
-  background: #f9fafb;
-  padding: 6px 12px;
-  border-radius: 100px;
-  display: inline-block;
-  margin-bottom: 20px;
+.cardFid {
+  font-size: 11px;
+  color: #64748b;
+  font-weight: 500;
+  margin-bottom: 10px;
 }
 
-.badge {
-  display: block;
-  font-size: 12px;
+/* Onchain Badge (Compact Pill) */
+.onchainBadgeWrapper {
+  display: flex;
+}
+
+.onchainBadge {
+  background-color: #0052ff;
+  color: #ffffff;
+  font-size: 10px;
   font-weight: 700;
-  color: #0052ff;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  background: #eff6ff;
-  padding: 8px 16px;
-  border-radius: 12px;
-  width: fit-content;
-  margin: 0 auto;
+  padding: 5px 12px;
+  border-radius: 50px;
+  letter-spacing: 0.5px;
 }
 
+/* নিচের Verified Badge (Compact) */
+.verifiedBadge {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #0052ff;
+  border-radius: 10px;
+  background: rgba(0, 82, 255, 0.05);
+  color: #0052ff;
+  font-size: 12px;
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: 2px;
+}
+
+
+/* ===== MINT BUTTON (Compact) ===== */
+.mintWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
 .mintButton {
   width: 100%;
   max-width: 360px;
-  padding: 18px;
-  border-radius: 20px;
+  padding: 16px; /* বাটন হাইট একটু কমানো হয়েছে */
+  border-radius: 14px;
   border: none;
-  background-color: #0052ff; 
-  color: #ffffff;
-  font-size: 16px;
+  background: #0052ff;
+  color: #fff;
+  font-size: 15px;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 0.2s, background-color 0.2s;
-  box-shadow: 0 4px 14px rgba(0, 82, 255, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 82, 255, 0.3);
+  transition: all 0.2s ease;
 }
 
-.mintButton:active {
-  transform: scale(0.98);
-}
+.mintButton:active { transform: scale(0.98); }
 
 .mintButton:disabled {
-  background-color: #e5e7eb;
-  color: #9ca3af;
-  cursor: not-allowed;
+  background: #334155;
+  color: #94a3b8;
   box-shadow: none;
+  cursor: not-allowed;
 }
 
-.error {
-  margin-top: 15px;
-  font-size: 14px;
-  color: #dc2626;
-  font-weight: 500;
+.manualStatusText {
+  margin-top: 12px;
+  color: #f87171;
+  font-size: 12px;
+  font-weight: 600;
+  animation: pulse 1.5s infinite;
 }
 
-
-@media (max-width: 480px) {
-  .card {
-    max-width: 100%;
-  }
-  .mintButton {
-    max-width: 100%;
-  }
-}
-
-
-
+/* Loader */
 .loadingWrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
+  height: 80vh;
 }
-
 .loadingSpinner {
-  width: 50px;
-  height: 50px;
-  border: 5px solid #f3f4f6;
-  border-top: 5px solid #ffffff; 
+  width: 36px; height: 36px;
+  border: 3px solid rgba(255,255,255,0.1);
+  border-top: 3px solid #0052ff;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 20px;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 15px;
 }
-
-.loadingText {
-  font-size: 20px;
-  font-weight: 700;
-  color: #faf7f7;
-  margin-bottom: 8px;
-
-  animation: pulse 1.5s ease-in-out infinite;
-}
-
-.loadingSubText {
-  font-size: 14px;
-  color: #faf7f7;
-  font-weight: 500;
-}
-
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
-}
-
-
-
-
-.taskBox {
-  margin-top: 20px;
-  padding: 16px;
-  border-radius: 14px;
-  background: #0b0f1a;
-  border: 1px dashed #2f80ff;
-  text-align: center;
-}
-
-
-.taskBox h4 {
-  margin-bottom: 6px;
-  font-size: 16px;
-  font-weight: 600;
-  color: #2f80ff;
-}
-
-.taskBox p {
-  font-size: 13px;
-  color: #cbd5e1;
-  margin-bottom: 12px;
-}
-
-
-.followBtn {
-  display: block;             
-  width: 100%;
-  padding: 12px 18px;
-  margin-bottom: 10px;         
-  border-radius: 10px;
-  background: linear-gradient(135deg, #2f80ff, #6aa9ff);
-  color: #ffffff;
-  font-weight: 600;
-  font-size: 14px;
-  text-decoration: none;
-  text-align: center;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-.followBtn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(47, 128, 255, 0.35);
-}
-
-.followBtn:active {
-  transform: scale(0.98);
-  
-}
-
-
-.orText {
-  margin: 10px 0;
-  font-size: 12px;
-  font-weight: 600;
-  color: #94a3b8;
-  text-transform: uppercase;
-} 
-
-.manualStatusText {
-  display: block !important;
-  width: 100% !important;
-  text-align: center !important;
-  
-  
-  font-size: 14px !important;
-  font-weight: 600 !important;
-  color: #ff0000 !important; /* ডিফল্ট টেক্সট কালার */
-  animation: fadeIn 0.3s ease-in-out; /* হালকা এনিমেশন */
-}
-
-
-
-
-
-
-
+.loadingText { font-size: 14px; font-weight: 600; color: #cbd5e1; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
