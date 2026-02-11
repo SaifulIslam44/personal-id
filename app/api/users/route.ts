@@ -55,12 +55,11 @@
 
 
 
-
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const fids = searchParams.get("fid"); // এখন এখানে কমা দেওয়া অনেকগুলো FID আসবে
+  const fids = searchParams.get("fid"); 
 
   if (!fids) {
     return NextResponse.json({ error: "FIDs required" }, { status: 400 });
@@ -68,9 +67,13 @@ export async function GET(request: Request) {
 
   const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY;
 
-  // Cache Control: ব্রাউজার এবং Vercel CDN ডাটা ২৪ ঘণ্টা মনে রাখবে
+  /**
+   * ক্যাশ কনফিগারেশন:
+   * s-maxage=172800: Vercel CDN-এ ডাটা ২ দিন (৬০*৬০*২৪*২) সেভ থাকবে।
+   * stale-while-revalidate=86400: ক্যাশ শেষ হওয়ার পর আরও ১ দিন পর্যন্ত পুরনো ডাটা দেখাবে যখন ব্যাকগ্রাউন্ডে নতুন ডাটা আপডেট হবে।
+   */
   const headers = {
-    'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=59',
+    'Cache-Control': 'public, s-maxage=172800, stale-while-revalidate=86400',
     'Content-Type': 'application/json',
   };
 
@@ -84,13 +87,13 @@ export async function GET(request: Request) {
           accept: "application/json",
           api_key: NEYNAR_API_KEY || "",
         },
-        // Next.js সার্ভার সাইড ক্যাশিং
-        next: { revalidate: 886400 } 
+        // Next.js সার্ভার সাইড ক্যাশিং (২ দিন = 172800 সেকেন্ড)
+        next: { revalidate: 172800 } 
       }
     );
 
     if (!response.ok) {
-      // ফেইল করলেও ক্যাশ হেডার সহ রিটার্ন করছি যাতে বারবার রিকোয়েস্ট না যায়
+      // ফেইল করলেও ক্যাশ হেডার সহ রিটার্ন করা হচ্ছে যাতে বারবার Neynar-এ রিকোয়েস্ট না যায়
       return NextResponse.json(
         { error: "Failed to fetch from Neynar" }, 
         { status: response.status, headers }
