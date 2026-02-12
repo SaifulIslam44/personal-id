@@ -396,14 +396,14 @@
   align-items: center; 
 }
 
-.wheel {
+/* .wheel {
   width: 100%;
   height: 100%;
   border-radius: 50%;
   border: 6px solid #1a1a1a;
   position: relative;
   overflow: hidden;
-  /* ০.০০৮ কে অ্যারোর নিচে সোজা রাখতে ২৫.৭ ডিগ্রি বামে ঘুরিয়ে শুরু করা হয়েছে */
+
   background: conic-gradient(
     from -25.7deg,
     #857a7a 0deg 51.4deg,
@@ -415,7 +415,26 @@
     #b69385 308.4deg 360deg
   );
   transition: transform 8s cubic-bezier(0.15, 0, 0.1, 1);
+} */
+
+.wheel {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 6px solid #1a1a1a;
+  position: relative;
+  overflow: hidden;
+  /* ৪টি স্লাইসের জন্য -৪৫ ডিগ্রি থেকে শুরু করা হয়েছে যাতে প্রথম স্লাইসটি (০°) পয়েন্টারের নিচে সোজা থাকে */
+  background: conic-gradient(
+    from -45deg,
+    #857a7a 0deg 90deg,   /* স্লাইস ১ */
+    #a17f7f 90deg 180deg,  /* স্লাইস ২ */
+    #837e7e 180deg 270deg, /* স্লাইস ৩ */
+    #a17f7f 270deg 360deg  /* স্লাইস ৪ */
+  );
+  transition: transform 8s cubic-bezier(0.15, 0, 0.1, 1);
 }
+
 
 .segment { 
   position: absolute; 
@@ -450,13 +469,18 @@
 }
 
 /* স্লাইসের টেক্সট পজিশন নিখুঁত করা হয়েছে */
-.s1 { transform: rotate(0deg); }   
+/* .s1 { transform: rotate(0deg); }   
 .s2 { transform: rotate(51.4deg); }   
 .s3 { transform: rotate(102.8deg); }  
 .s4 { transform: rotate(154.2deg); }  
 .s5 { transform: rotate(205.6deg); }  
 .s6 { transform: rotate(257deg); }    
-.s7 { transform: rotate(308.4deg); }  
+.s7 { transform: rotate(308.4deg); }   */
+
+.s1 { transform: rotate(0deg); }   
+.s2 { transform: rotate(90deg); }   
+.s3 { transform: rotate(180deg); }  
+.s4 { transform: rotate(270deg); }
 
 .wheelInner { 
   position: absolute; 

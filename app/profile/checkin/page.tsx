@@ -1407,15 +1407,23 @@ const [isDarkMode, setIsDarkMode] = useState(true);
   const USDC_LOGO = "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=032";
 
   // ইমেজ এবং ডিফল্ট পজিশন অনুযায়ী ডিগ্রি (0.008 = 0deg)
+  // const wheelSlices = [
+  //   { val: "0.04", centerDeg: 0 }, 
+  //   { val: "0.01", centerDeg: 51.43 }, 
+  //   { val: "0.03", centerDeg: 102.86 }, 
+  //   { val: "0.05",   centerDeg: 154.29 }, 
+  //   { val: "0.1",   centerDeg: 205.71 }, 
+  //   { val: "0.15",    centerDeg: 257.14 }, 
+  //   { val: "0.02", centerDeg: 308.57 }
+  // ];
+
+
   const wheelSlices = [
-    { val: "0.04", centerDeg: 0 }, 
-    { val: "0.01", centerDeg: 51.43 }, 
-    { val: "0.03", centerDeg: 102.86 }, 
-    { val: "0.05",   centerDeg: 154.29 }, 
-    { val: "0.1",   centerDeg: 205.71 }, 
-    { val: "0.15",    centerDeg: 257.14 }, 
-    { val: "0.02", centerDeg: 308.57 }
-  ];
+  { val: "0.01", centerDeg: 0 }, 
+  { val: "0.03", centerDeg: 90 }, 
+  { val: "0.02", centerDeg: 180 }, 
+  { val: "0.05",  centerDeg: 270 }
+];
 
 useEffect(() => {
     if (!isDarkMode) {
@@ -1686,7 +1694,7 @@ const handleCheckIn = async () => {
         abi: ABI,
         functionName: "spinWheel",
         args: [],
-        gas: BigInt(150000), 
+        gas: BigInt(80000), 
     }, {
       onSuccess: async () => {
         setSpinLoading(false); // কনফার্মেশন সফল হলে লোডিং বন্ধ
@@ -1907,7 +1915,10 @@ const handleShare = async () => {
 
 
 
-  const noticeMessage = "⚠️ Notice: Spin section temporary disabled due to this week rewards pool over. Wait for the next week and keep collecting $PIM 🟦🟦🟦";
+  // const noticeMessage = "⚠️ Notice: Spin section temporary disabled due to this week rewards pool over. Wait for the next week and keep collecting $PIM 🟦🟦🟦";
+  const noticeMessage = "🎉 Good News: Spin section is now active! This week's rewards pool is refilled. Spin now and win Mini $USDC, Base app user no need gas fee 🟦🟦🟦";
+
+
 
   return (
     // <div className={styles.container}>
@@ -1966,12 +1977,12 @@ const handleShare = async () => {
               transition: isSpinning ? 'transform 8s cubic-bezier(0.15, 0, 0.1, 1)' : 'none' 
             }}
           >
-            {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+            {/* {[1, 2, 3, 4, 5, 6, 7].map((i) => (
               <div key={i} className={`${styles.segment} ${styles[`s${i}`]}`}>
                 <div className={styles.rewardBox}>
-                  <span className={styles.rewardValue}>{wheelSlices[i-1].val}</span>
+                  <span className={styles.rewardValue}>{wheelSlices[i-1].val}</span> */}
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-<img 
+{/* <img 
   src={USDC_LOGO} 
   alt="usdc" 
   width="24" 
@@ -1980,7 +1991,27 @@ const handleShare = async () => {
 />
                 </div>
               </div>
-            ))}
+            ))} */}
+
+            {[1, 2, 3, 4].map((i) => (
+  <div key={i} className={`${styles.segment} ${styles[`s${i}`]}`}>
+    <div className={styles.rewardBox}>
+      <span className={styles.rewardValue}>{wheelSlices[i-1].val}</span>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img 
+        src={USDC_LOGO} 
+        alt="usdc" 
+        width="24" 
+        height="24" 
+        className={styles.tokenLogoLarge} 
+      />
+    </div>
+  </div>
+))}
+
+
+
+            
           </div>
           <div className={styles.wheelInner}>{isSpinning ? "🌀" : "🎡"}</div>
         </div>
@@ -1997,7 +2028,7 @@ const handleShare = async () => {
     {spinLoading ? "Confirming..." : 
      isSpinning ? "SPINNING..." : 
      cooldown > 0 ? `Wait ${cooldown}s` : 
-     availablePoints >= 100 ? "SPIN (BURN 100 $PIM)" : "Earn 100PIM to Unlocked"}
+     availablePoints >= 200 ? "SPIN (BURN 200 $PIM)" : "Earn 200PIM to Unlocked"}
 </button>
       </div>
 
@@ -2005,7 +2036,7 @@ const handleShare = async () => {
         <div className={styles.pointsTitle}>AVAILABLE: <span className={styles.pointsValueSmall}>{availablePoints} $PIM</span></div>
         
         <div className={styles.pointsTitle}>ClAIMABLE: <span className={styles.pointsValueSmall}>{spinRewards} $USDC</span></div>
-        <div className={styles.pointsLabelSmall}>(Daily Check-in = +50 PIM | Spin = Burn 100 PIM)</div>
+        <div className={styles.pointsLabelSmall}>(Daily Check-in = +50 PIM | Spin = Burn 200 PIM)</div>
       </div>
 
       <div className={styles.streakCard}>

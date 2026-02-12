@@ -754,11 +754,15 @@ const HistoryAccordionItem = ({ giveawayId }: { giveawayId: number }) => {
     // 1. JESSE Token (Only for ID 4)
     if (giveawayId === 4) return { decimals: 18, tokenSymbol: "$JESSE" };
 
-    if ([8, 10, 11, 12, 13, 14, 15, 16].includes(giveawayId)) { 
-        return { decimals: 18, tokenSymbol: "$DEGEN" };
+    // if ([8, 10, 11, 12, 13, 14, 15, 16].includes(giveawayId)) { 
+    //     return { decimals: 18, tokenSymbol: "$DEGEN" };
+    // }
+
+        if ([1, 2, 3, 5, 6, 7, 9].includes(giveawayId)) { 
+        return { decimals: 6, tokenSymbol: "$USDC" };
     }
 
-    return { decimals: 6, tokenSymbol: "$USDC" };
+    return { decimals: 18, tokenSymbol: "$DEGEN" };
   }, [giveawayId]);
 
 
@@ -961,10 +965,15 @@ export default function GiveawayPage(props: any) {
   // 🔥🔥 FIX: Token Symbol & Decimals for MAIN Card 🔥🔥
   const { decimals, tokenSymbol } = useMemo(() => {
     if (activeGiveawayId === 4) return { decimals: 18, tokenSymbol: "$JESSE" };
-    if ([8, 10, 11, 12, 13, 14, 15, 16].includes(activeGiveawayId)) {
-      return { decimals: 18, tokenSymbol: "$DEGEN" };
+    // if ([8, 10, 11, 12, 13, 14, 15, 16].includes(activeGiveawayId)) {
+    //   return { decimals: 18, tokenSymbol: "$DEGEN" };
+    // }
+
+        if ([1, 2, 3, 5, 6, 7, 9].includes(activeGiveawayId)) { 
+        return { decimals: 6, tokenSymbol: "$USDC" };
     }
-    return { decimals: 6, tokenSymbol: "$USDC" };
+
+    return { decimals: 18, tokenSymbol: "$DEGEN" };
   }, [activeGiveawayId]);
 
 
@@ -1196,14 +1205,14 @@ export default function GiveawayPage(props: any) {
 
 
 
-  
+
 const onClaim = async () => {
-  if (!isWarpcast || !isFarcasterUser) { 
-    setFarcasterError("Open in Warpcast App"); 
-    return; 
-  }
+  // if (!isWarpcast || !isFarcasterUser) { 
+  //   setFarcasterError("Open in Warpcast App"); 
+  //   return; 
+  // }
   
-  setFarcasterError("");
+  // setFarcasterError("");
 
   try {
     const walletAddress = 
