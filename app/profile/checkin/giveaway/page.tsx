@@ -882,6 +882,8 @@ export default function GiveawayPage(props: any) {
 
   const [showMainList, setShowMainList] = useState(true);
 
+
+
   // Fetch Latest ID
   const { data: latestId } = useReadContract({
     address: CONTRACT_ADDRESS as `0x${string}`,
@@ -913,6 +915,10 @@ export default function GiveawayPage(props: any) {
   const [winnersProfiles, setWinnersProfiles] = useState<Record<number, WinnerProfile>>({});
 
   const { address } = useAccount();
+  // ফারকাস্টার ফ্রেমের কনটেক্সট থেকে অ্যাড্রেস নেওয়ার চেষ্টা করুন
+// const address = context?.user?.address || context?.user?.custodyAddress;
+
+
   const { writeContractAsync, isPending: isClaiming } = useWriteContract();
 
   // Contract Reads (Active ID)
@@ -1150,39 +1156,124 @@ export default function GiveawayPage(props: any) {
     } catch { setVerifyError(true); setErrorTimer(3); }
   };
 
-  const onClaim = async () => {
-    if (!isWarpcast || !isFarcasterUser) { setFarcasterError("Open in Warpcast App"); return; }
-    setFarcasterError("");
-    try {
-      const signResponse = await fetch('/api/sign-claim', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userWallet: address, fid: userData.fid, giveawayId: activeGiveawayId }),
-      });
-      const signData = await signResponse.json();
-      if (!signResponse.ok || !signData.signature) throw new Error(signData.message || "Failed to get signature");
+  // const onClaim = async () => {
+  //   if (!isWarpcast || !isFarcasterUser) { setFarcasterError("Open in Warpcast App"); return; }
+  //   setFarcasterError("");
+  //   try {
+  //     const signResponse = await fetch('/api/sign-claim', {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({ userWallet: address, fid: userData.fid, giveawayId: activeGiveawayId }),
+  //     });
+  //     const signData = await signResponse.json();
+  //     if (!signResponse.ok || !signData.signature) throw new Error(signData.message || "Failed to get signature");
 
-      const hash = await writeContractAsync({
-        address: CONTRACT_ADDRESS as `0x${string}`,
-        abi: ABI,
-        functionName: "claimGiveaway",
-        args: [ BigInt(activeGiveawayId), BigInt(userData.fid), signData.signature as `0x${string}` ],
-      });
-      if (hash) {
-        setLastClaimedAmount(rewardAmountFormatted); 
-        setShowSuccessModal(true);
-        setTimeout(() => { refetchDetails(); refetchStats(); refetchWinners(); }, 2000);
-      }
-    } catch (error: any) {
-      if (error.code === 4001 || error.message?.includes("User rejected") || error.name === 'UserRejectedRequestError') {
-          setFarcasterError("Transaction cancelled by user");
-      } else {
-          console.error("Transaction Failed:", error);
-          setFarcasterError(error.message || "Transaction failed. Try again.");
-      }
-      setTimeout(() => setFarcasterError(""), 3000);
+  //     const hash = await writeContractAsync({
+  //       address: CONTRACT_ADDRESS as `0x${string}`,
+  //       abi: ABI,
+  //       functionName: "claimGiveaway",
+  //       args: [ BigInt(activeGiveawayId), BigInt(userData.fid), signData.signature as `0x${string}` ],
+  //     });
+  //     if (hash) {
+  //       setLastClaimedAmount(rewardAmountFormatted); 
+  //       setShowSuccessModal(true);
+  //       setTimeout(() => { refetchDetails(); refetchStats(); refetchWinners(); }, 2000);
+  //     }
+  //   } catch (error: any) {
+  //     if (error.code === 4001 || error.message?.includes("User rejected") || error.name === 'UserRejectedRequestError') {
+  //         setFarcasterError("Transaction cancelled by user");
+  //     } else {
+  //         console.error("Transaction Failed:", error);
+  //         setFarcasterError(error.message || "Transaction failed. Try again.");
+  //     }
+  //     setTimeout(() => setFarcasterError(""), 3000);
+  //   }
+  // };
+
+
+
+
+
+
+
+  
+const onClaim = async () => {
+  if (!isWarpcast || !isFarcasterUser) { 
+    setFarcasterError("Open in Warpcast App"); 
+    return; 
+  }
+  
+  setFarcasterError("");
+
+  try {
+    const walletAddress = 
+      address || 
+      (userData as any)?.verified_addresses?.eth_addresses?.[0] || 
+      (userData as any)?.custody_address ||
+      (userData as any)?.address;
+
+    const userFid = userData?.fid;
+    const giveawayId = activeGiveawayId;
+
+    if (!walletAddress) {
+      setFarcasterError("Wallet not found. Please connect your wallet.");
+      return;
     }
-  };
+
+    if (!userFid || !giveawayId) {
+      setFarcasterError("Missing user identity or Giveaway ID");
+      return;
+    }
+
+    const signResponse = await fetch('/api/sign-claim', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        userWallet: walletAddress, 
+        fid: Number(userFid), 
+        giveawayId: Number(giveawayId) 
+      }),
+    });
+
+    const signData = await signResponse.json();
+
+    if (!signResponse.ok || !signData.signature) {
+      throw new Error(signData.message || "Failed to get signature");
+    }
+
+    const hash = await writeContractAsync({
+      address: CONTRACT_ADDRESS as `0x${string}`,
+      abi: ABI,
+      functionName: "claimGiveaway",
+      args: [ 
+        BigInt(giveawayId), 
+        BigInt(userFid), 
+        signData.signature as `0x${string}` 
+      ],
+    });
+
+    if (hash) {
+      setLastClaimedAmount(rewardAmountFormatted); 
+      setShowSuccessModal(true);
+      setTimeout(() => { 
+        refetchDetails(); 
+        refetchStats(); 
+        refetchWinners(); 
+      }, 2000);
+    }
+
+  } catch (error: any) {
+    if (error.code === 4001 || error.message?.includes("User rejected") || error.name === 'UserRejectedRequestError') {
+        setFarcasterError("Transaction cancelled by user");
+    } else {
+        setFarcasterError(error.message || "Transaction failed. Try again.");
+    }
+    setTimeout(() => setFarcasterError(""), 3000);
+  }
+};
+
+
+
 
   if (!isMounted) return <div className={styles.loadingPage}><Loader2 className={styles.spinner} size={30}/></div>;
 
