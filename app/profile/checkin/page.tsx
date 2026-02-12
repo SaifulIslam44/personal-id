@@ -1981,7 +1981,7 @@ const handleShare = async () => {
               <div key={i} className={`${styles.segment} ${styles[`s${i}`]}`}>
                 <div className={styles.rewardBox}>
                   <span className={styles.rewardValue}>{wheelSlices[i-1].val}</span> */}
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  
 {/* <img 
   src={USDC_LOGO} 
   alt="usdc" 
@@ -1993,22 +1993,23 @@ const handleShare = async () => {
               </div>
             ))} */}
 
-            {[1, 2, 3, 4].map((i) => (
+
+
+{[1, 2, 3, 4].map((i) => (
   <div key={i} className={`${styles.segment} ${styles[`s${i}`]}`}>
     <div className={styles.rewardBox}>
-      <span className={styles.rewardValue}>{wheelSlices[i-1].val}</span>
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img 
+      <span className={styles.rewardValue}>{wheelSlices[i - 1].val}</span>
+      <Image 
         src={USDC_LOGO} 
         alt="usdc" 
-        width="24" 
-        height="24" 
-        className={styles.tokenLogoLarge} 
+        width={24} 
+        height={24} 
+        className={styles.tokenLogoLarge}
+        unoptimized // এক্সটার্নাল ইউআরএল এর জন্য এটি ব্যবহার করা নিরাপদ
       />
     </div>
   </div>
 ))}
-
 
 
             

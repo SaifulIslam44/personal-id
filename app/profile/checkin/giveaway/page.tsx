@@ -882,7 +882,7 @@ export default function GiveawayPage(props: any) {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [timeLeft, setTimeLeft] = useState({ hours: 0, mins: 0, secs: 0 });
   const [isEnded, setIsEnded] = useState(false);
-  const [isWarpcast, setIsWarpcast] = useState(false);
+  const [_isWarpcast, setIsWarpcast] = useState(false);
 
   const [showMainList, setShowMainList] = useState(true);
 
@@ -1005,7 +1005,7 @@ export default function GiveawayPage(props: any) {
       })).slice(0, 100);
   }, [displayedListRaw, rewardAmountRaw, decimals]);
 
-  const isFarcasterUser = userData.fid > 0;
+  // const isFarcasterUser = userData.fid > 0;
 
   // History List IDs (Previous 3 IDs from current)
   const previousHistoryIds = useMemo(() => {
