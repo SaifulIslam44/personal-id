@@ -292,40 +292,21 @@
 
 
 
-
-
 "use client";
 
-import { ReactNode, useMemo } from "react";
+import { ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createConfig, http, WagmiProvider } from "wagmi";
+import { WagmiProvider } from "wagmi";
 import { base } from "wagmi/chains";
-import { farcasterMiniApp } from "@farcaster/miniapp-wagmi-connector";
 import { OnchainKitProvider } from "@coinbase/onchainkit";
-import { Attribution } from "ox/erc8021"; 
 import "@coinbase/onchainkit/styles.css";
+
+// lib ফোল্ডার থেকে config ইমপোর্ট করুন
+import { config } from "@/lib/config";
 
 const queryClient = new QueryClient();
 
 export function Providers({ children }: { children: ReactNode }) {
-  // ১. মেমোরাইজড ডাটা সাফিক্স যাতে এটি পরিবর্তন না হয়
-  const DATA_SUFFIX = useMemo(() => Attribution.toDataSuffix({
-    codes: ["bc_bmhx0p43"], // আপনার সঠিক বিল্ডার আইডি
-  }), []);
-
-  // ২. কনফিগটি প্রোভাইডারের ভেতরে রাখা হয়েছে যাতে এটি ফ্রেশ ডাটা পায়
-  const config = useMemo(() => createConfig({
-    chains: [base],
-    transports: {
-      [base.id]: http("https://base-mainnet.g.alchemy.com/v2/32tegXMoF5FiuVtoOrxzH"),
-    },
-    connectors: [
-      farcasterMiniApp(),
-    ],
-    ssr: true,
-    dataSuffix: DATA_SUFFIX, // ট্র্যাকিং নিশ্চিত করবে
-  }), [DATA_SUFFIX]);
-
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>

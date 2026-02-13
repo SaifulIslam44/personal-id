@@ -211,18 +211,276 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+// "use client";
+
+// import { useState, useEffect } from "react";
+// import { useAccount, useReadContract, useWriteContract } from "wagmi";
+// import { ABI, CONTRACT_ADDRESS } from "@/lib/contract";
+// import { sdk } from "@farcaster/miniapp-sdk";
+// import styles from "../task.module.css";
+
+// export default function DailyShareTask({ fid }: { fid: any }) {
+//   const { address } = useAccount();
+//   const { writeContractAsync } = useWriteContract();
+
+//   const [hasShared, setHasShared] = useState(false);
+//   const [isVerifying, setIsVerifying] = useState(false);
+//   const [isVerified, setIsVerified] = useState(false);
+//   const [isClaiming, setIsClaiming] = useState(false);
+//   const [timeLeft, setTimeLeft] = useState("");
+//   const [isLocked, setIsLocked] = useState(false);
+//   const [verifyError, setVerifyError] = useState(false);
+//   const [errorTimer, setErrorTimer] = useState(0); // কাউন্টডাউনের জন্য নতুন স্টেট
+
+//   const TASK_ID = "dailyshare";
+
+//   // ১. অন-চেইন লাস্ট ক্লেইম টাইম রিড
+//   const { data: lastClaimData, refetch: refetchClaimTime } = useReadContract({
+//     address: CONTRACT_ADDRESS,
+//     abi: ABI,
+//     functionName: "getDailyTaskLastClaim",
+//     args: address ? [address as `0x${string}`, TASK_ID] : undefined,
+//     query: { enabled: !!address },
+//   });
+
+//   // ২. ডায়নামিক রিসেট আওয়ার রিড
+//   const { data: resetHourData } = useReadContract({
+//     address: CONTRACT_ADDRESS,
+//     abi: ABI,
+//     functionName: "getResetHour",
+//   });
+
+//   // ৩. এডমিন লিমিট ডিসেবল করেছে কি না চেক
+//   const { data: limitDisabled } = useReadContract({
+//     address: CONTRACT_ADDRESS,
+//     abi: ABI,
+//     functionName: "isDailyLimitDisabled",
+//   });
+
+//   const lastClaimTime = lastClaimData ? Number(lastClaimData) : 0;
+//   const resetHour = resetHourData !== undefined ? Number(resetHourData) : 6;
+
+//   // ৪. টাইম রিসেট লজিক (UTC সময় অনুযায়ী)
+//   useEffect(() => {
+//     const updateStatus = () => {
+//       if (limitDisabled) {
+//         setIsLocked(false);
+//         return;
+//       }
+
+//       const now = new Date();
+//       const nowUTC = new Date(now.toUTCString());
+      
+//       const nextResetUTC = new Date(now.toUTCString());
+//       if (nowUTC.getUTCHours() >= resetHour) {
+//         nextResetUTC.setUTCDate(nowUTC.getUTCDate() + 1);
+//       }
+//       nextResetUTC.setUTCHours(resetHour, 0, 0, 0);
+
+//       const currentCycleStartUTC = new Date(now.toUTCString());
+//       if (nowUTC.getUTCHours() < resetHour) {
+//         currentCycleStartUTC.setUTCDate(currentCycleStartUTC.getUTCDate() - 1);
+//       }
+//       currentCycleStartUTC.setUTCHours(resetHour, 0, 0, 0);
+
+//       const lastClaimMs = lastClaimTime * 1000;
+
+//       if (lastClaimTime !== 0 && lastClaimMs >= currentCycleStartUTC.getTime()) {
+//         setIsLocked(true);
+//         const diff = nextResetUTC.getTime() - nowUTC.getTime();
+        
+//         if (diff > 0) {
+//           const h = Math.floor(diff / (1000 * 60 * 60));
+//           const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+//           const s = Math.floor((diff % (1000 * 60)) / 1000);
+//           setTimeLeft(`${h}h ${m}m ${s}s`);
+//         } else {
+//           setIsLocked(false);
+//         }
+//       } else {
+//         setIsLocked(false);
+//       }
+//     };
+
+//     const timer = setInterval(updateStatus, 1000);
+//     updateStatus();
+//     return () => clearInterval(timer);
+//   }, [lastClaimTime, resetHour, limitDisabled]);
+
+//   // ৫. এরর কাউন্টডাউন লজিক
+//   useEffect(() => {
+//     if (errorTimer > 0) {
+//       const timerId = setInterval(() => {
+//         setErrorTimer((prev) => prev - 1);
+//       }, 1000);
+//       return () => clearInterval(timerId);
+//     } else if (errorTimer === 0 && verifyError) {
+//       setVerifyError(false);
+//       setIsVerifying(false);
+//       setHasShared(false);
+//     }
+//   }, [errorTimer, verifyError]);
+
+// const handleShare = () => {
+//   if (!fid) return;
+
+//   const appUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint";
+//   const text = "🔥 I just daily shared & earned 50 $PIM! Mint your ID now and earn you too!! 👇";
+  
+  
+//   const castIntentUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(`${appUrl}?fid=${fid}`)}`;
+
+  
+//   const isFarcaster = /warpcast|farcaster/i.test(navigator.userAgent);
+
+//   try {
+//     if (isFarcaster) {
+    
+//       sdk.actions.openUrl(castIntentUrl);
+//     } else {
+      
+//       window.open(castIntentUrl, "_blank");
+//     }
+//   } catch (error) {
+//     console.error("SDK Share error:", error);
+   
+//     window.open(castIntentUrl, "_blank");
+//   }
+
+//   setHasShared(true);
+// };
+
+//   const handleVerify = async () => {
+//     if (!fid) return;
+//     setIsVerifying(true);
+//     setVerifyError(false);
+
+//     try {
+//       const response = await fetch(`/api/verify-share?fid=${fid}`);
+//       const data = await response.json();
+
+//       if (data.success) {
+//         setIsVerified(true);
+//         setIsVerifying(false);
+//       } else {
+//         setVerifyError(true);
+//         setErrorTimer(3); // ৩ সেকেন্ডের কাউন্টডাউন শুরু
+//       }
+//     } catch (err) {
+//       console.error("Verification error:", err);
+//       setVerifyError(true);
+//       setErrorTimer(3);
+//     }
+//   };
+
+//   const handleClaim = async () => {
+//     if (!address) return;
+//     try {
+//       setIsClaiming(true);
+//       const tx = await writeContractAsync({
+//         address: CONTRACT_ADDRESS,
+//         abi: ABI,
+//         functionName: "claimDailyTaskReward",
+//         args: [TASK_ID],
+//       });
+
+//       if (tx) {
+//         await refetchClaimTime();
+//         setHasShared(false);
+//         setIsVerified(false);
+//       }
+//       setIsClaiming(false);
+//     } catch (err) {
+//       console.error("Claim failed:", err);
+//       setIsClaiming(false);
+//     }
+//   };
+
+//   return (
+//     <div className={styles.taskCard}>
+//       <div className={styles.left}><div className={styles.icon}>📢</div></div>
+      
+//       <div className={styles.center}>
+//         <h3>Daily App Share</h3>
+//         <p className={styles.desc}>
+//           Earn 50 PIM daily. Next reset at {resetHour}:00 AM UTC.
+//         </p>
+
+//         {isLocked ? (
+//           <button className={styles.retryBtn1} disabled style={{ opacity: 0.8, cursor: "wait" }}>
+//             Reset in: {timeLeft}
+//           </button>
+//         ) : verifyError ? (
+//           <button className={styles.verifyBtn} style={{ backgroundColor: "#ff4444", color: "white" }} disabled>
+//             Not Shared! Try Again {errorTimer}s
+//           </button>
+//         ) : isVerifying ? (
+//           <button className={styles.verifyBtn} disabled>Verifying...</button>
+//         ) : isVerified ? (
+//           <button className={styles.claimBtn} onClick={handleClaim} disabled={isClaiming}>
+//             {isClaiming ? "Claiming..." : "Claim +50 PIM"}
+//           </button>
+//         ) : hasShared ? (
+//           <button className={styles.verifyBtn} onClick={handleVerify}>Verify Share</button>
+//         ) : (
+//           <button className={styles.verifyBtn} onClick={handleShare}>Share App</button>
+//         )}
+//       </div>
+
+//       <div className={styles.right}>
+//         <span className={styles.reward}>+50 PIM</span>
+//       </div>
+//     </div>
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAccount, useReadContract, useWriteContract } from "wagmi";
+
+import { useAccount, useReadContract, useSendCalls } from "wagmi";
+import { encodeFunctionData, concat } from "viem"; 
+import { Attribution } from "ox/erc8021"; 
 import { ABI, CONTRACT_ADDRESS } from "@/lib/contract";
 import { sdk } from "@farcaster/miniapp-sdk";
 import styles from "../task.module.css";
 
 export default function DailyShareTask({ fid }: { fid: any }) {
   const { address } = useAccount();
-  const { writeContractAsync } = useWriteContract();
-
+  const { sendCalls } = useSendCalls();
   const [hasShared, setHasShared] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
@@ -373,28 +631,60 @@ const handleShare = () => {
     }
   };
 
-  const handleClaim = async () => {
-    if (!address) return;
-    try {
-      setIsClaiming(true);
-      const tx = await writeContractAsync({
-        address: CONTRACT_ADDRESS,
-        abi: ABI,
-        functionName: "claimDailyTaskReward",
-        args: [TASK_ID],
-      });
 
-      if (tx) {
+
+const handleClaim = async () => {
+  if (!address) return;
+  setIsClaiming(true);
+
+  try {
+    // ১. ডাটা এনকোড করা
+    const data = encodeFunctionData({
+      abi: ABI,
+      functionName: "claimDailyTaskReward",
+      args: [TASK_ID],
+    });
+
+    // ২. বিল্ডার কোড সাফিক্স তৈরি করা
+    const builderSuffix = Attribution.toDataSuffix({
+      codes: ["bc_bmhx0p43"], // আপনার বিল্ডার কোড
+    });
+
+    // ৩. ডাটা এবং সাফিক্স জোড়া লাগানো
+    const finalData = concat([data, builderSuffix]);
+
+    // ৪. sendCalls দিয়ে ট্রানজেকশন পাঠানো
+    sendCalls({
+      calls: [
+        {
+          to: CONTRACT_ADDRESS as `0x${string}`,
+          data: finalData, // সাফিক্সসহ ম্যানুয়াল ডাটা
+        },
+      ],
+      // যদি গ্যাসলেস করতে চান, তবে এখানে পে-মাস্টার ক্যাপাবিলিটি যোগ করতে পারেন
+    }, {
+      onSuccess: async (id) => {
+        console.log("Bundle ID:", id);
+        
+        // ৫. সাকসেস লজিক
         await refetchClaimTime();
         setHasShared(false);
         setIsVerified(false);
+        setIsClaiming(false);
+      },
+      onError: (err) => {
+        console.error("Claim failed:", err);
+        setIsClaiming(false);
       }
-      setIsClaiming(false);
-    } catch (err) {
-      console.error("Claim failed:", err);
-      setIsClaiming(false);
-    }
-  };
+    });
+
+  } catch (err) {
+    console.error("Execution error:", err);
+    setIsClaiming(false);
+  }
+};
+
+
 
   return (
     <div className={styles.taskCard}>
