@@ -16,10 +16,11 @@
     "ethers": "^5.7.2",
     "lucide-react": "^0.562.0",
     "next": "15.3.6",
+    "ox": "^0.12.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "viem": "^2.31.6",
-    "wagmi": "^2.16.3"
+    "viem": "^2.45.3",
+    "wagmi": "^2.19.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

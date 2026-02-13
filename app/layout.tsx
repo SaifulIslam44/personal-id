@@ -1,5 +1,94 @@
 
 
+// import type { Metadata } from "next";
+// import { Inter, Source_Code_Pro } from "next/font/google";
+// import { SafeArea } from "@coinbase/onchainkit/minikit";
+// import { minikitConfig } from "../minikit.config";
+// import { Providers } from "./providers";
+// import "./globals.css";
+// import ConditionalFooter from "./components/ConditionalFooter";
+
+// import { Providers as WalletProviders } from "./providers"; 
+
+// export async function generateMetadata(): Promise<Metadata> {
+//   return {
+//     title: minikitConfig.miniapp.name,
+//     description: minikitConfig.miniapp.description,
+//     other: {
+//       'base:app_id': '694ab226c63ad876c908105e',
+//       "fc:frame": JSON.stringify({
+//         version: minikitConfig.miniapp.version,
+//         imageUrl: minikitConfig.miniapp.ogImageUrl,
+//         button: {
+//           title: `Join the ${minikitConfig.miniapp.name}`,
+//           action: {
+//             name: `Launch ${minikitConfig.miniapp.name}`,
+//             type: "launch_frame",
+//           },
+//         },
+//       }),
+//     },
+//   };
+// }
+
+// const inter = Inter({
+//   variable: "--font-inter",
+//   subsets: ["latin"],
+// });
+
+// const sourceCodePro = Source_Code_Pro({
+//   variable: "--font-source-code-pro",
+//   subsets: ["latin"],
+// });
+
+// export default function RootLayout({
+//   children,
+// }: Readonly<{
+//   children: React.ReactNode;
+// }>) {
+
+
+
+//   return (
+    
+//     <html lang="en">
+//       <body className={`${inter.variable} ${sourceCodePro.variable}`}>
+//         <Providers>
+//           <WalletProviders> 
+//             <SafeArea>
+//               {children}
+//             </SafeArea>
+//              <ConditionalFooter />
+//           </WalletProviders>
+//         </Providers>
+//       </body>
+//     </html>
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import type { Metadata } from "next";
 import { Inter, Source_Code_Pro } from "next/font/google";
 import { SafeArea } from "@coinbase/onchainkit/minikit";
@@ -8,7 +97,6 @@ import { Providers } from "./providers";
 import "./globals.css";
 import ConditionalFooter from "./components/ConditionalFooter";
 
-import { Providers as WalletProviders } from "./providers"; 
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -49,17 +137,15 @@ export default function RootLayout({
 
 
 
-  return (
-    
+return (
     <html lang="en">
       <body className={`${inter.variable} ${sourceCodePro.variable}`}>
+        {/* একটি Providers-ই যথেষ্ট কারণ এটি আপনার WagmiConfig এবং OnchainKit দুটোই হ্যান্ডেল করছে */}
         <Providers>
-          <WalletProviders> 
-            <SafeArea>
-              {children}
-            </SafeArea>
-             <ConditionalFooter />
-          </WalletProviders>
+          <SafeArea>
+            {children}
+          </SafeArea>
+          <ConditionalFooter />
         </Providers>
       </body>
     </html>
