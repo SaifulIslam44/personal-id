@@ -1691,7 +1691,7 @@ export default function GiveawayPage(props: any) {
   const [_isWarpcast, setIsWarpcast] = useState(false);
 
   const [showMainList, setShowMainList] = useState(true);
-   const [optimisticCount, setOptimisticCount] = useState<number | null>(null);
+
 
 
 
@@ -1724,7 +1724,7 @@ export default function GiveawayPage(props: any) {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [lastClaimedAmount, setLastClaimedAmount] = useState("0");
   const [winnersProfiles, setWinnersProfiles] = useState<Record<number, WinnerProfile>>({});
-
+  const [isConfirming, setIsConfirming] = useState(false);
   const { address } = useAccount();
   // ফারকাস্টার ফ্রেমের কনটেক্সট থেকে অ্যাড্রেস নেওয়ার চেষ্টা করুন
 // const address = context?.user?.address || context?.user?.custodyAddress;
@@ -1761,8 +1761,7 @@ const { sendCallsAsync, isPending: isClaiming } = useSendCalls();
 
   const [_tokenAddr, amount, current, max, endTime, active] = (details as any) || [];
   const [totalWon, claimCount, currentLimit] = (userStats as any) || [0n, 0n, 2n]; 
-  const realCount = Number(claimCount || 0);
-  const count = optimisticCount !== null ? optimisticCount : realCount;
+  const count = Number(claimCount || 0);
   const limit = Number(currentLimit || 2);
   const isFull = Number(current || 0) >= Number(max || 0);
   const isActiveGiveaway = active && !isEnded && !isFull;
@@ -2053,112 +2052,91 @@ const handleShare = () => {
 
 
 
-
-
-
-
 const onClaim = async () => {
-    // if (!isWarpcast || !isFarcasterUser) { 
+      // if (!isWarpcast || !isFarcasterUser) { 
   //   setFarcasterError("Open in Warpcast App"); 
   //   return; 
   // }
   
   // setFarcasterError("");
-  try {
-    const walletAddress = 
-      address || 
-      (userData as any)?.verified_addresses?.eth_addresses?.[0] || 
-      (userData as any)?.custody_address ||
-      (userData as any)?.address;
+    try {
+      const walletAddress = 
+        address || 
+        (userData as any)?.verified_addresses?.eth_addresses?.[0] || 
+        (userData as any)?.custody_address ||
+        (userData as any)?.address;
 
-    const userFid = userData?.fid;
-    const giveawayId = activeGiveawayId;
+      const userFid = userData?.fid;
+      const giveawayId = activeGiveawayId;
 
-    if (!walletAddress) {
-      setFarcasterError("Wallet not found. Please connect your wallet.");
-      return;
+      if (!walletAddress) { setFarcasterError("Wallet not found. Please connect your wallet."); return; }
+      if (!userFid || !giveawayId) { setFarcasterError("Missing user identity or Giveaway ID"); return; }
+
+      const signResponse = await fetch('/api/sign-claim', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userWallet: walletAddress, fid: Number(userFid), giveawayId: Number(giveawayId) }),
+      });
+
+      const signData = await signResponse.json();
+      if (!signResponse.ok || !signData.signature) { throw new Error(signData.message || "Failed to get signature"); }
+
+      const functionData = encodeFunctionData({
+        abi: ABI,
+        functionName: "claimGiveaway",
+        args: [ BigInt(giveawayId), BigInt(userFid), signData.signature as `0x${string}` ],
+      });
+
+      const builderSuffix = Attribution.toDataSuffix({ codes: ["bc_bmhx0p43"] });
+      const finalData = concat([functionData, builderSuffix]);
+
+      const id = await sendCallsAsync({
+        calls: [{ to: CONTRACT_ADDRESS as `0x${string}`, data: finalData }],
+      });
+
+      if (id) {
+        // 🔥 ১. লোডিং শুরু (বাটন "Claiming..." দেখাবে)
+        setIsConfirming(true);
+
+        // 🔥 ২. পোলিং লুপ: চেক করবে ব্লকচেইনে আপডেট হয়েছে কিনা
+        let attempts = 0;
+        const checkInterval = setInterval(async () => {
+            attempts++;
+            
+            // ডাটা রি-ফেচ করা
+            const { data: newStats } = await refetchStats();
+            const [_total, newClaimCount] = (newStats as any) || [0n, 0n];
+            const newCount = Number(newClaimCount);
+            
+            // যদি ব্লকচেইনে কাউন্ট বেড়ে যায় অথবা ৩০ বার চেক করা হয়ে যায়
+            if (newCount > count || attempts >= 30) {
+                clearInterval(checkInterval); // চেক করা বন্ধ করো
+                setIsConfirming(false); // লোডিং বন্ধ করো
+                
+                // সাকসেস মডেল দেখাও
+                setLastClaimedAmount(rewardAmountFormatted);
+                setShowSuccessModal(true);
+                refetchDetails();
+                refetchWinners();
+            }
+        }, 2000); // প্রতি ২ সেকেন্ড পর পর চেক করবে
+      }
+
+    } catch (error: any) {
+      console.error("Claim Error:", error);
+      setIsConfirming(false); // এরর হলে লোডিং বন্ধ
+      if (error.code === 4001 || error.message?.includes("User rejected")) {
+          setFarcasterError("Transaction cancelled by user");
+      } else {
+          setFarcasterError(error.message || "Transaction failed. Try again.");
+      }
+      setTimeout(() => setFarcasterError(""), 3000);
     }
-
-    if (!userFid || !giveawayId) {
-      setFarcasterError("Missing user identity or Giveaway ID");
-      return;
-    }
-
-    const signResponse = await fetch('/api/sign-claim', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        userWallet: walletAddress, 
-        fid: Number(userFid), 
-        giveawayId: Number(giveawayId) 
-      }),
-    });
-
-    const signData = await signResponse.json();
-
-    if (!signResponse.ok || !signData.signature) {
-      throw new Error(signData.message || "Failed to get signature");
-    }
-
-    // 🔥 ১. ফাংশন ডাটা এনকোড করা 🔥
-    const functionData = encodeFunctionData({
-      abi: ABI,
-      functionName: "claimGiveaway",
-      args: [ 
-        BigInt(giveawayId), 
-        BigInt(userFid), 
-        signData.signature as `0x${string}` 
-      ],
-    });
-
-    // 🔥 ২. বিল্ডার কোড সাফিক্স তৈরি 🔥
-    const builderSuffix = Attribution.toDataSuffix({
-      codes: ["bc_bmhx0p43"], 
-    });
-
-    // 🔥 ৩. ডাটা জোড়া লাগানো (Concatenation) 🔥
-    const finalData = concat([functionData, builderSuffix]);
-
-    // 🔥 ৪. sendCallsAsync দিয়ে ট্রানজেকশন পাঠানো 🔥
-    const id = await sendCallsAsync({
-      calls: [
-        {
-          to: CONTRACT_ADDRESS as `0x${string}`,
-          data: finalData, // এখানে সাফিক্সসহ ম্যানুয়াল ডাটা যাচ্ছে
-        },
-      ],
-      // capabilities: { paymasterService: { url: "..." } } // প্রয়োজন হলে গ্যাসলেস করতে পারেন
-    });
-
-    // ৫. সাকসেস হ্যান্ডলিং (id মানেই ট্রানজেকশন বান্ডেল সাবমিট হয়েছে)
-    if (id) {
-      setOptimisticCount(realCount + 1);
-      setLastClaimedAmount(rewardAmountFormatted); 
-      setShowSuccessModal(true);
-      setTimeout(() => { 
-        refetchDetails(); 
-        refetchStats(); 
-        refetchWinners(); 
-      }, 2000);
-    }
-
-  } catch (error: any) {
-    console.error("Claim Error:", error);
-    if (error.code === 4001 || error.message?.includes("User rejected") || error.name === 'UserRejectedRequestError') {
-        setFarcasterError("Transaction cancelled by user");
-    } else {
-        setFarcasterError(error.message || "Transaction failed. Try again.");
-    }
-    setTimeout(() => setFarcasterError(""), 3000);
-  }
-};
+  };
 
 
-useEffect(() => {
-  if (optimisticCount !== null && realCount >= optimisticCount) {
-    setOptimisticCount(null);
-  }
-}, [realCount, optimisticCount]);
+
+
 
   if (!isMounted) return <div className={styles.loadingPage}><Loader2 className={styles.spinner} size={30}/></div>;
 
@@ -2172,11 +2150,16 @@ useEffect(() => {
     //     </button>
     //   );
     // }
-    if (count === 0) {
+if (count === 0) {
       return (
-        <button className={styles.primaryBtn} onClick={onClaim} disabled={isClaiming || isFull}>
-          {isClaiming ? "Sending..." : isFull ? "Full" : "Claim Reward"}
-          {!isClaiming && !isFull && <Zap size={16} fill="currentColor" />}
+        <button 
+           className={styles.primaryBtn} 
+           onClick={onClaim} 
+           disabled={isClaiming || isConfirming || isFull}
+        >
+          {isClaiming || isConfirming ? "Sending..." : isFull ? "Full" : "Claim Reward"}
+          
+          {!(isClaiming || isConfirming) && !isFull && <Zap size={16} fill="currentColor" />}
         </button>
       );
     }
