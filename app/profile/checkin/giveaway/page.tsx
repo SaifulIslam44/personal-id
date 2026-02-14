@@ -1528,6 +1528,7 @@ interface WinnerProfile {
 const HistoryAccordionItem = ({ giveawayId }: { giveawayId: number }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [winnersProfiles, setWinnersProfiles] = useState<Record<number, WinnerProfile>>({});
+ 
   
   // Ref to track fetched FIDs to avoid infinite loops and linter warnings
   const fetchedFidsRef = useRef<Set<number>>(new Set());
@@ -1690,6 +1691,7 @@ export default function GiveawayPage(props: any) {
   const [_isWarpcast, setIsWarpcast] = useState(false);
 
   const [showMainList, setShowMainList] = useState(true);
+   const [optimisticCount, setOptimisticCount] = useState<number | null>(null);
 
 
 
@@ -1759,7 +1761,8 @@ const { sendCallsAsync, isPending: isClaiming } = useSendCalls();
 
   const [_tokenAddr, amount, current, max, endTime, active] = (details as any) || [];
   const [totalWon, claimCount, currentLimit] = (userStats as any) || [0n, 0n, 2n]; 
-  const count = Number(claimCount || 0);
+  const realCount = Number(claimCount || 0);
+  const count = optimisticCount !== null ? optimisticCount : realCount;
   const limit = Number(currentLimit || 2);
   const isFull = Number(current || 0) >= Number(max || 0);
   const isActiveGiveaway = active && !isEnded && !isFull;
@@ -2129,6 +2132,7 @@ const onClaim = async () => {
 
     // ৫. সাকসেস হ্যান্ডলিং (id মানেই ট্রানজেকশন বান্ডেল সাবমিট হয়েছে)
     if (id) {
+      setOptimisticCount(realCount + 1);
       setLastClaimedAmount(rewardAmountFormatted); 
       setShowSuccessModal(true);
       setTimeout(() => { 
@@ -2150,8 +2154,15 @@ const onClaim = async () => {
 };
 
 
+useEffect(() => {
+  if (optimisticCount !== null && realCount >= optimisticCount) {
+    setOptimisticCount(null);
+  }
+}, [realCount, optimisticCount]);
 
   if (!isMounted) return <div className={styles.loadingPage}><Loader2 className={styles.spinner} size={30}/></div>;
+
+  
 
   const renderActionButton = () => {
     // if (!isWarpcast || !isFarcasterUser) {
@@ -2183,6 +2194,8 @@ const onClaim = async () => {
     }
     return <button className={styles.primaryBtn} disabled>Completed <Lock size={16} /></button>;
   };
+
+  
 
   return (
     <div className={`${styles.container} ${!isDarkMode ? styles.lightMode : ""}`}>
