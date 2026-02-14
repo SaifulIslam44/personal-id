@@ -1950,15 +1950,55 @@ const { sendCallsAsync, isPending: isClaiming } = useSendCalls();
     document.body.classList.toggle('light-mode');
   };
 
-  const handleShare = () => {
-    const shareAmount = Number(totalWonFormatted) > 0 ? totalWonFormatted : rewardAmountFormatted;
-    const appUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint";
-    const text = `I just claimed ${shareAmount} ${tokenSymbol} from the Exclusive Drop in the Airdrop section on Personal ID Mint 💸\nThis was a time-limited & user-limited FCFS airdrop (first come, first served)💙🟦`;
-    const castIntentUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(`${appUrl}?fid=${userData.fid}`)}`;
-    try { sdk.actions.openUrl(castIntentUrl); } catch { window.open(castIntentUrl, "_blank"); }
-    setHasShared(true);
-    setShowSuccessModal(false);
-  };
+  // const handleShare = () => {
+  //   const shareAmount = Number(totalWonFormatted) > 0 ? totalWonFormatted : rewardAmountFormatted;
+  //   const appUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint";
+  //   const text = `I just claimed ${shareAmount} ${tokenSymbol} from the Exclusive Drop in the Airdrop section on Personal ID Mint 💸\nThis was a time-limited & user-limited FCFS airdrop (first come, first served)💙🟦`;
+  //   const castIntentUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(`${appUrl}?fid=${userData.fid}`)}`;
+  //   try { sdk.actions.openUrl(castIntentUrl); } catch { window.open(castIntentUrl, "_blank"); }
+  //   setHasShared(true);
+  //   setShowSuccessModal(false);
+  // };
+
+
+const handleShare = () => {
+  if (!userData.fid) return;
+
+  const shareAmount = Number(totalWonFormatted) > 0 ? totalWonFormatted : rewardAmountFormatted;
+  const appUrl = "https://farcaster.xyz/miniapps/WbTVgaQ34L1m/personal-id-mint";
+  const text = `I just claimed ${shareAmount} ${tokenSymbol} from the Exclusive Drop in the Airdrop section on Personal ID Mint 💸\nThis was a time-limited & user-limited FCFS airdrop (first come, first served)💙🟦`;
+  
+  // Warpcast intent URL
+  const castIntentUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(`${appUrl}?fid=${userData.fid}`)}`;
+
+  // Base app ba Warpcast-er SDK environment check
+  const isFarcasterEnv = /warpcast|farcaster/i.test(navigator.userAgent);
+
+  try {
+    // Jodi frame-er bhitor thake (Warpcast ba Base app)
+    if (isFarcasterEnv) {
+      sdk.actions.openUrl(castIntentUrl);
+    } else {
+      // Normal browser hole
+      window.open(castIntentUrl, "_blank");
+    }
+  } catch (error) {
+    console.error("SDK Share error:", error);
+    // SDK fail korle manual window open
+    window.open(castIntentUrl, "_blank");
+  }
+
+  setHasShared(true);
+  setShowSuccessModal(false);
+};
+
+
+
+
+
+
+
+
 
   const handleVerify = async () => {
     if (!userData.fid) return;
@@ -2134,7 +2174,7 @@ const onClaim = async () => {
         return <button className={`${styles.primaryBtn} ${styles.shareBtn}`} onClick={handleShare}>Share to Unlock +1 <Share2 size={16} /></button>;
       }
       if (hasShared && !isVerified) {
-         if (verifyError) return <button className={`${styles.primaryBtn} ${styles.errorBtn}`} disabled>Try Again in {errorTimer}s</button>;
+         if (verifyError) return <button className={`${styles.primaryBtn} ${styles.errorBtn}`} disabled> Not Shared! Try Again {errorTimer}s</button>;
          return <button className={`${styles.primaryBtn} ${styles.verifyBtn}`} onClick={handleVerify} disabled={isVerifying}>{isVerifying ? "Verifying..." : "Verify Share"}{!isVerifying && <ShieldCheck size={16} />}</button>;
       }
       if (isVerified) {

@@ -2244,7 +2244,8 @@ import { sdk } from "@farcaster/miniapp-sdk";
 const USDC_TOKEN_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 
 export default function CheckInPage() {
-  const { address, isConnected, isReconnecting, isConnecting } = useAccount();
+  // const { address, isConnected, isReconnecting, isConnecting } = useAccount();
+  const { address, isConnected } = useAccount();
   const [message, setMessage] = useState("");
   const [justCheckedIn, setJustCheckedIn] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -2320,12 +2321,19 @@ useEffect(() => {
 
 
 
+  // useEffect(() => {
+  //   setIsMounted(true);
+  //   if (!isConnected && connectors.length > 0) {
+  //     connect({ connector: connectors[0] });
+  //   }
+  // }, [isConnected, connect, connectors]);
+
   useEffect(() => {
-    setIsMounted(true);
-    if (!isConnected && connectors.length > 0) {
-      connect({ connector: connectors[0] });
-    }
-  }, [isConnected, connect, connectors]);
+  setIsMounted(true);
+}, []);
+
+
+
 
   useEffect(() => {
   if (cooldown > 0) {
@@ -2930,16 +2938,16 @@ const handleShare = async () => {
     ? (justCheckedIn ? "Just Now" : new Date(lastCheckIn * 1000).toLocaleString()) 
     : "Never";
 
-  if (isReconnecting || isConnecting) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.loadingWrapper}>
-          <div className={styles.loadingSpinner}></div>
-          <h2 className={styles.loadingText}>Syncing Wallet State...</h2>
-        </div>
-      </div>
-    );
-  }
+  // if (isReconnecting || isConnecting) {
+  //   return (
+  //     <div className={styles.container}>
+  //       <div className={styles.loadingWrapper}>
+  //         <div className={styles.loadingSpinner}></div>
+  //         <h2 className={styles.loadingText}>Syncing Wallet State...</h2>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
 
 
