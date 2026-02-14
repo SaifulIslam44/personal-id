@@ -2902,8 +2902,15 @@ const handleShare = () => {
 
 
 
+
+
+
+
+
+
+
 const onClaim = async () => {
-    // if (!isWarpcast || !isFarcasterUser) { 
+      // if (!isWarpcast || !isFarcasterUser) { 
   //   setFarcasterError("Open in Warpcast App"); 
   //   return; 
   // }
@@ -2929,6 +2936,7 @@ const onClaim = async () => {
       return;
     }
 
+    // ১. ব্যাকএন্ড থেকে Signature এবং Nonce সংগ্রহ করা
     const signResponse = await fetch('/api/sign-claim', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -2941,41 +2949,42 @@ const onClaim = async () => {
 
     const signData = await signResponse.json();
 
-    if (!signResponse.ok || !signData.signature) {
-      throw new Error(signData.message || "Failed to get signature");
+    if (!signResponse.ok || !signData.signature || signData.nonce === undefined) {
+      throw new Error(signData.message || "Failed to get signature/nonce");
     }
 
-    // 🔥 ১. ফাংশন ডাটা এনকোড করা 🔥
+    // ২. 🔥 ফাংশন ডাটা এনকোড করা (নতুন আর্গুমেন্ট অর্ডারসহ) 🔥
+    // অর্ডার: _id, _fid, _nonce, _signature
     const functionData = encodeFunctionData({
       abi: ABI,
       functionName: "claimGiveaway",
       args: [ 
         BigInt(giveawayId), 
         BigInt(userFid), 
+        BigInt(signData.nonce), // 🔥 নতুন প্যারামিটার Nonce যোগ করা হয়েছে
         signData.signature as `0x${string}` 
       ],
     });
 
-    // 🔥 ২. বিল্ডার কোড সাফিক্স তৈরি 🔥
+    // ৩. বিল্ডার কোড সাফিক্স তৈরি
     const builderSuffix = Attribution.toDataSuffix({
       codes: ["bc_bmhx0p43"], 
     });
 
-    // 🔥 ৩. ডাটা জোড়া লাগানো (Concatenation) 🔥
+    // ৪. ডাটা জোড়া লাগানো (Concatenation)
     const finalData = concat([functionData, builderSuffix]);
 
-    // 🔥 ৪. sendCallsAsync দিয়ে ট্রানজেকশন পাঠানো 🔥
+    // ৫. sendCallsAsync দিয়ে ট্রানজেকশন পাঠানো
     const id = await sendCallsAsync({
       calls: [
         {
           to: CONTRACT_ADDRESS as `0x${string}`,
-          data: finalData, // এখানে সাফিক্সসহ ম্যানুয়াল ডাটা যাচ্ছে
+          data: finalData,
         },
       ],
-      // capabilities: { paymasterService: { url: "..." } } // প্রয়োজন হলে গ্যাসলেস করতে পারেন
     });
 
-    // ৫. সাকসেস হ্যান্ডলিং (id মানেই ট্রানজেকশন বান্ডেল সাবমিট হয়েছে)
+    // ৬. সাকসেস হ্যান্ডলিং
     if (id) {
       setOptimisticCount(realCount + 1);
       setLastClaimedAmount(rewardAmountFormatted); 
@@ -2989,14 +2998,19 @@ const onClaim = async () => {
 
   } catch (error: any) {
     console.error("Claim Error:", error);
-    if (error.code === 4001 || error.message?.includes("User rejected") || error.name === 'UserRejectedRequestError') {
+    
+    // নির্দিষ্ট এরর মেসেজ হ্যান্ডলিং (যেমন: Identity Check ফেইল করলে)
+    if (error.message?.includes("Personal ID Mint Required")) {
+        setFarcasterError("You must mint a Personal ID to claim this giveaway!");
+    } else if (error.code === 4001 || error.message?.includes("User rejected") || error.name === 'UserRejectedRequestError') {
         setFarcasterError("Transaction cancelled by user");
     } else {
         setFarcasterError(error.message || "Transaction failed. Try again.");
     }
-    setTimeout(() => setFarcasterError(""), 3000);
+    setTimeout(() => setFarcasterError(""), 5000);
   }
 };
+
 
 
 useEffect(() => {

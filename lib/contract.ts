@@ -4216,6 +4216,12 @@ export const ABI = [
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "nonce",
+        "type": "uint256"
       }
     ],
     "name": "GiveawayClaimed",
@@ -4307,6 +4313,19 @@ export const ABI = [
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "status",
+        "type": "bool"
+      }
+    ],
+    "name": "IdentityCheckStatusUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "newSigner",
@@ -4363,6 +4382,11 @@ export const ABI = [
       {
         "internalType": "uint256",
         "name": "_fid",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_nonce",
         "type": "uint256"
       },
       {
@@ -4574,6 +4598,19 @@ export const ABI = [
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "isIdentityCheckActive",
+    "outputs": [
+      {
+        "internalType": "bool",
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -4618,6 +4655,19 @@ export const ABI = [
       }
     ],
     "name": "setSignerAddress",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bool",
+        "name": "_status",
+        "type": "bool"
+      }
+    ],
+    "name": "toggleIdentityCheck",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
