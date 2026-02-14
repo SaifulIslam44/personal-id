@@ -2229,7 +2229,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAccount, useReadContract, useConnect, useSendCalls } from "wagmi"; // useSendCalls বাদ দিন, useSendTransaction নিন
+import { useAccount, useReadContract, useSendCalls } from "wagmi"; // useSendCalls বাদ দিন, useSendTransaction নিন
 import { Attribution } from "ox/erc8021";
 import { formatUnits, encodeFunctionData, concat } from "viem";
 import { CONTRACT_ADDRESS, ABI } from "@/lib/contract";
@@ -2245,7 +2245,7 @@ const USDC_TOKEN_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 
 export default function CheckInPage() {
   // const { address, isConnected, isReconnecting, isConnecting } = useAccount();
-  const { address, isConnected } = useAccount();
+  const { address } = useAccount();
   const [message, setMessage] = useState("");
   const [justCheckedIn, setJustCheckedIn] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -2257,7 +2257,6 @@ export default function CheckInPage() {
   const [tempRewards, setTempRewards] = useState<string | null>(null);
   const [oldRewardsRaw, setOldRewardsRaw] = useState<bigint>(BigInt(0));
   const [cooldown, setCooldown] = useState(0); 
-  const { connect, connectors } = useConnect();
   // const { writeContract } = useWriteContract();
   const { sendCalls } = useSendCalls();
 
