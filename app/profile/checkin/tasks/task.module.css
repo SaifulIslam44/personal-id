@@ -1,5 +1,5 @@
 .wrapper {
-  padding: 16px;
+  padding: 10px;
   min-height: 100vh; /* পুরো স্ক্রিন সাদা বা কালো রাখার জন্য */
   width: 100%;
   display: flex;
@@ -15,33 +15,51 @@
 
 /* 🆕 User Header: প্রোফাইল পিকচার এবং নামের জন্য */
 .userHeader {
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
-  padding-bottom: 25px;
+  padding: 5px 5px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+
+  margin-bottom: 20px;
+  
+}
+
+.lightMode .userHeader {
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .userInfo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+  flex: 1;
+  justify-content: flex-start;
 }
 
+/* Profile Picture Style */
 .pfp {
-  width: 40px;
-  height: 40px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   object-fit: cover;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  /* যেহেতু TSX এ wrapper div নেই, তাই ইমেজের বর্ডার দিয়েই ডিজাইনটা মেলানো হলো */
+  border: 1px solid #0052ff; 
+  padding: 1px;
 }
 
+/* User Name Style */
 .userName {
-  font-size: 17px;
-  font-weight: 700;
-  color: #ffffff;
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  margin: 0;
 }
-
 .themeBtn {
   background: none;
   border: none;
