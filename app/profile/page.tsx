@@ -1024,7 +1024,8 @@ useEffect(() => {
     }
   };
 
-  const isProfileLoading = (isConnected && !address) || isBalanceLoading;
+  // const isProfileLoading = (isConnected && !address) || isBalanceLoading;
+  const isProfileLoading = (isConnected && !address) || isBalanceLoading || (!loading && nftBalance !== undefined && (nftBalance as bigint) > 0n);
 
   if (!isConnected || isProfileLoading) {
     return (
