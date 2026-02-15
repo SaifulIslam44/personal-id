@@ -951,14 +951,18 @@ const { sendTransactionAsync, isPending } = useSendTransaction();
 
 
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   if (isConnected && nftBalance !== undefined && (nftBalance as bigint) > 0n) {
+  //     router.replace("/profile/checkin");
+  //   }
+  // }, [nftBalance, isConnected, router]);
+
+
+useEffect(() => {
     if (isConnected && nftBalance !== undefined && (nftBalance as bigint) > 0n) {
-      router.replace("/profile/checkin");
+      router.replace("/profile/checkin/info");
     }
   }, [nftBalance, isConnected, router]);
-
-
-
 
 
 

@@ -1,74 +1,43 @@
+/* ===== Header Title (Design Matches Profile Page) ===== */
 .headerTitle {
-  font-size: 25px;
-  font-weight: 900;
-  margin-bottom: 15px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  font-size: 24px;      /* আগে ছিল 25px */
+  font-weight: 800;     /* আগে ছিল 900 */
+  margin-bottom: 10px;  /* আগে ছিল 15px */
   text-align: center;
-  position: relative;
+  letter-spacing: -0.5px; /* আগে ছিল 1px */
   
-  /* White & Silver Glossy Gradient */
-  background: linear-gradient(
-    to right, 
-    #ffffff 20%, 
-    #a0a0a0 40%, 
-    #ffffff 50%, 
-    #a0a0a0 60%, 
-    #ffffff 80%
-  );
+  /* Gradient Style (From Profile Page) */
+  background: linear-gradient(90deg, #fff, #93c5fd, #fff);
   background-size: 200% auto;
   
-  /* টেক্সটের ভেতরে গ্রেডিয়েন্ট দেখানোর জন্য */
+  /* Text Clip */
   -webkit-background-clip: text;
   background-clip: text;
+  color: transparent;
   -webkit-text-fill-color: transparent;
   
-  /* ধীরগতির গ্লসি সুইপ অ্যানিমেশন */
-  animation: whiteGlossy 5s linear infinite;
+  /* Animation */
+  animation: shine 3s linear infinite;
 }
 
-/* সাদা আভাটি ধীরগতিতে প্রবাহিত হওয়ার লজিক */
-@keyframes whiteGlossy {
-  0% {
-    background-position: 0% center;
-  }
-  100% {
-    background-position: 200% center;
-  }
+/* Animation Keyframes (From Profile Page) */
+@keyframes shine { 
+  to { background-position: 200% center; } 
 }
 
-/* হোভার করলে অ্যানিমেশন কিছুটা ফাস্ট হবে */
-.headerTitle:hover {
-  animation: whiteGlossy 2s linear infinite;
-}
-
-/* ডার্ক মোডে গ্লো ইফেক্ট (আপনার wrapper এ dark mode থাকলে) */
-.wrapper:not(.lightMode) .headerTitle {
-  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.2));
-}
-
-/* লাইট মোডে টেক্সট কালার অ্যাডজাস্টমেন্ট */
+/* Light Mode Adjustment */
 .lightMode .headerTitle {
-  background: linear-gradient(
-    to right, 
-    #000000 20%, 
-    #555555 40%, 
-    #000000 50%, 
-    #555555 60%, 
-    #000000 80%
-  );
-  background-size: 200% auto;
+  background: linear-gradient(90deg, #1e293b, #3b82f6, #1e293b);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: none;
 }
 
 .wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  padding: 10px;
   min-height: 80vh;
 }
 
@@ -206,32 +175,59 @@
 
 
 /* 🆕 User Header: প্রোফাইল পিকচার এবং নামের লেআউট */
-.userHeader {
+/* .userHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
   padding-bottom: 25px;
+} */
+
+.userHeader {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 5px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+
+  margin-bottom: 20px;
+  
+}
+
+.lightMode .userHeader {
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .userInfo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+  flex: 1;
+  justify-content: flex-start;
 }
 
+/* Profile Picture Style */
 .pfp {
-  width: 40px;
-  height: 40px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   object-fit: cover;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  /* যেহেতু TSX এ wrapper div নেই, তাই ইমেজের বর্ডার দিয়েই ডিজাইনটা মেলানো হলো */
+  border: 1px solid #0052ff; 
+  padding: 1px;
 }
 
+/* User Name Style */
 .userName {
-  font-size: 17px;
-  font-weight: 700;
-  color: #ffffff; /* ডার্ক মোডে সাদা */
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  margin: 0;
 }
 
 .themeBtn {
