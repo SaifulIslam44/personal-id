@@ -2347,7 +2347,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { useReadContract, useSendCalls, useAccount } from "wagmi";
+import { useReadContract, useSendCalls, useAccount, useConnect } from "wagmi";
 import { formatUnits } from "viem";
 import { CONTRACT_ADDRESS, ABI } from "@/lib/contract";
 import styles from "./giveaway.module.css";
@@ -2404,6 +2404,7 @@ const HistoryAccordionItem = ({ giveawayId }: { giveawayId: number }) => {
   const { decimals, tokenSymbol } = useMemo(() => {
     // 1. JESSE Token (Only for ID 4)
     if (giveawayId === 4) return { decimals: 18, tokenSymbol: "$JESSE" };
+    if (giveawayId === 25) return { decimals: 18, tokenSymbol: "$BETR" };
 
     // if ([8, 10, 11, 12, 13, 14, 15, 16].includes(giveawayId)) { 
     //      return { decimals: 18, tokenSymbol: "$DEGEN" };
@@ -2571,6 +2572,7 @@ export default function GiveawayPage(props: any) {
   const [winnersProfiles, setWinnersProfiles] = useState<Record<number, WinnerProfile>>({});
 
   const { address } = useAccount();
+  const { connectors, connect } = useConnect();
   // ফারকাস্টার ফ্রেমের কনটেক্সট থেকে অ্যাড্রেস নেওয়ার চেষ্টা করুন
 // const address = context?.user?.address || context?.user?.custodyAddress;
 
@@ -2615,10 +2617,23 @@ const { sendCallsAsync, isPending: isClaiming } = useSendCalls();
 
 
 
+useEffect(() => {
+    if (!address && connectors.length > 0) {
+        // Farcaster environment এ সাধারণত 'injected' বা 'coinbaseWalletSDK' থাকে
+        const connector = connectors.find(c => c.id === 'coinbaseWalletSDK' || c.name.includes("Farcaster")) || connectors[0];
+        if (connector) {
+            connect({ connector });
+        }
+    }
+}, [address, connectors, connect]);
+
+
+
 
   // 🔥🔥 FIX: Token Symbol & Decimals for MAIN Card 🔥🔥
   const { decimals, tokenSymbol } = useMemo(() => {
     if (activeGiveawayId === 4) return { decimals: 18, tokenSymbol: "$JESSE" };
+    if (activeGiveawayId === 25) return { decimals: 18, tokenSymbol: "$BETR" };
     // if ([8, 10, 11, 12, 13, 14, 15, 16].includes(activeGiveawayId)) {
     //    return { decimals: 18, tokenSymbol: "$DEGEN" };
     // }
