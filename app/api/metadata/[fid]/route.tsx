@@ -307,7 +307,7 @@ import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
 
 export const runtime = 'edge';
-export const revalidate = 432000; 
+export const revalidate = 1296000;
 
 export async function GET(
   req: NextRequest,
@@ -318,7 +318,7 @@ export async function GET(
 
   try {
     const res = await fetch(`https://api.warpcast.com/v2/user-by-fid?fid=${fid}`, {
-      next: { revalidate: 432000 } 
+      next: { revalidate: 1296000 }
     });
     
     const json = await res.json();
@@ -350,7 +350,7 @@ export async function GET(
       }), { 
         headers: { 
           'Content-Type': 'application/json',
-          'Cache-Control': 'public, s-maxage=432000, stale-while-revalidate=86400'
+          'Cache-Control': 'public, s-maxage=1296000, stale-while-revalidate=86400'
         } 
       });
     }
@@ -409,7 +409,7 @@ export async function GET(
         width: 900,
         height: 400,
         headers: {
-          'Cache-Control': 'public, s-maxage=432000, stale-while-revalidate=86400',
+          'Cache-Control': 'public, s-maxage=1296000, stale-while-revalidate=86400',
         },
       }
     );

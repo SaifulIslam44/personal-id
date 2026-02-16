@@ -70,10 +70,10 @@ export async function GET(request: Request) {
 
   const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY;
 
-  const headers = {
-    'Cache-Control': 'public, s-maxage=172800, stale-while-revalidate=86400',
-    'Content-Type': 'application/json',
-  };
+const headers = {
+  'Cache-Control': 'public, s-maxage=432000, stale-while-revalidate=86400',
+  'Content-Type': 'application/json',
+};
 
   try {
     const response = await fetch(
@@ -84,7 +84,7 @@ export async function GET(request: Request) {
           accept: "application/json",
           api_key: NEYNAR_API_KEY || "",
         },
-        next: { revalidate: 172800 } 
+        next: { revalidate: 432000 }
       }
     );
 

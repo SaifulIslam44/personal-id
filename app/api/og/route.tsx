@@ -629,7 +629,8 @@ export async function GET(request: Request) {
             headers: {
                 'accept': 'application/json',
                 'api_key': process.env.NEYNAR_API_KEY || ''
-            }
+            },
+            next: { revalidate: 86400 }
         });
         const data = await neynarRes.json();
         if (data.users && data.users.length > 0) {

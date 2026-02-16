@@ -41,7 +41,8 @@ export async function GET(request: Request) {
       headers: {
         'accept': 'application/json',
         'api_key': process.env.NEYNAR_API_KEY as string
-      }
+      },
+      next: { revalidate: 86400 }
     });
 
     const data = await response.json();
