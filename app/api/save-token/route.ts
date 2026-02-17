@@ -24,7 +24,8 @@ export async function POST(req: NextRequest) {
         );
 
         return NextResponse.json({ success: true });
-    } catch {
-        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-    }
+   } catch (error: any) {
+    console.error("API DB Error:", error.message); // এটি যোগ করলে আপনি লগ দেখতে পাবেন
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+}
 }

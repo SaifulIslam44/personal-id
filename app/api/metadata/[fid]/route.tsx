@@ -301,6 +301,143 @@
 
 
 
+// /** @jsxImportSource react */
+// /* eslint-disable @next/next/no-img-element */
+// import { ImageResponse } from 'next/og';
+// import { NextRequest } from 'next/server';
+
+// export const runtime = 'edge';
+// export const revalidate = 1296000;
+
+// export async function GET(
+//   req: NextRequest,
+//   { params }: { params: Promise<{ fid: string }> }
+// ) {
+//   const { fid } = await params;
+//   const url = new URL(req.url);
+
+//   try {
+//     const res = await fetch(`https://api.warpcast.com/v2/user-by-fid?fid=${fid}`, {
+//       next: { revalidate: 1296000 }
+//     });
+    
+//     const json = await res.json();
+    
+//     if (!json.result || !json.result.user) {
+//         return new Response("User not found", { status: 404 });
+//     }
+
+//     const user = json.result.user;
+//     const userName = user.displayName || "Base User";
+//     const userHandle = user.username ? `@${user.username}` : "";
+
+//     // 🔹 এখানে ডিফল্ট ইমেজ সেট করা হয়েছে। 
+//     // যদি Warpcast থেকে pfp.url না আসে, তবে এই লিংকটি ব্যবহার হবে।
+//     const defaultPfp = "https://placehold.co/100x100/0052FF/ffffff?text=?"; 
+//     const pfpUrl = user.pfp?.url && user.pfp.url !== "" ? user.pfp.url : defaultPfp;
+
+//     const isJson = url.pathname.endsWith('.json') || req.headers.get('accept')?.includes('json');
+
+//     if (isJson) {
+//       return new Response(JSON.stringify({
+//         name: `Onchain ID #${fid}`,
+//         description: `Official ID for ${userName}`,
+//         image: `${process.env.NEXT_PUBLIC_URL || 'https://' + req.headers.get('host')}/api/metadata/${fid}/image.png`,
+//         attributes: [
+//           { trait_type: "FID", value: fid },
+//           { trait_type: "Name", value: userName }
+//         ]
+//       }), { 
+//         headers: { 
+//           'Content-Type': 'application/json',
+//           'Cache-Control': 'public, s-maxage=1296000, stale-while-revalidate=86400'
+//         } 
+//       });
+//     }
+
+//     return new ImageResponse(
+//       (
+//         <div
+//           style={{
+//             display: 'flex',
+//             flexDirection: 'row',
+//             backgroundColor: '#121212',
+//             width: '900px',
+//             height: '400px',
+//             color: 'white',
+//             alignItems: 'center',
+//             padding: '40px',
+//             border: '6px solid #0052FF',
+//             borderRadius: '0px',
+//             position: 'relative',
+//           }}
+//         >
+//           {/* Profile Section */}
+//           <div style={{ display: 'flex', position: 'relative' }}>
+//             <img
+//               src={pfpUrl}
+//               alt="Profile"
+//               // 🔹onError হ্যান্ডলিং: যদি pfpUrl কাজ না করে, তবে ব্রাউজার স্বয়ংক্রিয়ভাবে ডিফল্ট ইমেজটি দেখাবে
+//               onError={(e: any) => {
+//                 e.currentTarget.src = defaultPfp;
+//               }}
+//               style={{
+//                 width: 240,
+//                 height: 240,
+//                 borderRadius: 40,
+//                 objectFit: 'cover',
+//                 border: '8px solid #0052FF',
+//               }}
+//             />
+//           </div>
+
+//           <div style={{ display: 'flex', flexDirection: 'column', marginLeft: 40, flex: 1 }}>
+//             <div style={{ display: 'flex', fontSize: 55, fontWeight: 'bold', letterSpacing: '-1px' }}>{userName}</div>
+//             <div style={{ display: 'flex', fontSize: 32, color: '#0052FF', marginTop: 5 }}>{userHandle}</div>
+//             <div style={{ display: 'flex', fontSize: 26, color: '#666', marginTop: 15, fontWeight: '500' }}>FID: {fid}</div>
+//             <div style={{ display: 'flex', marginTop: 35 }}>
+//               <div style={{ display: 'flex', backgroundColor: '#0052FF', color: 'white', padding: '12px 30px', borderRadius: 100, fontSize: 22, fontWeight: 'bold' }}>Onchain Identity</div>
+//             </div>
+//           </div>
+
+//           <div style={{ display: 'flex', position: 'absolute', bottom: 40, right: 40, padding: '10px 24px', backgroundColor: '#0052FF15', border: '2px solid #0052FF', borderRadius: '12px', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 20px rgba(0, 82, 255, 0.2)' }}>
+//             <span style={{ fontSize: 20, color: '#0052FF', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '2px' }}>VERIFIED PIM USER</span>
+//           </div>
+//         </div>
+//       ),
+//       {
+//         width: 900,
+//         height: 400,
+//         headers: {
+//           'Cache-Control': 'public, s-maxage=1296000, stale-while-revalidate=86400',
+//         },
+//       }
+//     );
+
+//   } catch (e) {
+//     console.error("Error:", e);
+//     // 🔹 এরর আসলে একটি সিম্পল রেসপন্স দিন যাতে CPU প্রসেসিং না ঝুলে থাকে
+//     return new Response("Failed to generate image", { status: 500 });
+//   }
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /** @jsxImportSource react */
 /* eslint-disable @next/next/no-img-element */
 import { ImageResponse } from 'next/og';
@@ -331,9 +468,8 @@ export async function GET(
     const userName = user.displayName || "Base User";
     const userHandle = user.username ? `@${user.username}` : "";
 
-    // 🔹 এখানে ডিফল্ট ইমেজ সেট করা হয়েছে। 
-    // যদি Warpcast থেকে pfp.url না আসে, তবে এই লিংকটি ব্যবহার হবে।
-    const defaultPfp = "https://wrpcd.xyz/pfp/default.png"; 
+    // ডিফল্ট ইমেজ হিসেবে placehold.co ব্যবহার করা হয়েছে
+    const defaultPfp = `https://placehold.co/240x240/0052FF/ffffff?text=${userName.charAt(0).toUpperCase()}`; 
     const pfpUrl = user.pfp?.url && user.pfp.url !== "" ? user.pfp.url : defaultPfp;
 
     const isJson = url.pathname.endsWith('.json') || req.headers.get('accept')?.includes('json');
@@ -377,13 +513,10 @@ export async function GET(
             <img
               src={pfpUrl}
               alt="Profile"
-              // 🔹onError হ্যান্ডলিং: যদি pfpUrl কাজ না করে, তবে ব্রাউজার স্বয়ংক্রিয়ভাবে ডিফল্ট ইমেজটি দেখাবে
-              onError={(e: any) => {
-                e.currentTarget.src = defaultPfp;
-              }}
+              // 🔹 এখানে সরাসরি width ও height দেওয়া হয়েছে (এরর ফিক্স করার জন্য)
+              width="240"
+              height="240"
               style={{
-                width: 240,
-                height: 240,
                 borderRadius: 40,
                 objectFit: 'cover',
                 border: '8px solid #0052FF',
@@ -400,7 +533,18 @@ export async function GET(
             </div>
           </div>
 
-          <div style={{ display: 'flex', position: 'absolute', bottom: 40, right: 40, padding: '10px 24px', backgroundColor: '#0052FF15', border: '2px solid #0052FF', borderRadius: '12px', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 20px rgba(0, 82, 255, 0.2)' }}>
+          <div style={{ 
+            display: 'flex', 
+            position: 'absolute', 
+            bottom: 40, 
+            right: 40, 
+            padding: '10px 24px', 
+            backgroundColor: 'rgba(0, 82, 255, 0.15)', 
+            border: '2px solid #0052FF', 
+            borderRadius: '12px', 
+            alignItems: 'center', 
+            justifyContent: 'center' 
+          }}>
             <span style={{ fontSize: 20, color: '#0052FF', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '2px' }}>VERIFIED PIM USER</span>
           </div>
         </div>
@@ -416,7 +560,6 @@ export async function GET(
 
   } catch (e) {
     console.error("Error:", e);
-    // 🔹 এরর আসলে একটি সিম্পল রেসপন্স দিন যাতে CPU প্রসেসিং না ঝুলে থাকে
     return new Response("Failed to generate image", { status: 500 });
   }
 }

@@ -199,21 +199,23 @@
 
 
 
-
-
-
-
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
 import { useAccount, useReadContract, useSendCalls } from "wagmi"; 
-import { encodeFunctionData, concat } from "viem"; // নতুন যোগ করুন
-import { Attribution } from "ox/erc8021"; // নতুন যোগ করুন
+import { encodeFunctionData, concat } from "viem";
+import { Attribution } from "ox/erc8021";
 import { ABI, CONTRACT_ADDRESS } from "@/lib/contract";
 import { sdk } from "@farcaster/miniapp-sdk";
 import styles from "../task.module.css";
 
-export default function MiniTask() {
+// ১. Props এর জন্য ইন্টারফেস তৈরি (এরর ফিক্স করার জন্য)
+interface MiniTaskProps {
+  fid?: number | string;
+}
+
+// ২. ফাংশনে প্রপস রিসিভ করা
+export default function MiniTask({ fid }: MiniTaskProps) {
   const { address } = useAccount();
   const { sendCalls } = useSendCalls();
 
@@ -221,45 +223,41 @@ export default function MiniTask() {
   const [claimError, setClaimError] = useState(false);
   const [isAddedToProfile, setIsAddedToProfile] = useState(false);
   const [verifyLoading, setVerifyLoading] = useState(false);
-  
-  
   const [retryTimer, setRetryTimer] = useState(0);
 
-  // --- নোটিফিকেশন সিঙ্ক লজিক (অ্যাড করা হয়েছে) ---
   const syncNotificationToken = useCallback(async () => {
     try {
-      // ১. আগে চেক করবে এই ব্রাউজার থেকে অলরেডি সেভ হয়েছে কি না
       if (localStorage.getItem("pim_notif_synced") === "true") return;
 
       const context = await sdk.context;
-      const client = context?.client as any;
+      // যদি প্রপস থেকে fid না পাওয়া যায় তবে কন্টেক্সট থেকে নিবে
+      const userFid = fid || context?.user?.fid;
+      
+      if (!userFid) return;
 
-      // ২. যদি অ্যাপ অ্যাড থাকে এবং নোটিফিকেশন এনাবেল থাকে
-      if (client?.added && client?.notificationSettings?.enabled) {
-        const result = await sdk.actions.addFrame();
-        if (result.notificationDetails) {
-          const res = await fetch("/api/save-token", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              fid: context.user.fid,
-              url: result.notificationDetails.url,
-              token: result.notificationDetails.token
-            }),
-          });
+      const result = await sdk.actions.addFrame();
+      
+      if (result.notificationDetails) {
+        const response = await fetch("/api/save-token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fid: userFid,
+            url: result.notificationDetails.url,
+            token: result.notificationDetails.token
+          }),
+        });
 
-          // ৩. সফলভাবে সেভ হলে লোকাল স্টোরেজে মার্ক করে রাখবে যাতে আর কল না যায়
-          if (res.ok) {
-            localStorage.setItem("pim_notif_synced", "true");
-          }
+        if (response.ok) {
+          localStorage.setItem("pim_notif_synced", "true");
+          console.log("✅ Token Synced to DB");
         }
       }
     } catch (error) {
-      console.error("Notification Sync Error:", error);
+      console.error("Sync Error:", error);
     }
-  }, []);
+  }, [fid]); // ডিপেনডেন্সিতে fid যোগ করা হলো
 
-  
   const { data: isTaskDone, refetch: refetchTask } = useReadContract({
     address: CONTRACT_ADDRESS,
     abi: ABI,
@@ -268,7 +266,6 @@ export default function MiniTask() {
     query: { enabled: !!address },
   });
 
-  // টাইমার লজিক
   useEffect(() => {
     let t: NodeJS.Timeout;
     if (retryTimer > 0) {
@@ -277,106 +274,103 @@ export default function MiniTask() {
     return () => clearTimeout(t);
   }, [retryTimer]);
 
-  // ২. প্রোফাইল স্ট্যাটাস চেক করার ফাংশন
   const checkAdditionStatus = useCallback(async () => {
     try {
       const context = await sdk.context;
-      if (context?.client?.added) {
-        setIsAddedToProfile(true);
-        setClaimError(false);
-        // অ্যাপ অ্যাড করা থাকলে টোকেন সিঙ্ক রান করবে
+      const isAdded = !!context?.client?.added;
+      
+      setIsAddedToProfile(isAdded);
+
+      if (isAdded && localStorage.getItem("pim_notif_synced") !== "true") {
         syncNotificationToken();
-        return true;
-      } else {
-        setIsAddedToProfile(false);
-        return false;
       }
+      
+      return isAdded;
     } catch (error) {
       console.error("SDK Context Error:", error);
       return false;
     }
   }, [syncNotificationToken]);
 
-  // ৩. পোলিং
   useEffect(() => {
     checkAdditionStatus();
     const interval = setInterval(checkAdditionStatus, 3000);
     return () => clearInterval(interval);
   }, [checkAdditionStatus]);
 
-  // ৪. Add Button হ্যান্ডলার
   const handleAddClick = async () => {
     setClaimError(false); 
     setVerifyLoading(true);
     
     try {
-      const alreadyAdded = await checkAdditionStatus();
-      if (alreadyAdded) {
-        setVerifyLoading(false);
-        return;
+      const result = await sdk.actions.addFrame();
+      
+      if (result.notificationDetails) {
+        const context = await sdk.context;
+        const userFid = fid || context?.user?.fid;
+
+        await fetch("/api/save-token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fid: userFid,
+            url: result.notificationDetails.url,
+            token: result.notificationDetails.token
+          }),
+        });
+        localStorage.setItem("pim_notif_synced", "true");
       }
 
-      await new Promise(resolve => setTimeout(resolve, 100));
-      await sdk.actions.addFrame();
       await checkAdditionStatus();
     } catch (error: any) {
-      console.log("Interaction Error:", error);
+      console.error("Interaction Error:", error);
       setClaimError(true);
-      setIsAddedToProfile(false);
     } finally {
       setVerifyLoading(false);
     }
   };
 
-  
+  const handleClaim = async () => {
+    if (!address || !isAddedToProfile) return;
+    setIsClaiming(true);
 
+    try {
+      const data = encodeFunctionData({
+        abi: ABI,
+        functionName: "claimDirectTask",
+        args: ["add_miniapp"],
+      });
 
-const handleClaim = async () => {
-  if (!address || !isAddedToProfile) return;
-  setIsClaiming(true);
+      const builderSuffix = Attribution.toDataSuffix({
+        codes: ["bc_bmhx0p43"], 
+      });
 
-  try {
-    // ১. ডাটা এনকোড করা
-    const data = encodeFunctionData({
-      abi: ABI,
-      functionName: "claimDirectTask",
-      args: ["add_miniapp"],
-    });
+      const finalData = concat([data, builderSuffix]);
 
-    // ২. বিল্ডার কোড সাফিক্স তৈরি করা
-    const builderSuffix = Attribution.toDataSuffix({
-      codes: ["bc_bmhx0p43"], // আপনার বিল্ডার কোড
-    });
-
-    // ৩. ডাটা এবং সাফিক্স ম্যানুয়ালি জোড়া লাগানো
-    const finalData = concat([data, builderSuffix]);
-
-    // ৪. sendCalls দিয়ে ট্রানজেকশন পাঠানো
-    sendCalls({
-      calls: [
-        {
-          to: CONTRACT_ADDRESS as `0x${string}`,
-          data: finalData, // সাফিক্সসহ ডাটা
+      sendCalls({
+        calls: [
+          {
+            to: CONTRACT_ADDRESS as `0x${string}`,
+            data: finalData,
+          },
+        ],
+      }, {
+        onSuccess: async () => {
+          await refetchTask();
+          setIsClaiming(false);
         },
-      ],
-    }, {
-      onSuccess: async (id) => {
-        console.log("Bundle ID:", id);
-        await refetchTask(); // টাস্ক স্ট্যাটাস রিফ্রেশ
-        setIsClaiming(false);
-      },
-      onError: (err) => {
-        console.error("Claim Error:", err);
-        setIsClaiming(false);
-        setRetryTimer(3);
-      }
-    });
+        onError: (err) => {
+          console.error("Claim Error:", err);
+          setIsClaiming(false);
+          setRetryTimer(3);
+        }
+      });
 
-  } catch (err) {
-    console.error("Execution Error:", err);
-    setIsClaiming(false);
-  }
-};
+    } catch (err) {
+      console.error("Execution Error:", err);
+      setIsClaiming(false);
+    }
+  };
 
   return (
     <div className={styles.taskCard}>
