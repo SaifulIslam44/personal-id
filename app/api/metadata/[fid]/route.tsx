@@ -467,10 +467,9 @@ export async function GET(
     const user = json.result.user;
     const userName = user.displayName || "Base User";
     const userHandle = user.username ? `@${user.username}` : "";
-
-    // ডিফল্ট ইমেজ হিসেবে placehold.co ব্যবহার করা হয়েছে
-    const defaultPfp = `https://placehold.co/240x240/0052FF/ffffff?text=${userName.charAt(0).toUpperCase()}`; 
-    const pfpUrl = user.pfp?.url && user.pfp.url !== "" ? user.pfp.url : defaultPfp;
+    
+    // প্রোফাইল পিকচার চেক
+    const pfpUrl = user.pfp?.url || "";
 
     const isJson = url.pathname.endsWith('.json') || req.headers.get('accept')?.includes('json');
 
@@ -510,18 +509,36 @@ export async function GET(
         >
           {/* Profile Section */}
           <div style={{ display: 'flex', position: 'relative' }}>
-            <img
-              src={pfpUrl}
-              alt="Profile"
-              // 🔹 এখানে সরাসরি width ও height দেওয়া হয়েছে (এরর ফিক্স করার জন্য)
-              width="240"
-              height="240"
-              style={{
-                borderRadius: 40,
-                objectFit: 'cover',
+            {pfpUrl ? (
+              <img
+                src={pfpUrl}
+                alt="Profile"
+                width="240"
+                height="240"
+                style={{
+                  borderRadius: 40,
+                  objectFit: 'cover',
+                  border: '8px solid #0052FF',
+                }}
+              />
+            ) : (
+              /* ইমেজ না থাকলে placehold.co এর বদলে Pure CSS Avatar */
+              <div style={{
+                display: 'flex',
+                width: '240px',
+                height: '240px',
+                borderRadius: '40px',
+                backgroundColor: '#0052FF',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '100px',
+                fontWeight: 'bold',
+                color: 'white',
                 border: '8px solid #0052FF',
-              }}
-            />
+              }}>
+                {userName.charAt(0).toUpperCase()}
+              </div>
+            )}
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', marginLeft: 40, flex: 1 }}>
