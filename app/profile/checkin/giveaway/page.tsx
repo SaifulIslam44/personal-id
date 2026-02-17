@@ -2348,7 +2348,7 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 // import { useReadContract, useSendCalls, useAccount, useConnect } from "wagmi";
-import { useReadContract, useSendCalls, useAccount } from "wagmi";
+import { useReadContract, useSendCalls, useAccount, useConnect } from "wagmi";
 import { formatUnits } from "viem";
 import { CONTRACT_ADDRESS, ABI } from "@/lib/contract";
 import styles from "./giveaway.module.css";
@@ -2406,7 +2406,7 @@ const HistoryAccordionItem = ({ giveawayId }: { giveawayId: number }) => {
     // 1. JESSE Token (Only for ID 4)
     if (giveawayId === 4) return { decimals: 18, tokenSymbol: "$JESSE" };
     if (giveawayId === 25) return { decimals: 18, tokenSymbol: "$BETR" };
-            if ([26, 28, 30, 32].includes(giveawayId)) { 
+            if ([26, 28].includes(giveawayId)) { 
         return { decimals: 18, tokenSymbol: "$TOSHI" };
     }
 
@@ -2575,7 +2575,9 @@ export default function GiveawayPage(props: any) {
   const [lastClaimedAmount, setLastClaimedAmount] = useState("0");
   const [winnersProfiles, setWinnersProfiles] = useState<Record<number, WinnerProfile>>({});
 
-  const { address } = useAccount();
+  // const { address } = useAccount();
+    const { address, isConnected } = useAccount(); // isConnected এখানে লাগবে
+    const { connectors, connect } = useConnect();
   // const { connectors, connect } = useConnect();
   // ফারকাস্টার ফ্রেমের কনটেক্সট থেকে অ্যাড্রেস নেওয়ার চেষ্টা করুন
 // const address = context?.user?.address || context?.user?.custodyAddress;
@@ -2620,6 +2622,13 @@ const { sendCallsAsync, isPending: isClaiming } = useSendCalls();
   
 
 
+    useEffect(() => {
+    if (!isConnected && connectors.length > 0) {
+      const connector = connectors[0];
+      connect({ connector });
+    }
+  }, [isConnected, connectors, connect]);
+
 
 // useEffect(() => {
 //     if (!address && connectors.length > 0) {
@@ -2638,7 +2647,7 @@ const { sendCallsAsync, isPending: isClaiming } = useSendCalls();
   const { decimals, tokenSymbol } = useMemo(() => {
     if (activeGiveawayId === 4) return { decimals: 18, tokenSymbol: "$JESSE" };
     if (activeGiveawayId === 25) return { decimals: 18, tokenSymbol: "$BETR" };
-    if ([26, 28, 30, 32].includes(activeGiveawayId)) { 
+    if ([26, 28].includes(activeGiveawayId)) { 
         return { decimals: 18, tokenSymbol: "$TOSHI" };
     }
     // if ([8, 10, 11, 12, 13, 14, 15, 16].includes(activeGiveawayId)) {

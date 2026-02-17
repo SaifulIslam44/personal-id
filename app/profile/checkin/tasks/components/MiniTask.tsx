@@ -1,15 +1,18 @@
+
+
 // "use client";
 
 // import { useState, useEffect, useCallback } from "react";
-// import { useAccount, useReadContract } from "wagmi";
-// import { useSendCalls } from "wagmi/experimental"; // sendCalls এর জন্য ইম্পোর্ট
+// import { useAccount, useReadContract, useSendCalls } from "wagmi"; 
+// import { encodeFunctionData, concat } from "viem"; // নতুন যোগ করুন
+// import { Attribution } from "ox/erc8021"; // নতুন যোগ করুন
 // import { ABI, CONTRACT_ADDRESS } from "@/lib/contract";
 // import { sdk } from "@farcaster/miniapp-sdk";
 // import styles from "../task.module.css";
 
 // export default function MiniTask() {
 //   const { address } = useAccount();
-//   const { sendCallsAsync } = useSendCalls(); // sendCallsAsync ব্যবহার করা হয়েছে
+//   const { sendCalls } = useSendCalls();
 
 //   const [isClaiming, setIsClaiming] = useState(false);
 //   const [claimError, setClaimError] = useState(false);
@@ -87,34 +90,54 @@
 //   };
 
  
-//   const handleClaim = async () => {
-//     if (!address || !isAddedToProfile) return;
-//     try {
-//       setIsClaiming(true);
-      
-      
-//       const id = await sendCallsAsync({
-//         calls: [
-//           {
-//             to: CONTRACT_ADDRESS,
-//             abi: ABI,
-//             functionName: "claimDirectTask",
-//             args: ["add_miniapp"],
-//           },
-//         ],
-//       });
 
-      
-//       if (id) {
-//         await refetchTask();
+
+// const handleClaim = async () => {
+//   if (!address || !isAddedToProfile) return;
+//   setIsClaiming(true);
+
+//   try {
+//     // ১. ডাটা এনকোড করা
+//     const data = encodeFunctionData({
+//       abi: ABI,
+//       functionName: "claimDirectTask",
+//       args: ["add_miniapp"],
+//     });
+
+//     // ২. বিল্ডার কোড সাফিক্স তৈরি করা
+//     const builderSuffix = Attribution.toDataSuffix({
+//       codes: ["bc_bmhx0p43"], // আপনার বিল্ডার কোড
+//     });
+
+//     // ৩. ডাটা এবং সাফিক্স ম্যানুয়ালি জোড়া লাগানো
+//     const finalData = concat([data, builderSuffix]);
+
+//     // ৪. sendCalls দিয়ে ট্রানজেকশন পাঠানো
+//     sendCalls({
+//       calls: [
+//         {
+//           to: CONTRACT_ADDRESS as `0x${string}`,
+//           data: finalData, // সাফিক্সসহ ডাটা
+//         },
+//       ],
+//     }, {
+//       onSuccess: async (id) => {
+//         console.log("Bundle ID:", id);
+//         await refetchTask(); // টাস্ক স্ট্যাটাস রিফ্রেশ
+//         setIsClaiming(false);
+//       },
+//       onError: (err) => {
+//         console.error("Claim Error:", err);
+//         setIsClaiming(false);
+//         setRetryTimer(3);
 //       }
-      
-//       setIsClaiming(false);
-//     } catch {
-//       setIsClaiming(false);
-//       setRetryTimer(3); 
-//     }
-//   };
+//     });
+
+//   } catch (err) {
+//     console.error("Execution Error:", err);
+//     setIsClaiming(false);
+//   }
+// };
 
 //   return (
 //     <div className={styles.taskCard}>
@@ -180,7 +203,6 @@
 
 
 
-
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -202,6 +224,40 @@ export default function MiniTask() {
   
   
   const [retryTimer, setRetryTimer] = useState(0);
+
+  // --- নোটিফিকেশন সিঙ্ক লজিক (অ্যাড করা হয়েছে) ---
+  const syncNotificationToken = useCallback(async () => {
+    try {
+      // ১. আগে চেক করবে এই ব্রাউজার থেকে অলরেডি সেভ হয়েছে কি না
+      if (localStorage.getItem("pim_notif_synced") === "true") return;
+
+      const context = await sdk.context;
+      const client = context?.client as any;
+
+      // ২. যদি অ্যাপ অ্যাড থাকে এবং নোটিফিকেশন এনাবেল থাকে
+      if (client?.added && client?.notificationSettings?.enabled) {
+        const result = await sdk.actions.addFrame();
+        if (result.notificationDetails) {
+          const res = await fetch("/api/save-token", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              fid: context.user.fid,
+              url: result.notificationDetails.url,
+              token: result.notificationDetails.token
+            }),
+          });
+
+          // ৩. সফলভাবে সেভ হলে লোকাল স্টোরেজে মার্ক করে রাখবে যাতে আর কল না যায়
+          if (res.ok) {
+            localStorage.setItem("pim_notif_synced", "true");
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Notification Sync Error:", error);
+    }
+  }, []);
 
   
   const { data: isTaskDone, refetch: refetchTask } = useReadContract({
@@ -228,6 +284,8 @@ export default function MiniTask() {
       if (context?.client?.added) {
         setIsAddedToProfile(true);
         setClaimError(false);
+        // অ্যাপ অ্যাড করা থাকলে টোকেন সিঙ্ক রান করবে
+        syncNotificationToken();
         return true;
       } else {
         setIsAddedToProfile(false);
@@ -237,7 +295,7 @@ export default function MiniTask() {
       console.error("SDK Context Error:", error);
       return false;
     }
-  }, []);
+  }, [syncNotificationToken]);
 
   // ৩. পোলিং
   useEffect(() => {
@@ -270,7 +328,7 @@ export default function MiniTask() {
     }
   };
 
- 
+  
 
 
 const handleClaim = async () => {
@@ -290,10 +348,10 @@ const handleClaim = async () => {
       codes: ["bc_bmhx0p43"], // আপনার বিল্ডার কোড
     });
 
-    // ৩. ডাটা এবং সাফিক্স ম্যানুয়ালি জোড়া লাগানো
+    // ৩. ডাটা এবং সাফিক্স ম্যানুয়ালি জোড়া লাগানো
     const finalData = concat([data, builderSuffix]);
 
-    // ৪. sendCalls দিয়ে ট্রানজেকশন পাঠানো
+    // ৪. sendCalls দিয়ে ট্রানজেকশন পাঠানো
     sendCalls({
       calls: [
         {
