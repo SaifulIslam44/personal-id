@@ -32,7 +32,6 @@
 
 import mongoose from "mongoose";
 
-// মেইন কানেকশন স্ট্রিংটি গ্লোবালি না রেখে ফাংশনের ভেতর নিয়ে আসা হয়েছে
 let cached = (global as any).mongoose;
 
 if (!cached) {
@@ -40,16 +39,17 @@ if (!cached) {
 }
 
 async function connectDB() {
-  // এখানে ভেরিয়েবলটি চেক করুন যাতে dotenv লোড হওয়ার সময় পায়
+  // ১. চেকটি ফাংশনের ভেতরে নিয়ে আসা হয়েছে যাতে স্ক্রিপ্ট রান করার সময় এরর না দেয়
   const MONGODB_URI = process.env.MONGODB_URI;
 
   if (!MONGODB_URI) {
-    throw new Error("MONGODB_URI is missing in env. Please check .env.local");
+    throw new Error("MONGODB_URI is missing in env");
   }
 
   if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
+    // ২. বাফার কমান্ড ফলস রাখা ভালো যাতে কানেকশন হওয়ার আগে কোনো কুয়েরি না চলে
     const opts = {
       bufferCommands: false,
     };
@@ -59,7 +59,7 @@ async function connectDB() {
   try {
     cached.conn = await cached.promise;
   } catch (e) {
-    cached.promise = null;
+    cached.promise = null; // এরর হলে প্রমিস রিসেট করে দিবে
     throw e;
   }
 
