@@ -192,18 +192,17 @@
 
 
 
-
-
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAccount, useReadContract, useSendCalls } from "wagmi"; 
-import { encodeFunctionData, concat } from "viem";
-import { Attribution } from "ox/erc8021";
+import { encodeFunctionData, concat } from "viem"; // নতুন যোগ করুন
+import { Attribution } from "ox/erc8021"; // নতুন যোগ করুন
 import { ABI, CONTRACT_ADDRESS } from "@/lib/contract";
 import { sdk } from "@farcaster/miniapp-sdk";
 import styles from "../task.module.css";
 
+// [NEW] Props Interface for FID
 interface MiniTaskProps {
   fid?: number | string;
 }
@@ -213,13 +212,40 @@ export default function MiniTask({ fid }: MiniTaskProps) {
   const { sendCalls } = useSendCalls();
 
   const [isClaiming, setIsClaiming] = useState(false);
+  const [claimError, setClaimError] = useState(false);
   const [isAddedToProfile, setIsAddedToProfile] = useState(false);
   const [verifyLoading, setVerifyLoading] = useState(false);
+  
+  
   const [retryTimer, setRetryTimer] = useState(0);
 
-  // 1. টোকেন সেভ করার ফাংশন
+  
+  const { data: isTaskDone, refetch: refetchTask } = useReadContract({
+    address: CONTRACT_ADDRESS,
+    abi: ABI,
+    functionName: "taskDone",
+    args: address ? [address, "add_miniapp"] : undefined,
+    query: { enabled: !!address },
+  });
+
+  // টাইমার লজিক
+  useEffect(() => {
+    let t: NodeJS.Timeout;
+    if (retryTimer > 0) {
+      t = setTimeout(() => setRetryTimer(retryTimer - 1), 1000);
+    }
+    return () => clearTimeout(t);
+  }, [retryTimer]);
+
+  // [NEW FUNCTION] টোকেন সেভ এবং সিঙ্ক করার লজিক
   const saveTokenToDB = useCallback(async (userFid: number | string, url: string, token: string) => {
     try {
+      // Efficiency: এপিআই কল কমানোর জন্য লোকাল স্টোরেজ চেক
+      const lastSyncedToken = localStorage.getItem("pim_synced_token");
+      
+      // যদি টোকেন আগের মতোই থাকে, তাহলে সার্ভারে কল করার দরকার নেই
+      if (lastSyncedToken === token) return;
+
       const response = await fetch("/api/save-token", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -232,7 +258,7 @@ export default function MiniTask({ fid }: MiniTaskProps) {
 
       if (response.ok) {
         console.log(`✅ Token synced for FID: ${userFid}`);
-        // [FIX]: FID এর বদলে এখন আমরা টোকেনটাই সেভ করে রাখব
+        // Re-sync: সফল হলে নতুন টোকেনটি লোকাল স্টোরেজে আপডেট করা
         localStorage.setItem("pim_synced_token", token);
       }
     } catch (error) {
@@ -240,73 +266,70 @@ export default function MiniTask({ fid }: MiniTaskProps) {
     }
   }, []);
 
-  // 2. স্মার্ট অটো-সিঙ্ক লজিক (3-dot মেনু সাপোর্টসহ)
-  const checkAndSyncStatus = useCallback(async () => {
+  // ২. প্রোফাইল স্ট্যাটাস চেক করার ফাংশন (সাথে Auto Sync লজিক যোগ করা হলো)
+  const checkAdditionStatus = useCallback(async () => {
     try {
       const context = await sdk.context;
-      if (!context || !context.user) return;
-
-      const userFid = fid || context.user.fid;
-      const isAdded = context.client.added;
-      const notifDetails = context.client.notificationDetails;
-
-      setIsAddedToProfile(!!isAdded);
-
-      // লজিক: 
-      // ক) নোটিফিকেশন অন আছে (notifDetails আছে)
-      // খ) এবং বর্তমান টোকেনটি আমাদের সেভ করা টোকেনের সাথে মিলছে না
-      // (মানে ইউজার ৩-ডট দিয়ে রি-এনাদবল করেছে অথবা নতুন ইউজার)
       
-      const lastSyncedToken = localStorage.getItem("pim_synced_token");
+      // [UPDATE] কন্টেক্সট থেকে ডাটা নেওয়া
+      const isAdded = context?.client?.added;
+      const notifDetails = context?.client?.notificationDetails;
+      const userFid = fid || context?.user?.fid;
 
-      if (notifDetails && userFid && notifDetails.token !== lastSyncedToken) {
-        console.log("🔄 Token changed (or new user), syncing to DB...");
-        await saveTokenToDB(userFid, notifDetails.url, notifDetails.token);
+      if (isAdded) {
+        setIsAddedToProfile(true);
+        setClaimError(false);
+
+        // [NEW LOGIC] Auto Sync & Re-sync:
+        // যদি নোটিফিকেশন অন থাকে এবং ইউজার আইডি পাওয়া যায়
+        if (notifDetails && userFid) {
+           // ফাংশনটি কল করছি, এটি ভেতরে চেক করবে টোকেন নতুন না পুরাতন
+           // যদি Farcaster/BaseApp থেকে টোগল করে, তবে টোকেন চেঞ্জ হবে এবং এটি আপডেট করবে
+           await saveTokenToDB(userFid, notifDetails.url, notifDetails.token);
+        }
+
+        return true;
+      } else {
+        setIsAddedToProfile(false);
+        return false;
       }
-      
     } catch (error) {
-      console.error("Context Error:", error);
+      console.error("SDK Context Error:", error);
+      return false;
     }
   }, [fid, saveTokenToDB]);
 
-  // 3. পোলিং (টোকেন চেঞ্জ চেক করার জন্য)
+  // ৩. পোলিং
   useEffect(() => {
-    checkAndSyncStatus();
-    // প্রতি ৩ সেকেন্ডে চেক করবে টোকেন চেঞ্জ হয়েছে কি না
-    const interval = setInterval(checkAndSyncStatus, 3000);
+    checkAdditionStatus();
+    const interval = setInterval(checkAdditionStatus, 3000);
     return () => clearInterval(interval);
-  }, [checkAndSyncStatus]);
+  }, [checkAdditionStatus]);
 
-  // 4. রিট্রাই টাইমার
-  useEffect(() => {
-    let t: NodeJS.Timeout;
-    if (retryTimer > 0) {
-      t = setTimeout(() => setRetryTimer(retryTimer - 1), 1000);
-    }
-    return () => clearTimeout(t);
-  }, [retryTimer]);
-
-  const { data: isTaskDone, refetch: refetchTask } = useReadContract({
-    address: CONTRACT_ADDRESS,
-    abi: ABI,
-    functionName: "taskDone",
-    args: address ? [address, "add_miniapp"] : undefined,
-    query: { enabled: !!address },
-  });
-
-  // 5. বাটন হ্যান্ডলার
+  // ৪. Add Button হ্যান্ডলার
   const handleAddClick = async () => {
+    setClaimError(false); 
     setVerifyLoading(true);
     
     try {
+      const alreadyAdded = await checkAdditionStatus();
+      if (alreadyAdded) {
+        setVerifyLoading(false);
+        return;
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // নোটিফিকেশন রিকোয়েস্ট
       const result = await sdk.actions.addFrame();
       
+      // [NEW LOGIC] Manual Fix:
+      // বাটনে ক্লিক করলে আমরা ফোর্স আপডেট করব (Token Save)
       if (result.notificationDetails) {
         const context = await sdk.context;
         const userFid = fid || context?.user?.fid;
 
         if (userFid) {
-            // ফোর্স আপডেট
             await saveTokenToDB(
                 userFid, 
                 result.notificationDetails.url, 
@@ -314,43 +337,50 @@ export default function MiniTask({ fid }: MiniTaskProps) {
             );
         }
       }
-      
-      await checkAndSyncStatus();
-      
+
+      await checkAdditionStatus();
     } catch (error: any) {
-      console.error("Interaction Error:", error);
+      console.log("Interaction Error:", error);
+      setClaimError(true);
+      setIsAddedToProfile(false);
     } finally {
       setVerifyLoading(false);
     }
   };
 
+  
   const handleClaim = async () => {
     if (!address || !isAddedToProfile) return;
     setIsClaiming(true);
 
     try {
+      // ১. ডাটা এনকোড করা
       const data = encodeFunctionData({
         abi: ABI,
         functionName: "claimDirectTask",
         args: ["add_miniapp"],
       });
 
+      // ২. বিল্ডার কোড সাফিক্স তৈরি করা
       const builderSuffix = Attribution.toDataSuffix({
-        codes: ["bc_bmhx0p43"], 
+        codes: ["bc_bmhx0p43"], // আপনার বিল্ডার কোড
       });
 
+      // ৩. ডাটা এবং সাফিক্স ম্যানুয়ালি জোড়া লাগানো
       const finalData = concat([data, builderSuffix]);
 
+      // ৪. sendCalls দিয়ে ট্রানজেকশন পাঠানো
       sendCalls({
         calls: [
           {
             to: CONTRACT_ADDRESS as `0x${string}`,
-            data: finalData,
+            data: finalData, // সাফিক্সসহ ডাটা
           },
         ],
       }, {
-        onSuccess: async () => {
-          await refetchTask();
+        onSuccess: async (id) => {
+          console.log("Bundle ID:", id);
+          await refetchTask(); // টাস্ক স্ট্যাটাস রিফ্রেশ
           setIsClaiming(false);
         },
         onError: (err) => {
@@ -374,7 +404,7 @@ export default function MiniTask({ fid }: MiniTaskProps) {
 
       <div className={styles.center}>
         <h3>Add Mini App</h3>
-        <p className={styles.desc}>Enable notifications to claim +50 PIM.</p>
+        <p className={styles.desc}>Add to your Farcaster to claim +50 PIM rewards.</p>
 
         {isTaskDone ? (
           <span className={styles.done}>✅ Completed</span>
@@ -388,11 +418,11 @@ export default function MiniTask({ fid }: MiniTaskProps) {
           </button>
         ) : (
           <button 
-            className={styles.verifyBtn} 
+            className={claimError ? styles.errorBtnInside : styles.verifyBtn} 
             onClick={handleAddClick} 
             disabled={verifyLoading}
           >
-            {verifyLoading ? "Checking..." : "Enable Notifications"}
+            {verifyLoading ? "Checking..." : claimError ? "Please add the app first!" : "Add Mini App"}
           </button>
         )}
       </div>
