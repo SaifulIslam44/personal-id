@@ -1,3 +1,8 @@
+
+
+
+import dotenv from "dotenv";
+dotenv.config({ path: ".env.local" });
 import dbConnect from "../lib/db";
 import User from "../models/User";
 import axios from "axios";
