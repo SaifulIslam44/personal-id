@@ -303,13 +303,13 @@ import "@coinbase/onchainkit/styles.css";
 
 // lib ফোল্ডার থেকে config ইমপোর্ট করুন
 import { config } from "@/lib/config";
-import AutoConnect from "./components/AutoConnect";
+
 
 const queryClient = new QueryClient();
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
-    <WagmiProvider config={config}>
+    <WagmiProvider config={config} reconnectOnMount={true}>
       <QueryClientProvider client={queryClient}>
         <OnchainKitProvider
           apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
@@ -328,7 +328,7 @@ export function Providers({ children }: { children: ReactNode }) {
             notificationProxyUrl: undefined,
           }}
         >
-          <AutoConnect />
+         
           {children}
         </OnchainKitProvider>
       </QueryClientProvider>
