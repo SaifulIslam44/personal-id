@@ -46,7 +46,7 @@ export const config = createConfig({
   // কানেক্টরগুলো এখানে অ্যাড করা হয়েছে যাতে রিফ্রেশ করলে ওয়ালেট মনে রাখতে পারে
   connectors: [
     injected(), 
-    coinbaseWallet({ appName: "My Frame App" }), // প্রয়োজনে অ্যাপের নাম দিন
+    coinbaseWallet({ appName: "Personal ID Mint" }), // প্রয়োজনে অ্যাপের নাম দিন
   ],
   dataSuffix: DATA_SUFFIX,
   ssr: true, // সার্ভার সাইড রেন্ডারিং বা ফ্রেমের ক্ষেত্রে এটি সেশন ধরে রাখতে সাহায্য করে
