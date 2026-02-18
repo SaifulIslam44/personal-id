@@ -81,6 +81,78 @@
 
 
 
+// import { NextResponse } from "next/server";
+
+// export const runtime = 'edge'; 
+
+// export async function GET(request: Request) {
+//   const { searchParams } = new URL(request.url);
+//   const fids = searchParams.get("fid"); 
+
+//   if (!fids) {
+//     return NextResponse.json({ error: "FIDs required" }, { status: 400 });
+//   }
+
+//   const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY;
+  
+//   // ১৫ দিনের সেকেন্ডের হিসাব (15 * 24 * 60 * 60)
+//   const FIFTEEN_DAYS = 2160000; 
+
+//   const headers = {
+//     // ব্রাউজার এবং CDN-কে বলা হচ্ছে ১৫ দিন ক্যাশ ধরে রাখতে
+//     'Cache-Control': `public, max-age=${FIFTEEN_DAYS}, s-maxage=${FIFTEEN_DAYS}, stale-while-revalidate=86400`,
+//     'Content-Type': 'application/json',
+//   };
+
+//   try {
+//     const response = await fetch(
+//       `https://api.neynar.com/v2/farcaster/user/bulk?fids=${fids}`,
+//       {
+//         method: "GET",
+//         headers: {
+//           accept: "application/json",
+//           api_key: NEYNAR_API_KEY || "",
+//         },
+//         // 🔥 এই অপশনটা Next.js-কে বলবে ১৫ দিন পর্যন্ত পুরনো ডেটাই ব্যবহার করতে
+//         next: { revalidate: FIFTEEN_DAYS } 
+//       }
+//     );
+
+//     if (!response.ok) {
+//       return NextResponse.json(
+//         { error: "Failed to fetch from Neynar" }, 
+//         { status: response.status, headers }
+//       );
+//     }
+
+//     const data = await response.json();
+    
+//     const users = data.users?.map((user: any) => ({
+//       fid: user.fid,
+//       username: user.username,
+//       displayName: user.display_name,
+//       pfpUrl: user.pfp_url,
+//     })) || [];
+
+//     return NextResponse.json({ users }, { headers });
+
+//   } catch (error) {
+//     console.error("API Error:", error);
+//     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+//   }
+// }
+
+
+
+
+
+
+
+
+
+
+
+
 import { NextResponse } from "next/server";
 
 export const runtime = 'edge'; 
@@ -95,12 +167,13 @@ export async function GET(request: Request) {
 
   const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY;
   
-  // ১৫ দিনের সেকেন্ডের হিসাব (15 * 24 * 60 * 60)
-  const FIFTEEN_DAYS = 2160000; 
+  // ২৫ দিনের সেকেন্ডের সঠিক হিসাব (25 * 24 * 60 * 60)
+  const TWENTY_FIVE_DAYS = 2160000; 
 
   const headers = {
-    // ব্রাউজার এবং CDN-কে বলা হচ্ছে ১৫ দিন ক্যাশ ধরে রাখতে
-    'Cache-Control': `public, max-age=${FIFTEEN_DAYS}, s-maxage=${FIFTEEN_DAYS}, stale-while-revalidate=86400`,
+    // 'immutable' মানে ব্রাউজারকে বলা হচ্ছে: "২৫ দিনের মধ্যে ভুলেও সার্ভারে নক দিবা না"
+    // stale-while-revalidate বাদ দেওয়া হয়েছে যাতে ব্যাকগ্রাউন্ডেও কল না হয়
+    'Cache-Control': `public, max-age=${TWENTY_FIVE_DAYS}, s-maxage=${TWENTY_FIVE_DAYS}, immutable`,
     'Content-Type': 'application/json',
   };
 
@@ -113,15 +186,18 @@ export async function GET(request: Request) {
           accept: "application/json",
           api_key: NEYNAR_API_KEY || "",
         },
-        // 🔥 এই অপশনটা Next.js-কে বলবে ১৫ দিন পর্যন্ত পুরনো ডেটাই ব্যবহার করতে
-        next: { revalidate: FIFTEEN_DAYS } 
+        // 🔥 ১. 'force-cache': এটা Next.js কে বলবে নেটওয়ার্কে না গিয়ে ক্যাশ খুঁজতে
+        cache: 'force-cache',
+        // 🔥 ২. 'revalidate': ২৫ দিন পর ছাড়া ক্যাশ ভাঙবে না
+        next: { revalidate: TWENTY_FIVE_DAYS } 
       }
     );
 
     if (!response.ok) {
+      // যদি এরর হয়, তাহলে আমরা ক্যাশ করতে চাই না, তাই সাধারণ রেস্পন্স
       return NextResponse.json(
         { error: "Failed to fetch from Neynar" }, 
-        { status: response.status, headers }
+        { status: response.status }
       );
     }
 

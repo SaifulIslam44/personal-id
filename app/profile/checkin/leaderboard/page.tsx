@@ -227,6 +227,287 @@
 
 
 
+// "use client";
+
+// import { useState, useEffect, useMemo } from "react";
+// import { useReadContract, useAccount } from "wagmi";
+// import { formatUnits } from "viem";
+// import { CONTRACT_ADDRESS, ABI } from "@/lib/contract";
+// import styles from "./leaderboard.module.css";
+// import Image from "next/image";
+// import { Moon, Sun, ChevronLeft, ChevronRight } from "lucide-react"; 
+// import miniApp from "@farcaster/miniapp-sdk";
+
+// interface WinnerData {
+//   address: string;
+//   winnings: number;
+//   profileName: string;
+//   pfp: string;
+// }
+
+// export default function LeaderboardPage() { 
+//   const [leaderboard, setLeaderboard] = useState<WinnerData[]>([]);
+//   const [loading, setLoading] = useState(false);
+//   const [isMounted, setIsMounted] = useState(false);
+//   const [isDarkMode, setIsDarkMode] = useState(true); 
+
+//   const { address: connectedAddress } = useAccount();
+
+//   // Pagination State
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const itemsPerPage = 10; // Per page limit
+  
+//   const [userData, setUserData] = useState({
+//     displayName: "User",
+//     pfpUrl: "https://placehold.co/100x100?text=User"
+//   });
+
+//   // Effect for handling Dark/Light mode class
+//   useEffect(() => {
+//     if (!isDarkMode) {
+//       document.body.classList.add('light-mode');
+//     } else {
+//       document.body.classList.remove('light-mode');
+//     }
+//   }, [isDarkMode]);
+
+//   // Effect for initializing Mini App context
+//   useEffect(() => { 
+//     setIsMounted(true); 
+//     miniApp.context.then((ctx) => {
+//       if (ctx?.user) {
+//         setUserData({
+//           displayName: ctx.user.displayName || ctx.user.username || "User",
+//           pfpUrl: ctx.user.pfpUrl || "https://placehold.co/100x100?text=User"
+//         });
+//       }
+//     }).catch(() => {});
+//   }, []);
+
+//   // Fetching data from Smart Contract
+//   const { data: contractData } = useReadContract({
+//     address: CONTRACT_ADDRESS as `0x${string}`,
+//     abi: ABI,
+//     functionName: "getLeaderboard",
+//     args: [0, BigInt(10000)] as any, 
+//   });
+
+//   // Syncing contract data with state and fetching profiles
+//   useEffect(() => {
+//     const syncLeaderboard = async () => {
+//       if (contractData) {
+//         const [addresses, amounts, isEnabled] = contractData as [readonly string[], readonly bigint[], boolean];
+        
+//         if (isEnabled && addresses && addresses.length > 0) {
+//           setLoading(true);
+          
+//           // Step 1: Map and Sort by winnings descending
+//           const rawWinners = addresses.map((addr, i) => ({
+//             address: addr.toLowerCase(),
+//             winnings: parseFloat(formatUnits(amounts[i], 6)),
+//           })).sort((a, b) => b.winnings - a.winnings);
+
+//           try {
+//             const res = await fetch(`/api/get-profiles?addresses=${addresses.join(",")}`);
+//             const profileMap = await res.json();
+            
+//             const finalData = rawWinners.map(winner => ({
+//               ...winner,
+//               profileName: profileMap[winner.address]?.profileName || `User_${winner.address.slice(-4)}`,
+//               pfp: profileMap[winner.address]?.pfp || "https://placehold.co/100x100?text=?"
+//             }));
+            
+//             setLeaderboard(finalData);
+//           } catch (e) {
+//             console.error("Profile fetch error:", e);
+//           }
+//           setLoading(false);
+//         } else {
+//           setLeaderboard([]); 
+//         }
+//       }
+//     };
+//     syncLeaderboard();
+//   }, [contractData]);
+
+//   // Pagination Logic (Corrected to handle itemsPerPage)
+//   const totalPages = Math.max(1, Math.ceil(leaderboard.length / itemsPerPage));
+//   const indexOfFirstItem = (currentPage - 1) * itemsPerPage;
+//   const indexOfLastItem = indexOfFirstItem + itemsPerPage;
+  
+//   // Use useMemo for current items to show only 10 items per page
+//   const currentItems = useMemo(() => {
+//     return leaderboard.slice(indexOfFirstItem, indexOfLastItem);
+//   }, [leaderboard, indexOfFirstItem, indexOfLastItem]);
+
+//   if (!isMounted) return null;
+
+//   return (
+//     <div className={`${styles.container} ${!isDarkMode ? styles.lightMode : ""}`}>
+//       <nav className={styles.topBar}>
+//         <div className={styles.profileSummary}>
+//           <div className={styles.miniPfpWrapper}>
+//             <Image src={userData.pfpUrl} alt="PFP" className={styles.miniPfp} width={28} height={28} unoptimized />
+//           </div>
+//           <span className={styles.profileName}>{userData.displayName}</span>
+//         </div>
+//         <button className={styles.themeToggle} onClick={() => setIsDarkMode(!isDarkMode)}>
+//           {isDarkMode ? <Moon size={18} className={styles.iconBlue} /> : <Sun size={18} className={styles.iconOrange} />}
+//         </button>
+//       </nav>
+
+//       <main className={styles.mainContent}>
+//         <header className={styles.heroHeader}>
+//           <h1 className={styles.title}>🏆 WINNING LEADERBOARD 🏆</h1>
+//           {/* <p className={styles.subTitle}>Top earners and lucky winners of the Surprise Box</p> */}
+//         </header>
+
+//         <div className={styles.rewardSection}>
+//   <div className={styles.rewardHeader}>
+//     <h3>Monthly Championship Rewards</h3>
+//     <p>Top 3 monthly earners will receive exclusive $PIM bonuses</p>
+//   </div>
+
+//   <div className={styles.rewardCards}>
+//     <div className={styles.premiumCard}>
+//       <span className={styles.tier}>🥇 1st</span>
+//       <span className={styles.prize}>1,000 $PIM</span>
+//     </div>
+//     <div className={styles.premiumCard}>
+//       <span className={styles.tier}>🥈 2nd</span>
+//       <span className={styles.prize}>500 $PIM</span>
+//     </div>
+//     <div className={styles.premiumCard}>
+//       <span className={styles.tier}>🥉 3rd</span>
+//       <span className={styles.prize}>300 $PIM</span>
+//     </div>
+//   </div>
+// </div>
+
+//         <div className={styles.compactBoard}>
+//           <div className={styles.smallHeader}>
+//             <span>RANK</span>
+//             <span>USER</span>
+//             <span className={styles.textRight}>TOTAL WON</span>
+//           </div>
+
+//           <div className={styles.rowsContainer}>
+//             {loading ? (
+//               <div className={styles.loaderSmall}>Loading Leaderboard ...</div>
+//             ) : currentItems.length > 0 ? (
+//               currentItems.map((user, index) => {
+//                 // actualRank calculation for continuous ranking across pages
+//                 const actualRank = indexOfFirstItem + index;
+//                 const isCurrentUser = connectedAddress?.toLowerCase() === user.address.toLowerCase();
+
+//                 return (
+//                   <div 
+//                     key={user.address} 
+//                     className={`${styles.smallRow} ${isCurrentUser ? styles.highlightRow : ""}`}
+//                   >
+//                     <span className={styles.rankBadge}>
+//                       {actualRank === 0 ? "🥇" : actualRank === 1 ? "🥈" : actualRank === 2 ? "🥉" : `#${actualRank + 1}`}
+//                     </span>
+                    
+//                     <div className={styles.userInfoSmall}>
+//                       <div className={styles.avatarMini}>
+//                         <Image 
+//                           src={user.pfp} 
+//                           alt="pfp" 
+//                           width={34} 
+//                           height={34} 
+//                           className={styles.pfpRound} 
+//                           unoptimized 
+//                         />
+//                       </div>
+//                       <span className={styles.userText}>{user.profileName}</span>
+//                     </div>
+                    
+//                     <span className={styles.amountSmall}>
+//                       ${user.winnings.toFixed(2)} <small>USDC</small>
+//                     </span>
+//                   </div>
+//                 );
+//               })
+//             ) : (
+//               <p className={styles.emptySmall}>No winners yet.</p>
+//             )}
+//           </div>
+
+//           {/* Pagination Controls */}
+//           {totalPages > 1 && (
+//             <div className={styles.paginationWrapper}>
+//                <div className={styles.paginationRight}>
+//                   {/* Previous Page Button */}
+//                   <button 
+//                     className={styles.pBtnIcon} 
+//                     onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} 
+//                     disabled={currentPage === 1}
+//                   >
+//                     <ChevronLeft size={16} />
+//                   </button>
+                  
+//                   <div className={styles.pStatus}>
+//                     Page {currentPage} of {totalPages}
+//                   </div>
+                  
+//                   {/* Next Page Button */}
+//                   <button 
+//                     className={styles.pBtnIcon} 
+//                     onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} 
+//                     disabled={currentPage === totalPages}
+//                   >
+//                     <ChevronRight size={16} color="#0052ff" />
+//                   </button>
+//                </div>
+//             </div>
+//           )}
+//         </div>
+//       </main>
+//     </div>
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -237,6 +518,46 @@ import styles from "./leaderboard.module.css";
 import Image from "next/image";
 import { Moon, Sun, ChevronLeft, ChevronRight } from "lucide-react"; 
 import miniApp from "@farcaster/miniapp-sdk";
+
+
+
+
+
+// --- 🔵 CACHE SETTINGS ---
+const PROFILE_CACHE_KEY = "leaderboard_profiles_cache_v1";
+const CACHE_DURATION = 30 * 24 * 60 * 60 * 1000; // ৩০ দিন
+
+// লোকাল স্টোরেজ থেকে ডেটা আনার ফাংশন
+const getLocalProfileCache = () => {
+  if (typeof window === "undefined") return {};
+  try {
+    const stored = localStorage.getItem(PROFILE_CACHE_KEY);
+    if (!stored) return {};
+    
+    const { timestamp, data } = JSON.parse(stored);
+    
+    // ৩০ দিন পার হয়ে গেলে ক্যাশ ক্লিয়ার করে দিব
+    if (Date.now() - timestamp > CACHE_DURATION) {
+      localStorage.removeItem(PROFILE_CACHE_KEY);
+      return {};
+    }
+    return data || {};
+  } catch { return {}; }
+};
+
+// লোকাল স্টোরেজে নতুন ডেটা সেভ করার ফাংশন
+const saveToProfileCache = (newProfiles: Record<string, any>) => {
+  const current = getLocalProfileCache();
+  // আগের ডেটার সাথে নতুন ডেটা মার্জ করছি
+  const updated = { ...current, ...newProfiles };
+  try {
+    localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify({
+      timestamp: Date.now(),
+      data: updated
+    }));
+  } catch (e) { console.error("Cache full", e); }
+};
+// --------------------------
 
 interface WinnerData {
   address: string;
@@ -293,6 +614,7 @@ export default function LeaderboardPage() {
   });
 
   // Syncing contract data with state and fetching profiles
+// Syncing contract data with state and fetching profiles (Optimized with Cache)
   useEffect(() => {
     const syncLeaderboard = async () => {
       if (contractData) {
@@ -301,16 +623,36 @@ export default function LeaderboardPage() {
         if (isEnabled && addresses && addresses.length > 0) {
           setLoading(true);
           
-          // Step 1: Map and Sort by winnings descending
+          // Step 1: স্মার্ট কন্ট্রাক্ট থেকে পাওয়া অ্যাড্রেসগুলো লোয়ারকেস করা
           const rawWinners = addresses.map((addr, i) => ({
             address: addr.toLowerCase(),
             winnings: parseFloat(formatUnits(amounts[i], 6)),
           })).sort((a, b) => b.winnings - a.winnings);
 
           try {
-            const res = await fetch(`/api/get-profiles?addresses=${addresses.join(",")}`);
-            const profileMap = await res.json();
+            // 🔵 CACHE LOGIC START
+            const cachedProfiles = getLocalProfileCache(); // ক্যাশ লোড করলাম
+            const profileMap: Record<string, any> = { ...cachedProfiles }; // ফাইনাল ম্যাপে ক্যাশ ডেটা রাখলাম
             
+            // খুঁজে বের করছি কোন অ্যাড্রেসগুলো ক্যাশে নেই (Missing)
+            const missingAddresses = addresses
+              .map(a => a.toLowerCase())
+              .filter(addr => !cachedProfiles[addr]);
+
+            // যদি নতুন অ্যাড্রেস থাকে, শুধু তাদের জন্য API কল হবে
+            if (missingAddresses.length > 0) {
+              console.log("Fetching new profiles for:", missingAddresses.length, "users");
+              
+              const res = await fetch(`/api/get-profiles?addresses=${missingAddresses.join(",")}`);
+              const newFetchedProfiles = await res.json();
+              
+              // নতুন ডেটা ম্যাপে যোগ করলাম এবং ক্যাশে সেভ করলাম
+              Object.assign(profileMap, newFetchedProfiles);
+              saveToProfileCache(newFetchedProfiles);
+            }
+            // 🔵 CACHE LOGIC END
+
+            // Step 2: ফাইনাল ডেটা সেট করা (ক্যাশ + নতুন API ডেটা)
             const finalData = rawWinners.map(winner => ({
               ...winner,
               profileName: profileMap[winner.address]?.profileName || `User_${winner.address.slice(-4)}`,
