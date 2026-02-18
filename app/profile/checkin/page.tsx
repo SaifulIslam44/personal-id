@@ -2229,7 +2229,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAccount, useReadContract, useSendCalls, useConnect } from "wagmi"; // useSendCalls বাদ দিন, useSendTransaction নিন
+import { useAccount, useReadContract, useSendCalls } from "wagmi"; // useSendCalls বাদ দিন, useSendTransaction নিন
 import { Attribution } from "ox/erc8021";
 import { formatUnits, encodeFunctionData, concat } from "viem";
 import { CONTRACT_ADDRESS, ABI } from "@/lib/contract";
@@ -2245,9 +2245,9 @@ const USDC_TOKEN_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 
 export default function CheckInPage() {
   // const { address, isConnected, isReconnecting, isConnecting } = useAccount();
-  // const { address } = useAccount();
-  const { address, isConnected } = useAccount(); // isConnected এখানে লাগবে
-  const { connectors, connect } = useConnect();
+  const { address } = useAccount();
+  // const { address, isConnected } = useAccount(); // isConnected এখানে লাগবে
+  // const { connectors, connect } = useConnect();
   const [message, setMessage] = useState("");
   const [justCheckedIn, setJustCheckedIn] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -2322,19 +2322,13 @@ useEffect(() => {
 
 
 
-  // useEffect(() => {
-  //   setIsMounted(true);
-  //   if (!isConnected && connectors.length > 0) {
-  //     connect({ connector: connectors[0] });
-  //   }
-  // }, [isConnected, connect, connectors]);
 
-  useEffect(() => {
-    if (!isConnected && connectors.length > 0) {
-      const connector = connectors[0];
-      connect({ connector });
-    }
-  }, [isConnected, connectors, connect]);
+  // useEffect(() => {
+  //   if (!isConnected && connectors.length > 0) {
+  //     const connector = connectors[0];
+  //     connect({ connector });
+  //   }
+  // }, [isConnected, connectors, connect]);
 
   
   useEffect(() => {

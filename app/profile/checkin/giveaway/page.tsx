@@ -993,7 +993,7 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 // import { useReadContract, useSendCalls, useAccount, useConnect } from "wagmi";
-import { useReadContract, useSendCalls, useAccount, useConnect } from "wagmi";
+import { useReadContract, useSendCalls, useAccount} from "wagmi";
 import { formatUnits } from "viem";
 import { CONTRACT_ADDRESS, ABI } from "@/lib/contract";
 import styles from "./giveaway.module.css";
@@ -1221,8 +1221,7 @@ export default function GiveawayPage(props: any) {
   const [winnersProfiles, setWinnersProfiles] = useState<Record<number, WinnerProfile>>({});
 
   // const { address } = useAccount();
-    const { address, isConnected } = useAccount(); // isConnected এখানে লাগবে
-    const { connectors, connect } = useConnect();
+    const { address } = useAccount(); // isConnected এখানে লাগবে
   // const { connectors, connect } = useConnect();
   // ফারকাস্টার ফ্রেমের কনটেক্সট থেকে অ্যাড্রেস নেওয়ার চেষ্টা করুন
 // const address = context?.user?.address || context?.user?.custodyAddress;
@@ -1267,23 +1266,13 @@ const { sendCallsAsync, isPending: isClaiming } = useSendCalls();
   
 
 
-    useEffect(() => {
-    if (!isConnected && connectors.length > 0) {
-      const connector = connectors[0];
-      connect({ connector });
-    }
-  }, [isConnected, connectors, connect]);
+  //   useEffect(() => {
+  //   if (!isConnected && connectors.length > 0) {
+  //     const connector = connectors[0];
+  //     connect({ connector });
+  //   }
+  // }, [isConnected, connectors, connect]);
 
-
-// useEffect(() => {
-//     if (!address && connectors.length > 0) {
-//         // Farcaster environment এ সাধারণত 'injected' বা 'coinbaseWalletSDK' থাকে
-//         const connector = connectors.find(c => c.id === 'coinbaseWalletSDK' || c.name.includes("Farcaster")) || connectors[0];
-//         if (connector) {
-//             connect({ connector });
-//         }
-//     }
-// }, [address, connectors, connect]);
 
 
 
