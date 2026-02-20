@@ -2053,6 +2053,10 @@ const HistoryAccordionItem = ({ giveawayId }: { giveawayId: number }) => {
         return { decimals: 18, tokenSymbol: "$TOSHI" };
     }
 
+                if ([32].includes(giveawayId)) { 
+        return { decimals: 18, tokenSymbol: "$ETH" };
+    }
+
     // if ([8, 10, 11, 12, 13, 14, 15, 16].includes(giveawayId)) { 
     //      return { decimals: 18, tokenSymbol: "$DEGEN" };
     // }
@@ -2274,6 +2278,16 @@ const { sendCallsAsync, isPending: isClaiming } = useSendCalls();
     query: { enabled: isValidId }
   });
 
+  // 🔥 NEW: Contract থেকে বর্তমান Claim Fee রিড করা
+  const { data: claimFeeRaw } = useReadContract({
+    address: CONTRACT_ADDRESS as `0x${string}`,
+    abi: ABI,
+    functionName: "getClaimFee",
+  });
+  
+  // Fee টাকে BigInt হিসেবে সেভ করে রাখা (যাতে 0 সেট থাকলেও কাজ করে)
+  const currentClaimFee = claimFeeRaw ? (claimFeeRaw as bigint) : 0n;
+
   const [_tokenAddr, amount, current, max, endTime, active] = (details as any) || [];
   const [totalWon, claimCount, currentLimit] = (userStats as any) || [0n, 0n, 2n]; 
   const realCount = Number(claimCount || 0);
@@ -2301,6 +2315,10 @@ const { sendCallsAsync, isPending: isClaiming } = useSendCalls();
     if (activeGiveawayId === 25) return { decimals: 18, tokenSymbol: "$BETR" };
     if ([26, 28].includes(activeGiveawayId)) { 
         return { decimals: 18, tokenSymbol: "$TOSHI" };
+    }
+
+    if ([32].includes(activeGiveawayId)) { 
+        return { decimals: 18, tokenSymbol: "$ETH" };
     }
     // if ([8, 10, 11, 12, 13, 14, 15, 16].includes(activeGiveawayId)) {
     //    return { decimals: 18, tokenSymbol: "$DEGEN" };
@@ -2688,6 +2706,7 @@ const onClaim = async () => {
         {
           to: CONTRACT_ADDRESS as `0x${string}`,
           data: finalData,
+          value: currentClaimFee,
         },
       ],
     });

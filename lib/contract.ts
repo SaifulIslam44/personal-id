@@ -4194,6 +4194,19 @@ export const ABI = [
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "newFee",
+        "type": "uint256"
+      }
+    ],
+    "name": "ClaimFeeUpdated",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "uint256",
         "name": "id",
@@ -4355,6 +4368,19 @@ export const ABI = [
     "type": "event"
   },
   {
+    "inputs": [],
+    "name": "NATIVE_ETH",
+    "outputs": [
+      {
+        "internalType": "address",
+        "name": "",
+        "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -4397,7 +4423,7 @@ export const ABI = [
     ],
     "name": "claimGiveaway",
     "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "function"
   },
   {
@@ -4477,6 +4503,19 @@ export const ABI = [
   {
     "inputs": [],
     "name": "getActiveGiveawayId",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "getClaimFee",
     "outputs": [
       {
         "internalType": "uint256",
@@ -4624,6 +4663,19 @@ export const ABI = [
       }
     ],
     "name": "resetUserClaim",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_fee",
+        "type": "uint256"
+      }
+    ],
+    "name": "setClaimFee",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
