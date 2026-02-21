@@ -2088,7 +2088,10 @@ const HistoryAccordionItem = ({ giveawayId }: { giveawayId: number }) => {
       });
       return Array.from(winnerMap.entries()).map(([fid, winCount]) => ({
          fid,
-         totalWinAmount: (rewardAmountRaw * winCount).toFixed(decimals === 6 ? 3 : 2) 
+        //  totalWinAmount: (rewardAmountRaw * winCount).toFixed(decimals === 6 ? 3 : 2) 
+        totalWinAmount: (rewardAmountRaw * winCount) < 0.001 
+  ? (rewardAmountRaw * winCount).toFixed(6) 
+  : (rewardAmountRaw * winCount).toFixed(decimals === 6 ? 3 : 2)
       })).slice(0, 100);
   }, [currentWinnersFids, rewardAmountRaw, decimals]);
 
@@ -2336,7 +2339,10 @@ const { sendCallsAsync, isPending: isClaiming } = useSendCalls();
 
 
   const rewardAmountRaw = amount ? Number(formatUnits(amount, decimals)) : 0;
-  const rewardAmountFormatted = decimals === 6 ? rewardAmountRaw.toString() : rewardAmountRaw.toFixed(3);
+  // const rewardAmountFormatted = decimals === 6 ? rewardAmountRaw.toString() : rewardAmountRaw.toFixed(3);
+  const rewardAmountFormatted = decimals === 6 
+  ? rewardAmountRaw.toString() 
+  : (rewardAmountRaw < 0.001 ? rewardAmountRaw.toFixed(6) : rewardAmountRaw.toFixed(3));
   const totalWonFormatted = formatUnits(totalWon || 0n, decimals);
 
   const formattedEndDate = useMemo(() => {
@@ -2356,7 +2362,10 @@ const { sendCallsAsync, isPending: isClaiming } = useSendCalls();
       });
       return Array.from(winnerMap.entries()).map(([fid, winCount]) => ({
          fid,
-         totalWinAmount: (rewardAmountRaw * winCount).toFixed(decimals === 6 ? 3 : 2) 
+        //  totalWinAmount: (rewardAmountRaw * winCount).toFixed(decimals === 6 ? 3 : 2) 
+        totalWinAmount: (rewardAmountRaw * winCount) < 0.001 
+  ? (rewardAmountRaw * winCount).toFixed(6) 
+  : (rewardAmountRaw * winCount).toFixed(decimals === 6 ? 3 : 2)
       })).slice(0, 100);
   }, [displayedListRaw, rewardAmountRaw, decimals]);
 
