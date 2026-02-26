@@ -1,0 +1,157 @@
+.container {
+  max-width: 450px;
+  margin: 0 auto;
+  padding: 24px;
+  background-color: #0d0d0d;
+  color: #ffffff;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.label {
+  font-size: 12px;
+  color: #666;
+  font-weight: 600;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.taskTypeGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.taskTypeButton {
+  background: #1a1a1a;
+  border: 1px solid #262626;
+  color: #888;
+  padding: 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.taskTypeButton.active {
+  background: #1a1a1a;
+  border-color: #fbbf24;
+  color: #fbbf24;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.1);
+}
+
+.inputField {
+  width: 100%;
+  background: #1a1a1a;
+  border: 1px solid #262626;
+  padding: 16px;
+  border-radius: 12px;
+  color: white;
+  margin-bottom: 24px;
+  box-sizing: border-box;
+}
+
+.tokenGrid {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.tokenButton {
+  flex: 1;
+  background: #1a1a1a;
+  border: 1px solid #262626;
+  color: #888;
+  padding: 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.activeToken {
+  border-color: #8b5cf6;
+  color: white;
+  background: #1e1b4b;
+}
+
+.rewardInputRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 24px;
+}
+
+.rewardBox {
+  display: flex;
+  flex-direction: column;
+}
+
+.rewardBox label {
+  font-size: 11px;
+  color: #666;
+  margin-bottom: 6px;
+}
+
+.rewardBox input {
+  background: #1a1a1a;
+  border: 1px solid #262626;
+  padding: 12px;
+  border-radius: 10px;
+  color: white;
+}
+
+.summaryBox {
+  background: #1a1a1a;
+  padding: 20px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+  border: 1px dashed #333;
+}
+
+.summaryItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.summaryValue {
+  font-size: 18px;
+  font-weight: 700;
+  color: #10b981;
+}
+
+.createTaskButton {
+  width: 100%;
+  background: #ec4899;
+  color: white;
+  border: none;
+  padding: 18px;
+  border-radius: 16px;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.createTaskButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.message {
+  color: #fbbf24;
+  font-size: 13px;
+  text-align: center;
+  margin-bottom: 15px;
+}
