@@ -2292,10 +2292,10 @@ const { sendCallsAsync, isPending: isClaiming } = useSendCalls();
   const currentClaimFee = claimFeeRaw ? (claimFeeRaw as bigint) : 0n;
 
   const [_tokenAddr, amount, current, max, endTime, active] = (details as any) || [];
-  const [totalWon, claimCount, currentLimit] = (userStats as any) || [0n, 0n, 2n]; 
+  const [totalWon, claimCount, _currentLimit] = (userStats as any) || [0n, 0n, 2n]; 
   const realCount = Number(claimCount || 0);
   const count = optimisticCount !== null ? optimisticCount : realCount;
-  const limit = Number(currentLimit || 2);
+  // const limit = Number(currentLimit || 2);
   const isFull = Number(current || 0) >= Number(max || 0);
   const isActiveGiveaway = active && !isEnded && !isFull;
   
@@ -2590,8 +2590,8 @@ const handleShare = () => {
     try {
       const response = await fetch(`/api/verify-share?fid=${userData.fid}`);
       const data = await response.json();
-      if (data.success) { setIsVerified(true); setIsVerifying(false); } else { setVerifyError(true); setErrorTimer(3); }
-    } catch { setVerifyError(true); setErrorTimer(3); }
+      if (data.success) { setIsVerified(true); setIsVerifying(false); } else { setVerifyError(true); setErrorTimer(10); }
+    } catch { setVerifyError(true); setErrorTimer(10); }
   };
 
   // const onClaim = async () => {
@@ -2759,37 +2759,64 @@ useEffect(() => {
 
   
 
+  // const renderActionButton = () => {
+  //   // if (!isWarpcast || !isFarcasterUser) {
+  //   //    return (
+  //   //      <button className={styles.primaryBtn} disabled={true} style={{ opacity: 0.5, cursor: "not-allowed", backgroundColor: "#2a2a2a", color: "#888", border: "1px solid #444", pointerEvents: "none" }}>
+  //   //        Farcaster Users Only <Lock size={16} style={{marginLeft: 8}} />
+  //   //      </button>
+  //   //    );
+  //   // }
+  //   if (count === 0) {
+  //     return (
+  //       <button className={styles.primaryBtn} onClick={onClaim} disabled={isClaiming || isFull}>
+  //         {isClaiming ? "Sending..." : isFull ? "Full" : "Claim Reward"}
+  //         {!isClaiming && !isFull && <Zap size={16} fill="currentColor" />}
+  //       </button>
+  //     );
+  //   }
+  //   if (count === 1 && count < limit) {
+  //     if (!hasShared && !isVerified) {
+  //       return <button className={`${styles.primaryBtn} ${styles.shareBtn}`} onClick={handleShare}>Share to Unlock +1 <Share2 size={16} /></button>;
+  //     }
+  //     if (hasShared && !isVerified) {
+  //        if (verifyError) return <button className={`${styles.primaryBtn} ${styles.errorBtn}`} disabled> Not Shared! Try Again {errorTimer}s</button>;
+  //        return <button className={`${styles.primaryBtn} ${styles.verifyBtn}`} onClick={handleVerify} disabled={isVerifying}>{isVerifying ? "Verifying..." : "Verify Share"}{!isVerifying && <ShieldCheck size={16} />}</button>;
+  //     }
+  //     if (isVerified) {
+  //       return <button className={`${styles.primaryBtn} ${styles.bonusBtn}`} onClick={onClaim} disabled={isClaiming || isFull}>{isClaiming ? "Sending..." : "Claim Bonus"}{!isClaiming && <Zap size={16} fill="currentColor" />}</button>;
+  //     }
+  //   }
+  //   return <button className={styles.primaryBtn} disabled>Completed <Lock size={16} /></button>;
+  // };
+
+
+
+
+  
   const renderActionButton = () => {
-    // if (!isWarpcast || !isFarcasterUser) {
-    //    return (
-    //      <button className={styles.primaryBtn} disabled={true} style={{ opacity: 0.5, cursor: "not-allowed", backgroundColor: "#2a2a2a", color: "#888", border: "1px solid #444", pointerEvents: "none" }}>
-    //        Farcaster Users Only <Lock size={16} style={{marginLeft: 8}} />
-    //      </button>
-    //    );
-    // }
+    // --- প্রথম ক্লেইমের আগে শেয়ার এবং ভেরিফাই ---
     if (count === 0) {
-      return (
-        <button className={styles.primaryBtn} onClick={onClaim} disabled={isClaiming || isFull}>
-          {isClaiming ? "Sending..." : isFull ? "Full" : "Claim Reward"}
-          {!isClaiming && !isFull && <Zap size={16} fill="currentColor" />}
-        </button>
-      );
-    }
-    if (count === 1 && count < limit) {
       if (!hasShared && !isVerified) {
-        return <button className={`${styles.primaryBtn} ${styles.shareBtn}`} onClick={handleShare}>Share to Unlock +1 <Share2 size={16} /></button>;
+        return <button className={`${styles.primaryBtn} ${styles.shareBtn}`} onClick={handleShare}>Share to Unlock Claim <Share2 size={16} /></button>;
       }
       if (hasShared && !isVerified) {
          if (verifyError) return <button className={`${styles.primaryBtn} ${styles.errorBtn}`} disabled> Not Shared! Try Again {errorTimer}s</button>;
          return <button className={`${styles.primaryBtn} ${styles.verifyBtn}`} onClick={handleVerify} disabled={isVerifying}>{isVerifying ? "Verifying..." : "Verify Share"}{!isVerifying && <ShieldCheck size={16} />}</button>;
       }
       if (isVerified) {
-        return <button className={`${styles.primaryBtn} ${styles.bonusBtn}`} onClick={onClaim} disabled={isClaiming || isFull}>{isClaiming ? "Sending..." : "Claim Bonus"}{!isClaiming && <Zap size={16} fill="currentColor" />}</button>;
+        return (
+          <button className={styles.primaryBtn} onClick={onClaim} disabled={isClaiming || isFull}>
+            {isClaiming ? "Sending..." : isFull ? "Full" : "Claim Reward"}
+            {!isClaiming && !isFull && <Zap size={16} fill="currentColor" />}
+          </button>
+        );
       }
     }
+
+    // --- ১ বার ক্লেইম হয়ে গেলেই সরাসরি Completed দেখাবে ---
     return <button className={styles.primaryBtn} disabled>Completed <Lock size={16} /></button>;
   };
-
   
 
   return (
@@ -2846,11 +2873,20 @@ useEffect(() => {
                 <span className={styles.totalLabel}>Total Earnings</span>
                 <span className={styles.statValue}>{totalWonFormatted} {tokenSymbol}</span>
               </div>
-              <div className={styles.progressTrack}>
+              {/* <div className={styles.progressTrack}>
                  <div className={`${styles.step} ${count > 0 ? styles.stepActive : ''}`}>1</div>
                  <div className={`${styles.trackLine} ${count > 0 ? styles.lineActive : ''}`}></div>
-                 <div className={`${styles.step} ${count > 1 ? styles.stepActive : ''}`}>2</div>
-              </div>
+                 <div className={`${styles.step} ${count > 1 ? styles.stepActive : ''}`}>1</div>
+              </div> */}
+
+
+              <div className={styles.progressTrack}>
+   <div className={`${styles.step} ${styles.stepActive}`}>1</div>
+   <div className={`${styles.trackLine} ${count > 0 ? styles.lineActive : ''}`}></div>
+   <div className={`${styles.step} ${count > 0 ? styles.stepActive : ''}`}>
+      {count > 0 ? <Check size={16} /> : <Lock size={16} />}
+   </div>
+</div>
               <div className={styles.btnWrapper}>{renderActionButton()}</div>
               {farcasterError && <p className={styles.errorText}><AlertCircle size={12} style={{marginRight:4}}/> {farcasterError}</p>}
             </div>
@@ -2921,7 +2957,7 @@ useEffect(() => {
             <div className={styles.successIcon}><Check size={28} strokeWidth={4} /></div>
             <h3 className={styles.modalTitle}>Success!</h3>
             <p className={styles.modalText}>You received <span className={styles.gradientText}>{lastClaimedAmount} {tokenSymbol}</span></p>
-            {count === 1 && !isVerified && <button className={styles.modalShareBtn} onClick={handleShare}>Share to Unlock Bonus <Share2 size={16}/></button>}
+            {/* {count === 1 && !isVerified && <button className={styles.modalShareBtn} onClick={handleShare}>Share to Unlock Bonus <Share2 size={16}/></button>} */}
           </div>
         </div>
       )}

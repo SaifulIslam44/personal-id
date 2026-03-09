@@ -3165,7 +3165,8 @@ const [isDarkMode, setIsDarkMode] = useState(true);
 
 
 
-  const USDC_LOGO = "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=032";
+  // const USDC_LOGO = "https://cryptologos.cc/logos/usd-coin-usdc-logo.png?v=032";
+  const USDC_LOGO = "/usdc-logo.png";
 
   // ইমেজ এবং ডিফল্ট পজিশন অনুযায়ী ডিগ্রি (0.008 = 0deg)
   // const wheelSlices = [

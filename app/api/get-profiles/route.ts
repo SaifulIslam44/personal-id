@@ -209,7 +209,7 @@
 import { NextResponse } from "next/server";
 
 // ১. এই লাইনটি পুরোপুরি ডিলিট করে দিন (কমেন্ট না রেখে)
-// export const runtime = 'edge'; 
+export const runtime = 'edge'; 
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);

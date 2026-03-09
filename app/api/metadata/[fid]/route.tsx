@@ -443,7 +443,7 @@
 import { ImageResponse } from 'next/og';
 import { NextRequest } from 'next/server';
 
-// export const runtime = 'edge';
+export const runtime = 'edge';
 export const revalidate = 1296000;
 
 export async function GET(
