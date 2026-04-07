@@ -370,6 +370,9 @@
 
 import { type Address } from "viem";
 
+// Celo Mainnet Contract Address (Giveaway এর জন্য)
+export const CELO_CONTRACT_ADDRESS: Address = "0x778a8bC527a97f492ECB6c07e44622a898603427";
+
 // Base Mainnet Contract Address
 export const CONTRACT_ADDRESS: Address = "0x8C8d41c66a059a62577Ab14F313f6ad13a6D8012";
 
