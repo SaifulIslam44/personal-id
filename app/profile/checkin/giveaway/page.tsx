@@ -1059,7 +1059,7 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 // import { useReadContract, useSendCalls, useAccount, useConnect } from "wagmi";
-import { useReadContract, useSendCalls, useAccount} from "wagmi";
+import { useReadContract, useSendCalls, useAccount, useSwitchChain } from "wagmi";
 import { formatUnits } from "viem";
 
 import { CELO_CONTRACT_ADDRESS, ABI } from "@/lib/contract";
@@ -1150,26 +1150,27 @@ const { data: details } = useReadContract({
   // 🔥🔥 Token Logic for History Items 🔥🔥
   const { decimals, tokenSymbol } = useMemo(() => {
     // 1. JESSE Token (Only for ID 4)
-    if (giveawayId === 4) return { decimals: 18, tokenSymbol: "$JESSE" };
-    if (giveawayId === 25) return { decimals: 18, tokenSymbol: "$BETR" };
-            if ([26, 28].includes(giveawayId)) { 
-        return { decimals: 18, tokenSymbol: "$TOSHI" };
-    }
-
-                if ([32].includes(giveawayId)) { 
-        return { decimals: 18, tokenSymbol: "$ETH" };
-    }
-
-    // if ([8, 10, 11, 12, 13, 14, 15, 16].includes(giveawayId)) { 
-    //      return { decimals: 18, tokenSymbol: "$DEGEN" };
+    // if (giveawayId === 4) return { decimals: 18, tokenSymbol: "$JESSE" };
+    // if (giveawayId === 25) return { decimals: 18, tokenSymbol: "$BETR" };
+    //         if ([26, 28].includes(giveawayId)) { 
+    //     return { decimals: 18, tokenSymbol: "$TOSHI" };
     // }
 
-        if ([1, 2, 3, 5, 6, 7, 9].includes(giveawayId)) { 
-        return { decimals: 6, tokenSymbol: "$USDC" };
-    }
+    //             if ([32].includes(giveawayId)) { 
+    //     return { decimals: 18, tokenSymbol: "$ETH" };
+    // }
 
-    return { decimals: 18, tokenSymbol: "$DEGEN" };
-  }, [giveawayId]);
+    // // if ([8, 10, 11, 12, 13, 14, 15, 16].includes(giveawayId)) { 
+    // //      return { decimals: 18, tokenSymbol: "$DEGEN" };
+    // // }
+
+    //     if ([1, 2, 3, 5, 6, 7, 9].includes(giveawayId)) { 
+    //     return { decimals: 6, tokenSymbol: "$USDC" };
+    // }
+
+    return { decimals: 18, tokenSymbol: "$CELO" };
+  }, []);
+  // [giveawayId]);
 
 
 
@@ -1352,10 +1353,13 @@ const { data: latestId } = useReadContract({
   const [winnersProfiles, setWinnersProfiles] = useState<Record<number, WinnerProfile>>({});
 
   // const { address } = useAccount();
-    const { address } = useAccount(); // isConnected এখানে লাগবে
+    // const { address } = useAccount(); // isConnected এখানে লাগবে
   // const { connectors, connect } = useConnect();
   // ফারকাস্টার ফ্রেমের কনটেক্সট থেকে অ্যাড্রেস নেওয়ার চেষ্টা করুন
 // const address = context?.user?.address || context?.user?.custodyAddress;
+
+  const { address, chain } = useAccount(); // chain যোগ করা হয়েছে
+  const { switchChainAsync } = useSwitchChain(); // সুইচ করার ফাংশন
 
 
 const { sendCallsAsync, isPending: isClaiming } = useSendCalls();
@@ -1423,26 +1427,26 @@ const { sendCallsAsync, isPending: isClaiming } = useSendCalls();
 
 
   // 🔥🔥 FIX: Token Symbol & Decimals for MAIN Card 🔥🔥
-  const { decimals, tokenSymbol } = useMemo(() => {
+const { decimals, tokenSymbol } = useMemo(() => {
+    // পুরোনো বেস নেটওয়ার্কের টোকেন লজিক কমেন্ট করে দেওয়া হলো
+    /*
     if (activeGiveawayId === 4) return { decimals: 18, tokenSymbol: "$JESSE" };
     if (activeGiveawayId === 25) return { decimals: 18, tokenSymbol: "$BETR" };
     if ([26, 28].includes(activeGiveawayId)) { 
         return { decimals: 18, tokenSymbol: "$TOSHI" };
     }
-
     if ([32].includes(activeGiveawayId)) { 
         return { decimals: 18, tokenSymbol: "$ETH" };
     }
-    // if ([8, 10, 11, 12, 13, 14, 15, 16].includes(activeGiveawayId)) {
-    //    return { decimals: 18, tokenSymbol: "$DEGEN" };
-    // }
-
-        if ([1, 2, 3, 5, 6, 7, 9].includes(activeGiveawayId)) { 
+    if ([1, 2, 3, 5, 6, 7, 9].includes(activeGiveawayId)) { 
         return { decimals: 6, tokenSymbol: "$USDC" };
     }
+    */
 
-    return { decimals: 18, tokenSymbol: "$DEGEN" };
-  }, [activeGiveawayId]);
+    // সেলো নেটওয়ার্কের ডিফল্ট টোকেন রিটার্ন
+    return { decimals: 18, tokenSymbol: "$CELO" };
+  }, []);
+  // [activeGiveawayId]);
 
 
 
@@ -1761,7 +1765,13 @@ const onClaim = async () => {
   // }
   
   // setFarcasterError("");
+
+  
   try {
+    if (chain?.id !== 42220) {
+      await switchChainAsync({ chainId: 42220 });
+    }
+
     const walletAddress = 
       address || 
       (userData as any)?.verified_addresses?.eth_addresses?.[0] || 
@@ -1828,7 +1838,7 @@ const onClaim = async () => {
           value: currentClaimFee,
         },
       ],
-      chainId: 42220, 
+      // chainId: 42220, 
     });
 
     // ৬. সাকসেস হ্যান্ডলিং
