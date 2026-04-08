@@ -3114,7 +3114,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useAccount, useReadContract, useSendTransaction, useSendCalls } from "wagmi"; // useSendCalls বাদ দিন, useSendTransaction নিন
+import { useReadContract, useSendTransaction, useSendCalls, useAccount, useConnect } from "wagmi"; 
 import { Attribution } from "ox/erc8021";
 import { formatUnits, encodeFunctionData, concat } from "viem";
 import { CONTRACT_ADDRESS, ABI } from "@/lib/contract";
@@ -3130,9 +3130,9 @@ const USDC_TOKEN_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 
 export default function CheckInPage() {
   // const { address, isConnected, isReconnecting, isConnecting } = useAccount();
-  const { address } = useAccount();
-  // const { address, isConnected } = useAccount(); // isConnected এখানে লাগবে
-  // const { connectors, connect } = useConnect();
+  // const { address } = useAccount();
+  const { address, isConnected } = useAccount(); 
+  const { connectors, connect } = useConnect();
   const [message, setMessage] = useState("");
   const [justCheckedIn, setJustCheckedIn] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -3208,7 +3208,13 @@ useEffect(() => {
   }, []);
 
 
-
+// 🔴 Wagmi Auto Silent Connect for Warpcast/Base
+  useEffect(() => {
+    if (!isConnected && connectors.length > 0) {
+      const injectedConnector = connectors.find(c => c.id === 'injected') || connectors[0];
+      connect({ connector: injectedConnector });
+    }
+  }, [isConnected, connectors, connect]);
 
   // useEffect(() => {
   //   if (!isConnected && connectors.length > 0) {

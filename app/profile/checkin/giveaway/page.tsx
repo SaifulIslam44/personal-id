@@ -1059,10 +1059,10 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 // import { useReadContract, useSendCalls, useAccount, useConnect } from "wagmi";
-import { useReadContract, useSendCalls, useAccount, useSwitchChain } from "wagmi";
+import { useReadContract, useSendCalls, useAccount, useSwitchChain, useConnect } from "wagmi"; 
 import { formatUnits } from "viem";
 
-import { CELO_CONTRACT_ADDRESS, ABI } from "@/lib/contract";
+import { CELO_CONTRACT_ADDRESS, ABI } from "@/lib/celo";
 import styles from "./giveaway.module.css";
 import Image from "next/image";
 import { 
@@ -1358,8 +1358,9 @@ const { data: latestId } = useReadContract({
   // ফারকাস্টার ফ্রেমের কনটেক্সট থেকে অ্যাড্রেস নেওয়ার চেষ্টা করুন
 // const address = context?.user?.address || context?.user?.custodyAddress;
 
-  const { address, chain } = useAccount(); // chain যোগ করা হয়েছে
-  const { switchChainAsync } = useSwitchChain(); // সুইচ করার ফাংশন
+const { address, chain, isConnected } = useAccount(); 
+  const { switchChainAsync } = useSwitchChain();
+  const { connect, connectors } = useConnect(); 
 
 
 const { sendCallsAsync, isPending: isClaiming } = useSendCalls();
@@ -1423,7 +1424,13 @@ const { sendCallsAsync, isPending: isClaiming } = useSendCalls();
   // }, [isConnected, connectors, connect]);
 
 
-
+// 🔴 Wagmi Auto Silent Connect for Warpcast
+  useEffect(() => {
+    if (!isConnected && connectors.length > 0) {
+      const injectedConnector = connectors.find(c => c.id === 'injected') || connectors[0];
+      connect({ connector: injectedConnector });
+    }
+  }, [isConnected, connectors, connect]);
 
 
   // 🔥🔥 FIX: Token Symbol & Decimals for MAIN Card 🔥🔥
@@ -1850,7 +1857,7 @@ const onClaim = async () => {
         refetchDetails(); 
         refetchStats(); 
         refetchWinners(); 
-      }, 2000);
+      }, 5000);
     }
 
   } catch (error: any) {
