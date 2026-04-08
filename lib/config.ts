@@ -7,10 +7,11 @@ const DATA_SUFFIX = Attribution.toDataSuffix({
 });
 
 export const config = createConfig({
-  chains: [base, celo], // এখানে celo অ্যাড করুন
+  chains: [celo, base], // এখানে celo অ্যাড করুন
   transports: {
+    [celo.id]: http("https://rpc.ankr.com/celo"),
     [base.id]: http("https://base-mainnet.g.alchemy.com/v2/32tegXMoF5FiuVtoOrxzH"),
-    [celo.id]: http("https://celo-mainnet.gateway.tatum.io"),
+    
   },
   dataSuffix: DATA_SUFFIX,
 });
