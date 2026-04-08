@@ -3114,7 +3114,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useReadContract, useSendTransaction, useSendCalls, useAccount, useConnect } from "wagmi"; 
+import { useAccount, useReadContract, useSendTransaction, useSendCalls, useConnect, useSwitchChain } from "wagmi"; 
 import { Attribution } from "ox/erc8021";
 import { formatUnits, encodeFunctionData, concat } from "viem";
 import { CONTRACT_ADDRESS, ABI } from "@/lib/contract";
@@ -3131,8 +3131,10 @@ const USDC_TOKEN_ADDRESS = "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913";
 export default function CheckInPage() {
   // const { address, isConnected, isReconnecting, isConnecting } = useAccount();
   // const { address } = useAccount();
-  const { address, isConnected } = useAccount(); 
-  const { connectors, connect } = useConnect();
+const { address, chain, isConnected } = useAccount(); 
+  const { connect, connectors } = useConnect();
+  const { switchChainAsync } = useSwitchChain(); 
+
   const [message, setMessage] = useState("");
   const [justCheckedIn, setJustCheckedIn] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -3335,6 +3337,9 @@ const handleCheckIn = async () => {
   setLoading(true);
 
   try {
+    if (chain?.id !== 8453) {
+      await switchChainAsync({ chainId: 8453 });
+    }
     // ১. ডাটা এনকোড করা
     const functionData = encodeFunctionData({
       abi: ABI,
@@ -3406,6 +3411,9 @@ const handleSpin = async () => {
   setMessage("Please confirm in your wallet...");
 
   try {
+    if (chain?.id !== 8453) {
+      await switchChainAsync({ chainId: 8453 });
+    }
     // ১. ডাটা এনকোড
     const data = encodeFunctionData({
       abi: ABI,
@@ -3618,6 +3626,9 @@ const handleClaimReward = async () => {
   setClaimLoading(true);
 
   try {
+    if (chain?.id !== 8453) {
+      await switchChainAsync({ chainId: 8453 });
+    }
     // ১. ডাটা এনকোড করা
     const functionData = encodeFunctionData({
       abi: ABI,

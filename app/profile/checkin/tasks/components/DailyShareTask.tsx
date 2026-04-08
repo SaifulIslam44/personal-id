@@ -471,7 +471,7 @@
 
 import { useState, useEffect } from "react";
 
-import { useAccount, useReadContract, useSendCalls } from "wagmi";
+import { useAccount, useReadContract, useSendCalls, useConnect, useSwitchChain } from "wagmi"; 
 import { encodeFunctionData, concat } from "viem"; 
 import { Attribution } from "ox/erc8021"; 
 import { ABI, CONTRACT_ADDRESS } from "@/lib/contract";
@@ -479,7 +479,10 @@ import { sdk } from "@farcaster/miniapp-sdk";
 import styles from "../task.module.css";
 
 export default function DailyShareTask({ fid }: { fid: any }) {
-  const { address } = useAccount();
+const { address, chain, isConnected } = useAccount(); 
+  const { connect, connectors } = useConnect();
+  const { switchChainAsync } = useSwitchChain(); // 👈 এটি যোগ করুন
+  
   const { sendCalls } = useSendCalls();
   const [hasShared, setHasShared] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
@@ -517,6 +520,18 @@ export default function DailyShareTask({ fid }: { fid: any }) {
 
   const lastClaimTime = lastClaimData ? Number(lastClaimData) : 0;
   const resetHour = resetHourData !== undefined ? Number(resetHourData) : 6;
+
+
+
+// 🔴 Wagmi Auto Silent Connect for Warpcast/Base
+  useEffect(() => {
+    if (!isConnected && connectors.length > 0) {
+      // Warpcast বা Injected প্রোভাইডার খুঁজে বের করে অটো কানেক্ট করবে
+      const injectedConnector = connectors.find(c => c.id === 'injected') || connectors[0];
+      connect({ connector: injectedConnector });
+    }
+  }, [isConnected, connectors, connect]);
+
 
   // ৪. টাইম রিসেট লজিক (UTC সময় অনুযায়ী)
   useEffect(() => {
@@ -638,6 +653,9 @@ const handleClaim = async () => {
   setIsClaiming(true);
 
   try {
+    if (chain?.id !== 8453) {
+      await switchChainAsync({ chainId: 8453 });
+    }
     // ১. ডাটা এনকোড করা
     const data = encodeFunctionData({
       abi: ABI,
