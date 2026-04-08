@@ -76,6 +76,13 @@
   color: #7b88b8;
 }
 
+
+.mainContent {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 /* ===== Hero Header (Compact) ===== */
 .heroHeader {
   text-align: center;
@@ -343,12 +350,14 @@
 
 /* ===== Action Button (Full Width Adjust) ===== */
 .shareBtn {
-  width: 98%;
-  max-width: 400px;
-  margin-top: 20px;
+  width: calc(100vw - 40px) !important; /* 👈 কার্ডের একদম সমান সাইজ হবে */
+  max-width: 500px; /* 👈 কার্ডের max-width এর সাথে মেলানো হলো */
+  box-sizing: border-box; /* 👈 প্যাডিংয়ের কারণে বাটন আর স্ক্রিনের বাইরে যাবে না */
+  margin: 20px auto 0 auto; /* 👈 একদম পারফেক্টলি মাঝখানে রাখার জন্য */
+  
   background: linear-gradient(90deg, #a77867, #d84315);
   border: none;
-  padding: 10px;
+  padding: 14px 10px; /* 👈 বাটনের হাইট একটু সুন্দর করার জন্য ১৪ পিক্সেল করা হলো */
   border-radius: 18px;
   color: #fff;
   font-weight: 700;
@@ -365,6 +374,7 @@
 .shareBtn:active {
   transform: scale(0.97);
 }
+
 
 /* Utility Colors */
 .iconOrange { color: #f0642f; }
