@@ -1077,6 +1077,19 @@ import { Attribution } from "ox/erc8021"; // বিল্ডার কোড ত
 
 
 
+
+const useMiniPayCompatibility = () => {
+  const [isMiniPay, setIsMiniPay] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.ethereum && (window.ethereum as any).isMiniPay) {
+      setIsMiniPay(true);
+    }
+  }, []);
+
+  return isMiniPay;
+};
+
 // --- 🔵 CACHE HELPERS (Add this block) ---
 const CACHE_KEY = "leaderboard_users_v1";
 const CACHE_DURATION = 7 * 24 * 60 * 60 * 1000; // ৭ দিন
@@ -1304,6 +1317,7 @@ const { data: details } = useReadContract({
 
 // --- MAIN PAGE COMPONENT ---
 export default function GiveawayPage(props: any) { 
+  const _isMiniPay = useMiniPayCompatibility();
   const passedId = props.giveawayId;
   const [activeGiveawayId, setActiveGiveawayId] = useState<number>(passedId || 0);
   const fetchedFidsRef = useRef<Set<number>>(new Set()); // ✅ নতুন লাইন

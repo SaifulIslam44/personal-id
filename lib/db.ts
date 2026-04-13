@@ -39,7 +39,7 @@ if (!cached) {
 }
 
 async function connectDB() {
-  // ১. চেকটি ফাংশনের ভেতরে নিয়ে আসা হয়েছে যাতে স্ক্রিপ্ট রান করার সময় এরর না দেয়
+
   const MONGODB_URI = process.env.MONGODB_URI;
 
   if (!MONGODB_URI) {
@@ -49,7 +49,7 @@ async function connectDB() {
   if (cached.conn) return cached.conn;
 
   if (!cached.promise) {
-    // ২. বাফার কমান্ড ফলস রাখা ভালো যাতে কানেকশন হওয়ার আগে কোনো কুয়েরি না চলে
+
     const opts = {
       bufferCommands: false,
     };
@@ -59,7 +59,7 @@ async function connectDB() {
   try {
     cached.conn = await cached.promise;
   } catch (e) {
-    cached.promise = null; // এরর হলে প্রমিস রিসেট করে দিবে
+    cached.promise = null; 
     throw e;
   }
 
