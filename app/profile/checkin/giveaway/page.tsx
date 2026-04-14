@@ -1059,7 +1059,10 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 // import { useReadContract, useSendCalls, useAccount, useConnect } from "wagmi";
-import { useReadContract, useSendCalls, useAccount, useSwitchChain, useConnect } from "wagmi"; 
+//last farcaster used
+// import { useReadContract, useSendCalls, useAccount, useSwitchChain, useConnect } from "wagmi"; 
+//minipay
+import { useReadContract, useSendCalls, useSendTransaction, useAccount, useSwitchChain, useConnect } from "wagmi";
 import { formatUnits } from "viem";
 
 import { CELO_CONTRACT_ADDRESS, ABI } from "@/lib/celo";
@@ -1390,8 +1393,15 @@ const { address, chain, isConnected } = useAccount();
   const { switchChainAsync } = useSwitchChain();
   const { connect, connectors } = useConnect(); 
 
+//last farcaster used
+// const { sendCallsAsync, isPending: isClaiming } = useSendCalls();
 
-const { sendCallsAsync, isPending: isClaiming } = useSendCalls();
+//minipay
+const { sendCallsAsync, isPending: isClaimingCalls } = useSendCalls();
+const { sendTransactionAsync, isPending: isClaimingTx } = useSendTransaction();
+
+// বাটন ডিজেবল করার জন্য দুটির যেকোনো একটি Pending থাকলেই লোডিং দেখাবে
+const isClaiming = isClaimingCalls || isClaimingTx;
 
 
   // Contract Reads (Active ID)
@@ -1743,41 +1753,120 @@ const handleShare = () => {
     } catch { setVerifyError(true); setErrorTimer(10); }
   };
 
-  // const onClaim = async () => {
-  //  if (!isWarpcast || !isFarcasterUser) { setFarcasterError("Open in Warpcast App"); return; }
-  //  setFarcasterError("");
-  //  try {
-  //    const signResponse = await fetch('/api/sign-claim', {
-  //      method: 'POST',
-  //      headers: { 'Content-Type': 'application/json' },
-  //      body: JSON.stringify({ userWallet: address, fid: userData.fid, giveawayId: activeGiveawayId }),
-  //    });
-  //    const signData = await signResponse.json();
-  //    if (!signResponse.ok || !signData.signature) throw new Error(signData.message || "Failed to get signature");
-
-  //    const hash = await writeContractAsync({
-  //      address: CONTRACT_ADDRESS as `0x${string}`,
-  //      abi: ABI,
-  //      functionName: "claimGiveaway",
-  //      args: [ BigInt(activeGiveawayId), BigInt(userData.fid), signData.signature as `0x${string}` ],
-  //    });
-  //    if (hash) {
-  //      setLastClaimedAmount(rewardAmountFormatted); 
-  //      setShowSuccessModal(true);
-  //      setTimeout(() => { refetchDetails(); refetchStats(); refetchWinners(); }, 2000);
-  //    }
-  //  } catch (error: any) {
-  //    if (error.code === 4001 || error.message?.includes("User rejected") || error.name === 'UserRejectedRequestError') {
-  //        setFarcasterError("Transaction cancelled by user");
-  //    } else {
-  //        console.error("Transaction Failed:", error);
-  //        setFarcasterError(error.message || "Transaction failed. Try again.");
-  //    }
-  //    setTimeout(() => setFarcasterError(""), 3000);
-  //  }
-  // };
 
 
+//last used for farcaster. 
+
+// const onClaim = async () => {
+//       // if (!isWarpcast || !isFarcasterUser) { 
+//   //   setFarcasterError("Open in Warpcast App"); 
+//   //   return; 
+//   // }
+  
+//   // setFarcasterError("");
+
+  
+//   try {
+//     if (chain?.id !== 42220) {
+//       await switchChainAsync({ chainId: 42220 });
+//     }
+
+//     const walletAddress = 
+//       address || 
+//       (userData as any)?.verified_addresses?.eth_addresses?.[0] || 
+//       (userData as any)?.custody_address ||
+//       (userData as any)?.address;
+
+//     const userFid = userData?.fid;
+//     const giveawayId = activeGiveawayId;
+
+//     if (!walletAddress) {
+//       setFarcasterError("Wallet not found. Please connect your wallet.");
+//       return;
+//     }
+
+//     if (!userFid || !giveawayId) {
+//       setFarcasterError("Missing user identity or Giveaway ID");
+//       return;
+//     }
+
+//     // ১. ব্যাকএন্ড থেকে Signature এবং Nonce সংগ্রহ করা
+//     const signResponse = await fetch('/api/sign-claim', {
+//       method: 'POST',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify({ 
+//         userWallet: walletAddress, 
+//         fid: Number(userFid), 
+//         giveawayId: Number(giveawayId), 
+//         isMiniPay: _isMiniPay
+//       }),
+//     });
+
+//     const signData = await signResponse.json();
+
+//     if (!signResponse.ok || !signData.signature || signData.nonce === undefined) {
+//       throw new Error(signData.message || "Failed to get signature/nonce");
+//     }
+
+//     // ২. 🔥 ফাংশন ডাটা এনকোড করা (নতুন আর্গুমেন্ট অর্ডারসহ) 🔥
+//     // অর্ডার: _id, _fid, _nonce, _signature
+//     const functionData = encodeFunctionData({
+//       abi: ABI,
+//       functionName: "claimGiveaway",
+//       args: [ 
+//         BigInt(giveawayId), 
+//         BigInt(userFid), 
+//         BigInt(signData.nonce), // 🔥 নতুন প্যারামিটার Nonce যোগ করা হয়েছে
+//         signData.signature as `0x${string}` 
+//       ],
+//     });
+
+//     // ৩. বিল্ডার কোড সাফিক্স তৈরি
+//     const builderSuffix = Attribution.toDataSuffix({
+//       codes: ["bc_bmhx0p43"], 
+//     });
+
+//     // ৪. ডাটা জোড়া লাগানো (Concatenation)
+//     const finalData = concat([functionData, builderSuffix]);
+
+//     // ৫. sendCallsAsync দিয়ে ট্রানজেকশন পাঠানো
+//     const id = await sendCallsAsync({
+//       calls: [
+//         {
+//           to: CELO_CONTRACT_ADDRESS as `0x${string}`, // 👈 Change here
+//           data: finalData,
+//           value: currentClaimFee,
+//         },
+//       ],
+//       // chainId: 42220, 
+//     });
+
+//     // ৬. সাকসেস হ্যান্ডলিং
+//     if (id) {
+//       setOptimisticCount(realCount + 1);
+//       setLastClaimedAmount(rewardAmountFormatted); 
+//       setShowSuccessModal(true);
+//       setTimeout(() => { 
+//         refetchDetails(); 
+//         refetchStats(); 
+//         refetchWinners(); 
+//       }, 5000);
+//     }
+
+//   } catch (error: any) {
+//     console.error("Claim Error:", error);
+    
+//     // নির্দিষ্ট এরর মেসেজ হ্যান্ডলিং (যেমন: Identity Check ফেইল করলে)
+//     if (error.message?.includes("Personal ID Mint Required")) {
+//         setFarcasterError("You must mint a Personal ID to claim this giveaway!");
+//     } else if (error.code === 4001 || error.message?.includes("User rejected") || error.name === 'UserRejectedRequestError') {
+//         setFarcasterError("Transaction cancelled by user");
+//     } else {
+//         setFarcasterError(error.message || "Transaction failed. Try again.");
+//     }
+//     setTimeout(() => setFarcasterError(""), 5000);
+//   }
+// };
 
 
 
@@ -1785,23 +1874,8 @@ const handleShare = () => {
 
 
 
-
-
-
-
-
-
-
-
+//minipay:
 const onClaim = async () => {
-      // if (!isWarpcast || !isFarcasterUser) { 
-  //   setFarcasterError("Open in Warpcast App"); 
-  //   return; 
-  // }
-  
-  // setFarcasterError("");
-
-  
   try {
     if (chain?.id !== 42220) {
       await switchChainAsync({ chainId: 42220 });
@@ -1813,7 +1887,8 @@ const onClaim = async () => {
       (userData as any)?.custody_address ||
       (userData as any)?.address;
 
-    const userFid = userData?.fid;
+    // FID 0 ধরে নিব যদি না থাকে
+    const userFid = userData?.fid || 0; 
     const giveawayId = activeGiveawayId;
 
     if (!walletAddress) {
@@ -1821,7 +1896,8 @@ const onClaim = async () => {
       return;
     }
 
-    if (!userFid || !giveawayId) {
+    // 🔥 ফিক্স: যদি MiniPay না হয় এবং FID না থাকে, তবেই শুধু এরর দিবে
+    if (!giveawayId || (!_isMiniPay && !userFid)) {
       setFarcasterError("Missing user identity or Giveaway ID");
       return;
     }
@@ -1834,7 +1910,7 @@ const onClaim = async () => {
         userWallet: walletAddress, 
         fid: Number(userFid), 
         giveawayId: Number(giveawayId), 
-        isMiniPay: _isMiniPay
+        isMiniPay: _isMiniPay // 👈 MiniPay স্ট্যাটাস পাঠানো হচ্ছে
       }),
     });
 
@@ -1844,41 +1920,50 @@ const onClaim = async () => {
       throw new Error(signData.message || "Failed to get signature/nonce");
     }
 
-    // ২. 🔥 ফাংশন ডাটা এনকোড করা (নতুন আর্গুমেন্ট অর্ডারসহ) 🔥
-    // অর্ডার: _id, _fid, _nonce, _signature
+    // ২. ফাংশন ডাটা এনকোড করা
     const functionData = encodeFunctionData({
       abi: ABI,
       functionName: "claimGiveaway",
       args: [ 
         BigInt(giveawayId), 
         BigInt(userFid), 
-        BigInt(signData.nonce), // 🔥 নতুন প্যারামিটার Nonce যোগ করা হয়েছে
+        BigInt(signData.nonce), 
         signData.signature as `0x${string}` 
       ],
     });
 
-    // ৩. বিল্ডার কোড সাফিক্স তৈরি
     const builderSuffix = Attribution.toDataSuffix({
       codes: ["bc_bmhx0p43"], 
     });
 
-    // ৪. ডাটা জোড়া লাগানো (Concatenation)
     const finalData = concat([functionData, builderSuffix]);
 
-    // ৫. sendCallsAsync দিয়ে ট্রানজেকশন পাঠানো
-    const id = await sendCallsAsync({
-      calls: [
-        {
-          to: CELO_CONTRACT_ADDRESS as `0x${string}`, // 👈 Change here
-          data: finalData,
-          value: currentClaimFee,
-        },
-      ],
-      // chainId: 42220, 
-    });
+    // ৩. ট্রানজেকশন পাঠানো
+    // ৫. ট্রানজেকশন পাঠানো (MiniPay vs Farcaster)
+    let txId;
+    
+    if (_isMiniPay) {
+      // MiniPay-এর জন্য স্ট্যান্ডার্ড ট্রানজেকশন
+      txId = await sendTransactionAsync({
+        to: CELO_CONTRACT_ADDRESS as `0x${string}`,
+        data: finalData,
+        value: currentClaimFee,
+      });
+    } else {
+      // Farcaster-এর জন্য Batched (SendCalls) ট্রানজেকশন
+      txId = await sendCallsAsync({
+        calls: [
+          {
+            to: CELO_CONTRACT_ADDRESS as `0x${string}`, 
+            data: finalData,
+            value: currentClaimFee,
+          },
+        ],
+      });
+    }
 
     // ৬. সাকসেস হ্যান্ডলিং
-    if (id) {
+    if (txId) {
       setOptimisticCount(realCount + 1);
       setLastClaimedAmount(rewardAmountFormatted); 
       setShowSuccessModal(true);
@@ -1892,7 +1977,6 @@ const onClaim = async () => {
   } catch (error: any) {
     console.error("Claim Error:", error);
     
-    // নির্দিষ্ট এরর মেসেজ হ্যান্ডলিং (যেমন: Identity Check ফেইল করলে)
     if (error.message?.includes("Personal ID Mint Required")) {
         setFarcasterError("You must mint a Personal ID to claim this giveaway!");
     } else if (error.code === 4001 || error.message?.includes("User rejected") || error.name === 'UserRejectedRequestError') {
