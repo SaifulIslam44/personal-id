@@ -1749,8 +1749,8 @@ const handleShare = () => {
     try {
       const response = await fetch(`/api/verify-share?fid=${userData.fid}`);
       const data = await response.json();
-      if (data.success) { setIsVerified(true); setIsVerifying(false); } else { setVerifyError(true); setErrorTimer(10); }
-    } catch { setVerifyError(true); setErrorTimer(10); }
+      if (data.success) { setIsVerified(true); setIsVerifying(false); } else { setVerifyError(true); setErrorTimer(5); }
+    } catch { setVerifyError(true); setErrorTimer(5); }
   };
 
 
