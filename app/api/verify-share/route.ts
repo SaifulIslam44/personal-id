@@ -105,7 +105,7 @@
 import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import ShareLog from "@/models/ShareLog";
-import ShareBackup from "@/models/ShareBackup"; // ১. নতুন ব্যাকআপ মডেল ইমপোর্ট
+import ShareBackup from "@/models/ShareBackup"; 
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -115,10 +115,10 @@ export async function GET(request: Request) {
   if (!fid) return NextResponse.json({ success: false, error: "FID missing" });
 
   try {
-    // ১. ডাটাবেস কানেক্ট করা
+    
     await connectDB();
 
-    // ২. Neynar API থেকে কাস্ট ফেচ করা
+    
     const response = await fetch(
       `https://api.neynar.com/v2/farcaster/feed/user/casts?fid=${fid}&limit=10`,
       {
@@ -126,7 +126,7 @@ export async function GET(request: Request) {
           accept: "application/json",
           api_key: process.env.NEYNAR_API_KEY || "",
         },
-        // ১৫ সেকেন্ডের জন্য ইন্টারনাল ক্যাশ (ক্রেডিট সেভ হবে)
+        
         next: { revalidate: 15 } 
       }
     );
@@ -165,10 +165,10 @@ export async function GET(request: Request) {
           timestamp: new Date(validCast.timestamp)
       };
 
-      // ৫. ডাটাবেসে সেভ (Parallel saving for speed)
+      
       await Promise.all([
-        ShareLog.create(shareData),    // ৫ মিনিট পর ডিলিট হবে (ক্লেইম লজিকের জন্য)
-        ShareBackup.create(shareData)  // আজীবন থাকবে (রেকর্ড বা অডিটের জন্য)
+        ShareLog.create(shareData),    
+        ShareBackup.create(shareData)  
       ]);
 
       return NextResponse.json({ success: true });

@@ -167,12 +167,11 @@ export async function GET(request: Request) {
 
   const NEYNAR_API_KEY = process.env.NEYNAR_API_KEY;
   
-  // ২৫ দিনের সেকেন্ডের সঠিক হিসাব (25 * 24 * 60 * 60)
+ 
   const TWENTY_FIVE_DAYS = 2160000; 
 
   const headers = {
-    // 'immutable' মানে ব্রাউজারকে বলা হচ্ছে: "২৫ দিনের মধ্যে ভুলেও সার্ভারে নক দিবা না"
-    // stale-while-revalidate বাদ দেওয়া হয়েছে যাতে ব্যাকগ্রাউন্ডেও কল না হয়
+    
     'Cache-Control': `public, max-age=${TWENTY_FIVE_DAYS}, s-maxage=${TWENTY_FIVE_DAYS}, immutable`,
     'Content-Type': 'application/json',
   };
@@ -186,15 +185,15 @@ export async function GET(request: Request) {
           accept: "application/json",
           api_key: NEYNAR_API_KEY || "",
         },
-        // 🔥 ১. 'force-cache': এটা Next.js কে বলবে নেটওয়ার্কে না গিয়ে ক্যাশ খুঁজতে
+       
         cache: 'force-cache',
-        // 🔥 ২. 'revalidate': ২৫ দিন পর ছাড়া ক্যাশ ভাঙবে না
+        
         next: { revalidate: TWENTY_FIVE_DAYS } 
       }
     );
 
     if (!response.ok) {
-      // যদি এরর হয়, তাহলে আমরা ক্যাশ করতে চাই না, তাই সাধারণ রেস্পন্স
+      
       return NextResponse.json(
         { error: "Failed to fetch from Neynar" }, 
         { status: response.status }

@@ -157,3 +157,9 @@ For official Base developer resources, please visit:
 - [https://docs.base.org](https://docs.base.org)  
 
 ---
+
+
+## ⚠️ License & Copyright
+**Copyright (c) 2026 Saiful Islam. All Rights Reserved.**
+
+This project is proprietary and closed-source. The code is made public strictly for review and evaluation purposes. You may not copy, clone, distribute, or modify this code for personal or commercial use without explicit permission.

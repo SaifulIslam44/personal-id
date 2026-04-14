@@ -10,7 +10,7 @@ export const config = createConfig({
   chains: [celo, base], 
   transports: {
     [celo.id]: http("https://rpc.ankr.com/celo"),
-    [base.id]: http("https://base-mainnet.g.alchemy.com/v2/32tegXMoF5FiuVtoOrxzH"),
+    [base.id]: http(process.env.NEXT_PUBLIC_BASE_RPC_URL),
     
   },
   dataSuffix: DATA_SUFFIX,

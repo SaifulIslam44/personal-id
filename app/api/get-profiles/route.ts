@@ -233,8 +233,7 @@ export async function GET(request: Request) {
           'accept': 'application/json',
           'api_key': process.env.NEYNAR_API_KEY as string
         },
-        // ২. Next.js স্পেসিফিক ক্যাশ অপশনগুলো বাদ দিয়ে স্ট্যান্ডার্ড ফেচ ব্যবহার করুন
-        // এটি বিল্ড এরর কমাতে সাহায্য করবে
+       
       }
     );
 
