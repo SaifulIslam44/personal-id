@@ -1077,7 +1077,6 @@ import { Attribution } from "ox/erc8021"; // বিল্ডার কোড ত
 
 
 
-
 const useMiniPayCompatibility = () => {
   const [isMiniPay, setIsMiniPay] = useState(false);
 
@@ -1834,7 +1833,8 @@ const onClaim = async () => {
       body: JSON.stringify({ 
         userWallet: walletAddress, 
         fid: Number(userFid), 
-        giveawayId: Number(giveawayId) 
+        giveawayId: Number(giveawayId), 
+        isMiniPay: _isMiniPay
       }),
     });
 
@@ -1950,18 +1950,41 @@ useEffect(() => {
 
 
 
-  
+//useable for farcaster
+  // const renderActionButton = () => {
+  //   // --- প্রথম ক্লেইমের আগে শেয়ার এবং ভেরিফাই ---
+  //   if (count === 0) {
+  //     if (!hasShared && !isVerified) {
+  //       return <button className={`${styles.primaryBtn} ${styles.shareBtn}`} onClick={handleShare}>Share to Unlock Claim <Share2 size={16} /></button>;
+  //     }
+  //     if (hasShared && !isVerified) {
+  //        if (verifyError) return <button className={`${styles.primaryBtn} ${styles.errorBtn}`} disabled> Not Shared! Try Again {errorTimer}s</button>;
+  //        return <button className={`${styles.primaryBtn} ${styles.verifyBtn}`} onClick={handleVerify} disabled={isVerifying}>{isVerifying ? "Verifying..." : "Verify Share"}{!isVerifying && <ShieldCheck size={16} />}</button>;
+  //     }
+  //     if (isVerified) {
+  //       return (
+  //         <button className={styles.primaryBtn} onClick={onClaim} disabled={isClaiming || isFull}>
+  //           {isClaiming ? "Sending..." : isFull ? "Full" : "Claim Reward"}
+  //           {!isClaiming && !isFull && <Zap size={16} fill="currentColor" />}
+  //         </button>
+  //       );
+  //     }
+  //   }
+
+  //   // --- ১ বার ক্লেইম হয়ে গেলেই সরাসরি Completed দেখাবে ---
+  //   return <button className={styles.primaryBtn} disabled>Completed <Lock size={16} /></button>;
+  // };
+
+
+
+
   const renderActionButton = () => {
     // --- প্রথম ক্লেইমের আগে শেয়ার এবং ভেরিফাই ---
     if (count === 0) {
-      if (!hasShared && !isVerified) {
-        return <button className={`${styles.primaryBtn} ${styles.shareBtn}`} onClick={handleShare}>Share to Unlock Claim <Share2 size={16} /></button>;
-      }
-      if (hasShared && !isVerified) {
-         if (verifyError) return <button className={`${styles.primaryBtn} ${styles.errorBtn}`} disabled> Not Shared! Try Again {errorTimer}s</button>;
-         return <button className={`${styles.primaryBtn} ${styles.verifyBtn}`} onClick={handleVerify} disabled={isVerifying}>{isVerifying ? "Verifying..." : "Verify Share"}{!isVerifying && <ShieldCheck size={16} />}</button>;
-      }
-      if (isVerified) {
+      
+      // 🔥 MiniPay ইউজারদের জন্য ডিরেক্ট Claim (Share Bypass)
+      // অথবা যদি ফারকাস্টার ইউজার ইতিমধ্যে ভেরিফাই করে থাকে
+      if (_isMiniPay || isVerified) {
         return (
           <button className={styles.primaryBtn} onClick={onClaim} disabled={isClaiming || isFull}>
             {isClaiming ? "Sending..." : isFull ? "Full" : "Claim Reward"}
@@ -1969,9 +1992,19 @@ useEffect(() => {
           </button>
         );
       }
+
+      // 🔥 ফারকাস্টার ইউজারদের জন্য Share Logic
+      if (!hasShared && !isVerified) {
+        return <button className={`${styles.primaryBtn} ${styles.shareBtn}`} onClick={handleShare}>Share to Unlock Claim <Share2 size={16} /></button>;
+      }
+      
+      if (hasShared && !isVerified) {
+         if (verifyError) return <button className={`${styles.primaryBtn} ${styles.errorBtn}`} disabled> Not Shared! Try Again {errorTimer}s</button>;
+         return <button className={`${styles.primaryBtn} ${styles.verifyBtn}`} onClick={handleVerify} disabled={isVerifying}>{isVerifying ? "Verifying..." : "Verify Share"}{!isVerifying && <ShieldCheck size={16} />}</button>;
+      }
     }
 
-    // --- ১ বার ক্লেইম হয়ে গেলেই সরাসরি Completed দেখাবে ---
+    // --- ১ বার ক্লেইম হয়ে গেলেই সরাসরি Completed দেখাবে ---
     return <button className={styles.primaryBtn} disabled>Completed <Lock size={16} /></button>;
   };
   
