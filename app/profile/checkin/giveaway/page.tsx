@@ -1082,9 +1082,24 @@ const useMiniPayCompatibility = () => {
   const [isMiniPay, setIsMiniPay] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && window.ethereum && (window.ethereum as any).isMiniPay) {
-      setIsMiniPay(true);
-    }
+    let retry = 0;
+
+    const detect = () => {
+      if (typeof window === "undefined") return;
+
+      const eth = (window as any).ethereum;
+
+      const detected = eth?.isMiniPay === true;
+
+      if (detected) {
+        setIsMiniPay(true);
+      } else if (retry < 10) {
+        retry++;
+        setTimeout(detect, 300); 
+      }
+    };
+
+    detect();
   }, []);
 
   return isMiniPay;
