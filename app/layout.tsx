@@ -96,6 +96,7 @@ import { minikitConfig } from "../minikit.config";
 import { Providers } from "./providers";
 import "./globals.css";
 import ConditionalFooter from "./components/ConditionalFooter";
+import MiniPayProvider from "./components/MiniPayProvider";
 
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -143,10 +144,12 @@ return (
       <body className={`${inter.variable} ${sourceCodePro.variable}`}>
         {/* একটি Providers-ই যথেষ্ট কারণ এটি আপনার WagmiConfig এবং OnchainKit দুটোই হ্যান্ডেল করছে */}
         <Providers>
+          <MiniPayProvider>
           <SafeArea>
             {children}
           </SafeArea>
           <ConditionalFooter />
+          </MiniPayProvider>
         </Providers>
       </body>
     </html>
