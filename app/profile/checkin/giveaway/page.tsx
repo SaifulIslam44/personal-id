@@ -1448,7 +1448,7 @@ const isClaiming = isClaimingCalls || isClaimingTx;
   const [totalWon, claimCount, _currentLimit] = (userStats as any) || [0n, 0n, 2n]; 
   const realCount = Number(claimCount || 0);
   const count = optimisticCount !== null ? optimisticCount : realCount;
-  // const limit = Number(currentLimit || 2);
+  const limit = Number(_currentLimit || 2);   //share logic 1 to 2
   const isFull = Number(current || 0) >= Number(max || 0);
   const isActiveGiveaway = active && !isEnded && !isFull;
   
@@ -2061,25 +2061,64 @@ useEffect(() => {
 
 
 
+// last used minipay
+  // const renderActionButton = () => {
+  //   // --- প্রথম ক্লেইমের আগে শেয়ার এবং ভেরিফাই ---
+  //   if (count === 0) {
+      
+  //     // 🔥 MiniPay ইউজারদের জন্য ডিরেক্ট Claim (Share Bypass)
+  //     // অথবা যদি ফারকাস্টার ইউজার ইতিমধ্যে ভেরিফাই করে থাকে
+  //     if (_isMiniPay || isVerified) {
+  //       return (
+  //         <button className={styles.primaryBtn} onClick={onClaim} disabled={isClaiming || isFull}>
+  //           {isClaiming ? "Sending..." : isFull ? "Full" : "Claim Reward"}
+  //           {!isClaiming && !isFull && <Zap size={16} fill="currentColor" />}
+  //         </button>
+  //       );
+  //     }
+
+  //     // 🔥 ফারকাস্টার ইউজারদের জন্য Share Logic
+  //     if (!hasShared && !isVerified) {
+  //       return <button className={`${styles.primaryBtn} ${styles.shareBtn}`} onClick={handleShare}>Share to Unlock Claim <Share2 size={16} /></button>;
+  //     }
+      
+  //     if (hasShared && !isVerified) {
+  //        if (verifyError) return <button className={`${styles.primaryBtn} ${styles.errorBtn}`} disabled> Not Shared! Try Again {errorTimer}s</button>;
+  //        return <button className={`${styles.primaryBtn} ${styles.verifyBtn}`} onClick={handleVerify} disabled={isVerifying}>{isVerifying ? "Verifying..." : "Verify Share"}{!isVerifying && <ShieldCheck size={16} />}</button>;
+  //     }
+  //   }
+
+  //   // --- ১ বার ক্লেইম হয়ে গেলেই সরাসরি Completed দেখাবে ---
+  //   return <button className={styles.primaryBtn} disabled>Completed <Lock size={16} /></button>;
+  // };
+
 
   const renderActionButton = () => {
-    // --- প্রথম ক্লেইমের আগে শেয়ার এবং ভেরিফাই ---
+    
     if (count === 0) {
+      return (
+        <button className={styles.primaryBtn} onClick={onClaim} disabled={isClaiming || isFull}>
+          {isClaiming ? "Sending..." : isFull ? "Full" : "Claim Reward"}
+          {!isClaiming && !isFull && <Zap size={16} fill="currentColor" />}
+        </button>
+      );
+    }
+
+   
+    if (count === 1 && count < limit) {
       
-      // 🔥 MiniPay ইউজারদের জন্য ডিরেক্ট Claim (Share Bypass)
-      // অথবা যদি ফারকাস্টার ইউজার ইতিমধ্যে ভেরিফাই করে থাকে
       if (_isMiniPay || isVerified) {
         return (
-          <button className={styles.primaryBtn} onClick={onClaim} disabled={isClaiming || isFull}>
-            {isClaiming ? "Sending..." : isFull ? "Full" : "Claim Reward"}
+          <button className={`${styles.primaryBtn} ${styles.bonusBtn}`} onClick={onClaim} disabled={isClaiming || isFull}>
+            {isClaiming ? "Sending..." : isFull ? "Full" : "Claim Bonus"}
             {!isClaiming && !isFull && <Zap size={16} fill="currentColor" />}
           </button>
         );
       }
 
-      // 🔥 ফারকাস্টার ইউজারদের জন্য Share Logic
+      
       if (!hasShared && !isVerified) {
-        return <button className={`${styles.primaryBtn} ${styles.shareBtn}`} onClick={handleShare}>Share to Unlock Claim <Share2 size={16} /></button>;
+        return <button className={`${styles.primaryBtn} ${styles.shareBtn}`} onClick={handleShare}>Share to Unlock Bonus <Share2 size={16} /></button>;
       }
       
       if (hasShared && !isVerified) {
@@ -2088,7 +2127,6 @@ useEffect(() => {
       }
     }
 
-    // --- ১ বার ক্লেইম হয়ে গেলেই সরাসরি Completed দেখাবে ---
     return <button className={styles.primaryBtn} disabled>Completed <Lock size={16} /></button>;
   };
   
@@ -2147,20 +2185,22 @@ useEffect(() => {
                 <span className={styles.totalLabel}>Total Earnings</span>
                 <span className={styles.statValue}>{totalWonFormatted} {tokenSymbol}</span>
               </div>
-              {/* <div className={styles.progressTrack}>
+
+          
+              <div className={styles.progressTrack}>
                  <div className={`${styles.step} ${count > 0 ? styles.stepActive : ''}`}>1</div>
                  <div className={`${styles.trackLine} ${count > 0 ? styles.lineActive : ''}`}></div>
-                 <div className={`${styles.step} ${count > 1 ? styles.stepActive : ''}`}>1</div>
-              </div> */}
+                 <div className={`${styles.step} ${count > 1 ? styles.stepActive : ''}`}>2</div>
+              </div>
 
 
-              <div className={styles.progressTrack}>
+              {/* <div className={styles.progressTrack}>
    <div className={`${styles.step} ${styles.stepActive}`}>1</div>
    <div className={`${styles.trackLine} ${count > 0 ? styles.lineActive : ''}`}></div>
    <div className={`${styles.step} ${count > 0 ? styles.stepActive : ''}`}>
       {count > 0 ? <Check size={16} /> : <Lock size={16} />}
    </div>
-</div>
+</div> */}
               <div className={styles.btnWrapper}>{renderActionButton()}</div>
               {farcasterError && <p className={styles.errorText}><AlertCircle size={12} style={{marginRight:4}}/> {farcasterError}</p>}
             </div>
@@ -2232,6 +2272,7 @@ useEffect(() => {
             <h3 className={styles.modalTitle}>Success!</h3>
             <p className={styles.modalText}>You received <span className={styles.gradientText}>{lastClaimedAmount} {tokenSymbol}</span></p>
             {/* {count === 1 && !isVerified && <button className={styles.modalShareBtn} onClick={handleShare}>Share to Unlock Bonus <Share2 size={16}/></button>} */}
+            {count === 1 && !isVerified && <button className={styles.modalShareBtn} onClick={handleShare}>Share to Unlock Bonus <Share2 size={16}/></button>}
           </div>
         </div>
       )}
