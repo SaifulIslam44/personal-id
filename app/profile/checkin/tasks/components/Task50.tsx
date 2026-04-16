@@ -267,7 +267,7 @@ const handleShare = () => {
 
 
     const builderSuffix = Attribution.toDataSuffix({
-      codes: ["bc_bmhx0p43"], // আপনার কোড
+      codes: ["bc_bmhx0p43"], 
     });
 
 

@@ -1910,7 +1910,7 @@ const onClaim = async () => {
         userWallet: walletAddress, 
         fid: Number(userFid), 
         giveawayId: Number(giveawayId), 
-        isMiniPay: _isMiniPay // 👈 MiniPay স্ট্যাটাস পাঠানো হচ্ছে
+        isMiniPay: _isMiniPay 
       }),
     });
 
@@ -1920,7 +1920,6 @@ const onClaim = async () => {
       throw new Error(signData.message || "Failed to get signature/nonce");
     }
 
-    // ২. ফাংশন ডাটা এনকোড করা
     const functionData = encodeFunctionData({
       abi: ABI,
       functionName: "claimGiveaway",
@@ -1938,8 +1937,6 @@ const onClaim = async () => {
 
     const finalData = concat([functionData, builderSuffix]);
 
-    // ৩. ট্রানজেকশন পাঠানো
-    // ৫. ট্রানজেকশন পাঠানো (MiniPay vs Farcaster)
     let txId;
     
     if (_isMiniPay) {
