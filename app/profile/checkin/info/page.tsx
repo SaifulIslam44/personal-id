@@ -215,3 +215,7 @@ const handleUsdcDonate = async (amount: string) => {
     </div>
   );
 }
+
+
+
+//changes the border radius #1000002500
