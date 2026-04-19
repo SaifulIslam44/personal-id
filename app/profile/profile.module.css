@@ -145,10 +145,7 @@
 
 @keyframes shine { to { background-position: 200% center; } }
 
-/* ... (Rest of the CSS remains same) ... */
 
-
-/* ===== PREMIUM COMPACT CARD ===== */
 .premiumCard {
   width: 100%;
   max-width: 360px; /* উইডথ কমানো হয়েছে */
@@ -177,13 +174,13 @@
   gap: 16px;
 }
 
-/* বাম পাশের ছবি (Compact) */
+
 .pfpContainer {
   flex-shrink: 0;
 }
 
 .cardPfp {
-  width: 85px; /* ইমেজের সাইজ কমানো হয়েছে (আগে 100 ছিল) */
+  width: 85px; 
   height: 85px;
   border-radius: 16px; 
   object-fit: cover;
@@ -283,7 +280,7 @@
 .mintButton:active { transform: scale(0.98); }
 
 .mintButton:disabled {
-  background: #334155;
+  background: #374558;
   color: #94a3b8;
   box-shadow: none;
   cursor: not-allowed;
@@ -297,7 +294,7 @@
   animation: pulse 1.5s infinite;
 }
 
-/* Loader */
+
 .loadingWrapper {
   display: flex;
   flex-direction: column;
