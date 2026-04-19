@@ -18,7 +18,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // 🔴 Image Optimization বন্ধ করা এবং ডোমেইন পারমিশন দেওয়া
   images: {
     unoptimized: true, 
     remotePatterns: [
@@ -29,7 +28,7 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  // আপনার আগের Webpack কনফিগারেশন
+
   webpack: (config) => {
     config.externals.push("pino-pretty", "lokijs", "encoding");
     return config;
@@ -37,3 +36,6 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+
+// ID: 200442581

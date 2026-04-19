@@ -1,6 +1,5 @@
 import dotenv from "dotenv";
 import path from "path";
-// .env.local ফাইলটি ম্যানুয়ালি লোড করা যাতে DB URI খুঁজে পায়
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 
 import dbConnect from "../lib/db";
@@ -35,8 +34,7 @@ async function sendNotification() {
 
         for (const user of users) {
             try {
-                // targetUrl অবশ্যই আপনার ভেরিফাইড ডোমেইনের হতে হবে
-                // ফারকাস্টার ডাইরেক্ট লিঙ্ক (farcaster.xyz) অনেক সময় ডোমেইন মিসম্যাচ এরর দেয়
+                
                 await axios.post(user.notificationUrl, {
                     notificationId: `msg-${Date.now()}-${user.fid}`,
                     title: title,
@@ -62,3 +60,6 @@ async function sendNotification() {
 }
 
 sendNotification();
+
+
+//ID: 200542152

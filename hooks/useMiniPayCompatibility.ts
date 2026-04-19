@@ -15,7 +15,7 @@ export const useMiniPayCompatibility = () => {
         setIsMiniPay(true);
       } else if (retry < 10) {
         retry++;
-        setTimeout(detect, 300);
+        setTimeout(detect, 200);
       }
     };
 
@@ -24,3 +24,6 @@ export const useMiniPayCompatibility = () => {
 
   return isMiniPay;
 };
+
+
+//ID: 200520524
