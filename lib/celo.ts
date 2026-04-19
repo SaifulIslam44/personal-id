@@ -1,11 +1,10 @@
 
 import { type Address } from "viem";
 
-// Celo Mainnet Contract Address (Giveaway এর জন্য)
+
 export const CELO_CONTRACT_ADDRESS: Address = "0x778a8bC527a97f492ECB6c07e44622a898603427";
 
 
-// Base Mainnet Updated ABI (Full)
 export const ABI = [
   {
     "anonymous": false,
