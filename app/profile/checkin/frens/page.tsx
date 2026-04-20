@@ -25,7 +25,7 @@ export default function FrensPage() {
 
 
   useEffect(() => {
-  // পেজ লোড হলে লোকাল স্টোরেজ থেকে ইউজারের FID নিয়ে আসবে
+
   const storedFid = localStorage.getItem("user_fid");
   if (storedFid) {
     setFid(storedFid);
@@ -252,6 +252,6 @@ const handleShare = async () => {
 
 
 
-
+//ID: 002154
 
 
