@@ -7,7 +7,7 @@ import React, { useState, useEffect } from "react";
 import styles from "./score.module.css";
 import { Moon, Sun, Share2, ShieldCheck, Zap } from "lucide-react";
 import { useMiniKit } from "@coinbase/onchainkit/minikit";
-import miniApp, { sdk } from "@farcaster/miniapp-sdk"; // sdk import যোগ করা হয়েছে
+import miniApp, { sdk } from "@farcaster/miniapp-sdk"; 
 import Image from "next/image";
 
 export default function ScorePage() {
