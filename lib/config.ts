@@ -9,7 +9,7 @@ const DATA_SUFFIX = Attribution.toDataSuffix({
 export const config = createConfig({
   chains: [celo, base], 
   transports: {
-    [celo.id]: http("https://rpc.ankr.com/celo"),
+    [celo.id]: http("https://celo-json-rpc.stakely.io"),
     [base.id]: http(process.env.NEXT_PUBLIC_BASE_RPC_URL),
     
   },
