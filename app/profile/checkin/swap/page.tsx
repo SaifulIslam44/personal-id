@@ -594,14 +594,13 @@ export default function SwapPage() {
     const newFromCache: Record<string, any> = {};
 
     const missingAddresses = topUsers
-      .map(u => u.address)
+      .map(u => u.address.toLowerCase()) // 🔥 lowercase force korlam ensure korar jonno
       .filter(addr => {
-        const lowerAddr = addr.toLowerCase();
-        if (cachedData[lowerAddr]) {
-          newFromCache[lowerAddr] = cachedData[lowerAddr];
+        if (cachedData[addr]) {
+          newFromCache[addr] = cachedData[addr];
           return false;
         }
-        if (fetchedAddressesRef.current.has(lowerAddr)) return false;
+        if (fetchedAddressesRef.current.has(addr)) return false;
         return true;
       });
 
@@ -611,7 +610,7 @@ export default function SwapPage() {
 
     if (missingAddresses.length === 0) return;
 
-    missingAddresses.forEach(addr => fetchedAddressesRef.current.add(addr.toLowerCase()));
+    missingAddresses.forEach(addr => fetchedAddressesRef.current.add(addr));
 
     const fetchProfiles = async () => {
       try {
