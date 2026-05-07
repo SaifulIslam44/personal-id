@@ -301,108 +301,143 @@
 }
 
 /* Leaderboard */
+.leaderboard {
+  width: 100%;
+  margin: 15px 0; 
+  background: #0a0a0a;
+  border-radius: 16px;
+  border: 1px solid #1a1a1a;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.lightMode .leaderboard {
+  background: #ffffff;
+  border: 1px solid #eee;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.05);
+}
+
 .leaderboardHeader {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 14px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.lightMode .leaderboardHeader {
-  border-bottom-color: rgba(0, 0, 0, 0.05);
+  padding: 12px 15px;
+  background: rgba(0, 112, 243, 0.08);
+  font-size: 11px;
+  font-weight: 800;
+  color: #7b88b8;
+  text-transform: uppercase;
+  margin: 0;
 }
 
 .listContainer {
   display: flex;
   flex-direction: column;
-  gap: 8px;
 }
 
 .rankRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(30, 41, 59, 0.3);
-  padding: 10px 14px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.03);
-  transition: transform 0.2s;
+  padding: 12px 15px;
+  border-bottom: 1px solid #111;
 }
 
-.lightMode .rankRow {
-  background: #ffffff;
-  border-color: rgba(0, 0, 0, 0.03);
+.lightMode .rankRow { 
+  border-bottom: 1px solid #f5f5f5; 
 }
 
-.rankRow:hover {
-  transform: translateX(4px);
-  background: rgba(30, 41, 59, 0.5);
+.rankRow:last-child {
+  border-bottom: none;
 }
-
-.top1Row { border-color: rgba(251, 191, 36, 0.4); background: rgba(251, 191, 36, 0.05); }
-.top2Row { border-color: rgba(156, 163, 175, 0.4); background: rgba(156, 163, 175, 0.05); }
-.top3Row { border-color: rgba(180, 83, 9, 0.4); background: rgba(180, 83, 9, 0.05); }
 
 .rowLeft {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  overflow: hidden;
 }
 
 .rankNum {
-  width: 20px;
-  font-weight: 800;
-  font-size: 14px;
-  text-align: center;
-  color: #94a3b8;
+  font-size: 16px;
+  font-weight: bold;
+  color: #7b88b8;
+  min-width: 20px;
 }
 
 .pfp {
+  width: 34px !important; 
+  height: 34px !important;
+  min-width: 34px;
+  min-height: 34px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  object-fit: cover;
+  border: 2px solid transparent;
+  background: linear-gradient(#0a0a0a, #0a0a0a) padding-box,
+              linear-gradient(45deg, #f09433, #dc2743, #bc1888) border-box;
+}
+
+.lightMode .pfp {
+  background: linear-gradient(#ffffff, #ffffff) padding-box,
+              linear-gradient(45deg, #f09433, #dc2743, #bc1888) border-box;
 }
 
 .userAddressWrapper {
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .userAddress {
-  font-family: monospace;
   font-size: 13px;
-  font-weight: 500;
+  color: #e0e0e0;
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+}
+
+.lightMode .userAddress { 
+  color: #333; 
 }
 
 .youTag {
-  font-size: 10px;
-  color: #7555e9;
-  font-weight: 700;
-  margin-top: -2px;
+  font-size: 9px;
+  color: #0052ff;
+  font-weight: bold;
+  margin-top: 2px;
 }
 
 .rowRight {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  text-align: right;
 }
 
 .volAmount {
-  font-weight: 700;
-  font-size: 14px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #4ade80;
 }
 
+/* Top 3 Rank Highlight Colors */
+.top1Row .rankNum { color: #fbbf24; }
+.top2Row .rankNum { color: #9ca3af; }
+.top3Row .rankNum { color: #b45309; }
+
 .rewardTag {
-  font-size: 10px;
+  font-size: 9px;
   display: flex;
   align-items: center;
   gap: 3px;
-  font-weight: 600;
   margin-top: 2px;
+  opacity: 0.9;
 }
+
+.rewardTag.rank1 { color: #fbbf24; }
+.rewardTag.rank2 { color: #9ca3af; }
+.rewardTag.rank3 { color: #b45309; }
 
 .emptyState {
   text-align: center;

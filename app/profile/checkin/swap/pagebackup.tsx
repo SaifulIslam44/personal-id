@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState, useRef } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   useAccount,
   useBalance,
@@ -31,36 +31,6 @@ import { CELO_CONTRACT_ADDRESS } from "@/lib/celo";
 import styles from "./swap.module.css";
 
 const CELO_CHAIN_ID = 42220;
-
-// --- 🔵 CACHE HELPERS (To prevent unnecessary Neynar/API requests) ---
-const CACHE_KEY = "swap_leaderboard_users_v1";
-const CACHE_DURATION = 7 * 24 * 60 * 60 * 1000; // ৭ দিনের জন্য ক্যাশে সেভ থাকবে
-
-const getLocalCache = () => {
-  if (typeof window === "undefined") return {};
-  try {
-    const stored = localStorage.getItem(CACHE_KEY);
-    if (!stored) return {};
-    const { timestamp, data } = JSON.parse(stored);
-    if (Date.now() - timestamp > CACHE_DURATION) {
-      localStorage.removeItem(CACHE_KEY);
-      return {};
-    }
-    return data || {};
-  } catch { return {}; }
-};
-
-const saveToLocalCache = (newData: Record<string, any>) => {
-  const current = getLocalCache();
-  const updated = { ...current, ...newData };
-  try {
-    localStorage.setItem(CACHE_KEY, JSON.stringify({
-      timestamp: Date.now(),
-      data: updated
-    }));
-  } catch (e) { console.error("Cache full", e); }
-};
-// ---------------------------------------------------------------------
 
 const MINI_ABI = [
   {
@@ -223,13 +193,6 @@ export default function SwapPage() {
   const [slippagePercent, setSlippagePercent] = useState<number>(0.1);
   const [callId, setCallId] = useState<string>("");
 
-  // --- Profile States ---
-  const [userProfiles, setUserProfiles] = useState<Record<string, { displayName: string, pfpUrl: string }>>({});
-  const fetchedAddressesRef = useRef<Set<string>>(new Set());
-
-  // 🔥 Farcaster Context for Current User
-  const [userData, setUserData] = useState({ displayName: "Guest", pfpUrl: "https://placehold.co/100x100/0052FF/ffffff?text=?" });
-
   /* DEBUG CONSOLE COMMENTED OUT
   const [debugLogs, setDebugLogs] = useState<string[]>([]);
   const addLog = (title: string, data?: any) => {
@@ -337,19 +300,7 @@ export default function SwapPage() {
   useEffect(() => {
     setMounted(true);
     // addLog("🟢 App Mounted"); // Commented out
-    const loadContext = async () => {
-      try {
-        await sdk.actions.ready();
-        const ctx = await sdk.context;
-        if (ctx?.user) {
-          setUserData({
-            displayName: ctx.user.displayName || ctx.user.username || "User",
-            pfpUrl: ctx.user.pfpUrl || "https://placehold.co/100x100/0052FF/ffffff?text=?",
-          });
-        }
-      } catch (err) { console.error("SDK Context Error:", err); }
-    };
-    loadContext();
+    try { sdk.actions.ready(); } catch {}
   }, []);
 
   useEffect(() => {
@@ -586,59 +537,6 @@ export default function SwapPage() {
     })).sort((a, b) => Number(b.vol) - Number(a.vol)).slice(0, 20);
   }, [leaderboardData]);
 
-  // --- 🔵 PROFILE FETCHING LOGIC (API Call only when names are missing from Cache) ---
-  useEffect(() => {
-    if (topUsers.length === 0) return;
-
-    const cachedData = getLocalCache();
-    const newFromCache: Record<string, any> = {};
-
-    const missingAddresses = topUsers
-      .map(u => u.address)
-      .filter(addr => {
-        const lowerAddr = addr.toLowerCase();
-        if (cachedData[lowerAddr]) {
-          newFromCache[lowerAddr] = cachedData[lowerAddr];
-          return false;
-        }
-        if (fetchedAddressesRef.current.has(lowerAddr)) return false;
-        return true;
-      });
-
-    if (Object.keys(newFromCache).length > 0) {
-      setUserProfiles(prev => ({...prev, ...newFromCache}));
-    }
-
-    if (missingAddresses.length === 0) return;
-
-    missingAddresses.forEach(addr => fetchedAddressesRef.current.add(addr.toLowerCase()));
-
-    const fetchProfiles = async () => {
-      try {
-        const res = await fetch(`/api/users?address=${missingAddresses.join(',')}`);
-        if (res.ok) {
-          const data = await res.json();
-          const newProfs: Record<string, any> = {};
-          if (data.users && Array.isArray(data.users)) {
-            data.users.forEach((u: any) => {
-              const lowerAddr = (u.address || "").toLowerCase();
-              if (lowerAddr) {
-                newProfs[lowerAddr] = {
-                  displayName: u.displayName || u.username,
-                  pfpUrl: u.pfpUrl
-                };
-              }
-            });
-          }
-          setUserProfiles(prev => ({...prev, ...newProfs}));
-          saveToLocalCache(newProfs);
-        }
-      } catch (e) { console.error("Batch fetch error:", e); }
-    };
-    fetchProfiles();
-  }, [topUsers]);
-  // ----------------------------------------------------------------------------------
-
   const isBtnDisabled = isSendingTx || isProcessing || !!callId || amountInWei === 0n || isFetchingQuote || !isConnected;
 
   if (!mounted) return <div className={styles.loading}><Loader2 className="animate-spin" size={28} color="#3b82f6" /></div>;
@@ -754,29 +652,13 @@ export default function SwapPage() {
         <div className={styles.listContainer}>
           {topUsers.length > 0 ? topUsers.map((u, i) => {
             const isMe = address && u.address.toLowerCase() === address?.toLowerCase();
-            const profile = userProfiles[u.address.toLowerCase()];
-            
-            // 🔥 Farcaster থেকে ডিরেক্ট নাম ফেস করার লজিক
-            let displayName = (isMe && userData.displayName !== "Guest") 
-              ? userData.displayName 
-              : profile?.displayName || `${u.address.slice(0,6)}...${u.address.slice(-4)}`;
-              
-            // name boro hole "..." add korar logic
-            if (displayName !== `${u.address.slice(0,6)}...${u.address.slice(-4)}` && displayName.length > 17) {
-              displayName = displayName.substring(0, 17) + "...";
-            }
-              
-            const pfpUrl = (isMe && userData.pfpUrl !== "https://placehold.co/100x100/0052FF/ffffff?text=?") 
-              ? userData.pfpUrl 
-              : profile?.pfpUrl || u.pfpUrl;
-
             return (
             <div key={u.address} className={`${styles.rankRow} ${i === 0 ? styles.top1Row : i === 1 ? styles.top2Row : i === 2 ? styles.top3Row : ""}`}>
               <div className={styles.rowLeft}>
                 <div className={`${styles.rankNum} ${i === 0 ? styles.rank1 : i === 1 ? styles.rank2 : i === 2 ? styles.rank3 : ""}`}>{i+1}</div>
-                <Image src={pfpUrl} alt="pfp" width={32} height={32} className={styles.pfp} unoptimized />
+                <Image src={u.pfpUrl} alt="pfp" width={32} height={32} className={styles.pfp} unoptimized />
                 <div className={styles.userAddressWrapper}>
-                  <span className={styles.userAddress}>{displayName}</span>
+                  <span className={styles.userAddress}>{u.address.slice(0,6)}...{u.address.slice(-4)}</span>
                   {isMe && <span className={styles.youTag}>(You)</span>}
                 </div>
               </div>
@@ -811,3 +693,15 @@ export default function SwapPage() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
