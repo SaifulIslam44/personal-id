@@ -33,7 +33,8 @@ import styles from "./swap.module.css";
 const CELO_CHAIN_ID = 42220;
 
 // --- 🔵 CACHE HELPERS (To prevent unnecessary Neynar/API requests) ---
-const CACHE_KEY = "swap_leaderboard_users_v1";
+// 🔥 ক্যাশ কী 'v2' করা হলো যাতে পুরনো ভুল ক্যাশ বাদ দিয়ে নতুন করে API কল হয়
+const CACHE_KEY = "swap_leaderboard_users_v2";
 const CACHE_DURATION = 7 * 24 * 60 * 60 * 1000; // ৭ দিনের জন্য ক্যাশে সেভ থাকবে
 
 const getLocalCache = () => {
@@ -614,23 +615,22 @@ export default function SwapPage() {
 
     const fetchProfiles = async () => {
       try {
-        const res = await fetch(`/api/users?address=${missingAddresses.join(',')}`);
+        // 🔥 Leaderboard-এর মতো API Endpoint এবং Parameter (addresses=) ব্যবহার করা হয়েছে
+        const res = await fetch(`/api/get-profiles?addresses=${missingAddresses.join(',')}`);
         if (res.ok) {
-          const data = await res.json();
+          const profileMap = await res.json();
           const newProfs: Record<string, any> = {};
-          if (data.users && Array.isArray(data.users)) {
-            data.users.forEach((u: any) => {
-              const lowerAddr = (u.address || "").toLowerCase();
-              if (lowerAddr) {
-                newProfs[lowerAddr] = {
-                  displayName: u.displayName || u.username,
-                  pfpUrl: u.pfpUrl
-                };
-              }
-            });
-          }
+
+          // 🔵 Fallback Setup & Data Mapping: API-তে কল কমানোর জন্য ডিফল্ট নাম ও ছবি সেট করা হলো
+          missingAddresses.forEach(addr => {
+            newProfs[addr] = {
+              displayName: profileMap[addr]?.profileName || `${addr.slice(0,6)}...${addr.slice(-4)}`,
+              pfpUrl: profileMap[addr]?.pfp || "https://placehold.co/100x100/0052FF/ffffff?text=?"
+            };
+          });
+          
           setUserProfiles(prev => ({...prev, ...newProfs}));
-          saveToLocalCache(newProfs);
+          saveToLocalCache(newProfs); // ক্যাশে সেভ হয়ে যাবে, ফলে বারবার API কল হবে না
         }
       } catch (e) { console.error("Batch fetch error:", e); }
     };
