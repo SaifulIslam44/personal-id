@@ -140,7 +140,7 @@ export default function RootLayout({
 
 
 return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${sourceCodePro.variable}`}>
         {/* একটি Providers-ই যথেষ্ট কারণ এটি আপনার WagmiConfig এবং OnchainKit দুটোই হ্যান্ডেল করছে */}
         <Providers>

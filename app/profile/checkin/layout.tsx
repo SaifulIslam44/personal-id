@@ -62,7 +62,7 @@
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import styles from "./tabs.module.css";
-import { Gift, ListChecks, Users, Trophy, BarChart3, IdCard } from "lucide-react";
+import { Gift, ListChecks, Users, Trophy, BarChart3, IdCard, ArrowUpDown } from "lucide-react";
 import Image from "next/image";
 
 export default function ProfileLayout({
@@ -79,7 +79,8 @@ export default function ProfileLayout({
     { label: "Rewards", path: "/profile/checkin", icon: Gift },
     { label: "Task", path: "/profile/checkin/tasks", icon: ListChecks },
     { label: "Menus", path: "MENU_TRIGGER", icon: null },
-    { label: "Score", path: "/profile/checkin/score", icon: BarChart3 },
+    // { label: "Score", path: "/profile/checkin/score", icon: BarChart3 },
+    { label: "Swap & Earn", path: "/profile/checkin/swap", icon: ArrowUpDown  },
     // { label: "Info", path: "/profile/checkin/info", icon: Info },
     // { label: "Info", path: "#", icon: Info, disabled: true },
     { label: "Mint ID", path: "/profile", icon: IdCard },

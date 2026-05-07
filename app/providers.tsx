@@ -297,11 +297,8 @@
 import { ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { WagmiProvider } from "wagmi";
-import { base } from "wagmi/chains";
+import { celo } from "wagmi/chains"; 
 import { OnchainKitProvider } from "@coinbase/onchainkit";
-
-
-// lib ফোল্ডার থেকে config ইমপোর্ট করুন
 import { config } from "@/lib/config";
 
 
@@ -313,7 +310,7 @@ export function Providers({ children }: { children: ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <OnchainKitProvider
           apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
-          chain={base}
+          chain={celo}
           config={{
             appearance: { mode: "auto" },
             paymaster: "https://api.developer.coinbase.com/rpc/v1/base/QgLBDzBBarpt7Ob9FpVSjk24cbzDsDeF",
@@ -335,3 +332,17 @@ export function Providers({ children }: { children: ReactNode }) {
     </WagmiProvider>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
