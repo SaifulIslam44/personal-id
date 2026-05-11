@@ -519,7 +519,7 @@
 
 .slippageGroup {
   display: flex;
-  gap: 6px;
+  gap: 5px;
 }
 .slippageGroup button {
   background: #374151;
@@ -533,7 +533,7 @@
 }
 .lightMode .slippageGroup button {
   background: #e5e7eb;
-  color: #374151;
+  color: #37404e;
 }
 .slippageGroup button.slipActive {
   background: #3b82f6;
