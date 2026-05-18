@@ -1062,17 +1062,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 //last farcaster used
 // import { useReadContract, useSendCalls, useAccount, useSwitchChain, useConnect } from "wagmi"; 
 //minipay
-// import { useReadContract, useSendCalls, useSendTransaction, useAccount, useSwitchChain, useConnect } from "wagmi";
-import { 
-  useReadContract, 
-  useSendCalls, 
-  useSendTransaction, 
-  useAccount, 
-  useSwitchChain, 
-  useConnect,
-  useWaitForTransactionReceipt, 
-  useCallsStatus                
-} from "wagmi";
+import { useReadContract, useSendCalls, useSendTransaction, useAccount, useSwitchChain, useConnect } from "wagmi";
 import { formatUnits } from "viem";
 
 import { CELO_CONTRACT_ADDRESS, ABI } from "@/lib/celo";
@@ -1392,25 +1382,6 @@ const { data: latestId } = useReadContract({
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [lastClaimedAmount, setLastClaimedAmount] = useState("0");
   const [winnersProfiles, setWinnersProfiles] = useState<Record<number, WinnerProfile>>({});
-
-  //new add
-  const [pendingTxHash, setPendingTxHash] = useState<`0x${string}` | null>(null);
-const [pendingCallsId, setPendingCallsId] = useState<string | null>(null);
-
-
-const { isLoading: isTxConfirming, isSuccess: isTxSuccess } = useWaitForTransactionReceipt({
-  hash: pendingTxHash as `0x${string}`,
-  query: { enabled: !!pendingTxHash } 
-});
-
-
-const { data: callsStatus } = useCallsStatus({
-  id: pendingCallsId as string,
-  query: {
-    enabled: !!pendingCallsId,
-    refetchInterval: (query) => (query.state.data?.status === 'pending' ? 1000 : false), 
-  }
-});
 
   // const { address } = useAccount();
     // const { address } = useAccount(); // isConnected এখানে লাগবে
@@ -1903,118 +1874,7 @@ const handleShare = () => {
 
 
 
-// //minipay:
-// const onClaim = async () => {
-//   try {
-//     if (chain?.id !== 42220) {
-//       await switchChainAsync({ chainId: 42220 });
-//     }
-
-//     const walletAddress = 
-//       address || 
-//       (userData as any)?.verified_addresses?.eth_addresses?.[0] || 
-//       (userData as any)?.custody_address ||
-//       (userData as any)?.address;
-
-//     // FID 0 ধরে নিব যদি না থাকে
-//     const userFid = userData?.fid || 0; 
-//     const giveawayId = activeGiveawayId;
-
-//     if (!walletAddress) {
-//       setFarcasterError("Wallet not found. Please connect your wallet.");
-//       return;
-//     }
-
-//     // 🔥 ফিক্স: যদি MiniPay না হয় এবং FID না থাকে, তবেই শুধু এরর দিবে
-//     if (!giveawayId || (!_isMiniPay && !userFid)) {
-//       setFarcasterError("Missing user identity or Giveaway ID");
-//       return;
-//     }
-
-//     // ১. ব্যাকএন্ড থেকে Signature এবং Nonce সংগ্রহ করা
-//     const signResponse = await fetch('/api/sign-claim', {
-//       method: 'POST',
-//       headers: { 'Content-Type': 'application/json' },
-//       body: JSON.stringify({ 
-//         userWallet: walletAddress, 
-//         fid: Number(userFid), 
-//         giveawayId: Number(giveawayId), 
-//         isMiniPay: _isMiniPay 
-//       }),
-//     });
-
-//     const signData = await signResponse.json();
-
-//     if (!signResponse.ok || !signData.signature || signData.nonce === undefined) {
-//       throw new Error(signData.message || "Failed to get signature/nonce");
-//     }
-
-//     const functionData = encodeFunctionData({
-//       abi: ABI,
-//       functionName: "claimGiveaway",
-//       args: [ 
-//         BigInt(giveawayId), 
-//         BigInt(userFid), 
-//         BigInt(signData.nonce), 
-//         signData.signature as `0x${string}` 
-//       ],
-//     });
-
-//     const builderSuffix = Attribution.toDataSuffix({
-//       codes: ["bc_bmhx0p43"], 
-//     });
-
-//     const finalData = concat([functionData, builderSuffix]);
-
-//     let txId;
-    
-//     if (_isMiniPay) {
-//       // MiniPay-এর জন্য স্ট্যান্ডার্ড ট্রানজেকশন
-//       txId = await sendTransactionAsync({
-//         to: CELO_CONTRACT_ADDRESS as `0x${string}`,
-//         data: finalData,
-//         value: currentClaimFee,
-//       });
-//     } else {
-//       // Farcaster-এর জন্য Batched (SendCalls) ট্রানজেকশন
-//       txId = await sendCallsAsync({
-//         calls: [
-//           {
-//             to: CELO_CONTRACT_ADDRESS as `0x${string}`, 
-//             data: finalData,
-//             value: currentClaimFee,
-//           },
-//         ],
-//       });
-//     }
-
-//     // ৬. সাকসেস হ্যান্ডলিং
-//     if (txId) {
-//       setOptimisticCount(realCount + 1);
-//       setLastClaimedAmount(rewardAmountFormatted); 
-//       setShowSuccessModal(true);
-//       setTimeout(() => { 
-//         refetchDetails(); 
-//         refetchStats(); 
-//         refetchWinners(); 
-//       }, 5000);
-//     }
-
-//   } catch (error: any) {
-//     console.error("Claim Error:", error);
-    
-//     if (error.message?.includes("Personal ID Mint Required")) {
-//         setFarcasterError("You must mint a Personal ID to claim this giveaway!");
-//     } else if (error.code === 4001 || error.message?.includes("User rejected") || error.name === 'UserRejectedRequestError') {
-//         setFarcasterError("Transaction cancelled by user");
-//     } else {
-//         setFarcasterError(error.message || "Transaction failed. Try again.");
-//     }
-//     setTimeout(() => setFarcasterError(""), 5000);
-//   }
-// };
-
-
+//minipay:
 const onClaim = async () => {
   try {
     if (chain?.id !== 42220) {
@@ -2027,6 +1887,7 @@ const onClaim = async () => {
       (userData as any)?.custody_address ||
       (userData as any)?.address;
 
+    // FID 0 ধরে নিব যদি না থাকে
     const userFid = userData?.fid || 0; 
     const giveawayId = activeGiveawayId;
 
@@ -2035,11 +1896,13 @@ const onClaim = async () => {
       return;
     }
 
+    // 🔥 ফিক্স: যদি MiniPay না হয় এবং FID না থাকে, তবেই শুধু এরর দিবে
     if (!giveawayId || (!_isMiniPay && !userFid)) {
       setFarcasterError("Missing user identity or Giveaway ID");
       return;
     }
 
+    // ১. ব্যাকএন্ড থেকে Signature এবং Nonce সংগ্রহ করা
     const signResponse = await fetch('/api/sign-claim', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -2077,12 +1940,14 @@ const onClaim = async () => {
     let txId;
     
     if (_isMiniPay) {
+      // MiniPay-এর জন্য স্ট্যান্ডার্ড ট্রানজেকশন
       txId = await sendTransactionAsync({
         to: CELO_CONTRACT_ADDRESS as `0x${string}`,
         data: finalData,
         value: currentClaimFee,
       });
     } else {
+      // Farcaster-এর জন্য Batched (SendCalls) ট্রানজেকশন
       txId = await sendCallsAsync({
         calls: [
           {
@@ -2094,15 +1959,21 @@ const onClaim = async () => {
       });
     }
 
+    // ৬. সাকসেস হ্যান্ডলিং
     if (txId) {
-      if (_isMiniPay) {
-        setPendingTxHash(txId as `0x${string}`);
-      } else {
-        setPendingCallsId(txId as string);
-      }
+      setOptimisticCount(realCount + 1);
+      setLastClaimedAmount(rewardAmountFormatted); 
+      setShowSuccessModal(true);
+      setTimeout(() => { 
+        refetchDetails(); 
+        refetchStats(); 
+        refetchWinners(); 
+      }, 5000);
     }
 
   } catch (error: any) {
+    console.error("Claim Error:", error);
+    
     if (error.message?.includes("Personal ID Mint Required")) {
         setFarcasterError("You must mint a Personal ID to claim this giveaway!");
     } else if (error.code === 4001 || error.message?.includes("User rejected") || error.name === 'UserRejectedRequestError') {
@@ -2113,26 +1984,6 @@ const onClaim = async () => {
     setTimeout(() => setFarcasterError(""), 5000);
   }
 };
-
-
-useEffect(() => {
-  const isCallConfirmed = callsStatus?.status === 'success'; 
-
-  if (isTxSuccess || isCallConfirmed) {
-    setOptimisticCount(realCount + 1);
-    setLastClaimedAmount(rewardAmountFormatted); 
-    setShowSuccessModal(true);
-    
-    setPendingTxHash(null);
-    setPendingCallsId(null);
-    
-    setTimeout(() => { 
-      refetchDetails(); 
-      refetchStats(); 
-      refetchWinners(); 
-    }, 5000);
-  }
-}, [isTxSuccess, callsStatus?.status, realCount, rewardAmountFormatted, refetchDetails, refetchStats, refetchWinners]);
 
 
 
@@ -2239,83 +2090,42 @@ useEffect(() => {
   // };
 
 
-
-
-  // last used
-  // const renderActionButton = () => {
-    
-  //   if (count === 0) {
-  //     return (
-  //       <button className={styles.primaryBtn} onClick={onClaim} disabled={isClaiming || isFull}>
-  //         {isClaiming ? "Sending..." : isFull ? "Full" : "Claim Reward"}
-  //         {!isClaiming && !isFull && <Zap size={16} fill="currentColor" />}
-  //       </button>
-  //     );
-  //   }
-
-   
-  //   if (count === 1 && count < limit) {
-      
-  //     if (_isMiniPay || isVerified) {
-  //       return (
-  //         <button className={`${styles.primaryBtn} ${styles.bonusBtn}`} onClick={onClaim} disabled={isClaiming || isFull}>
-  //           {isClaiming ? "Sending..." : isFull ? "Full" : "Claim Bonus"}
-  //           {!isClaiming && !isFull && <Zap size={16} fill="currentColor" />}
-  //         </button>
-  //       );
-  //     }
-
-      
-  //     if (!hasShared && !isVerified) {
-  //       return <button className={`${styles.primaryBtn} ${styles.shareBtn}`} onClick={handleShare}>Share to Unlock Bonus <Share2 size={16} /></button>;
-  //     }
-      
-  //     if (hasShared && !isVerified) {
-  //        if (verifyError) return <button className={`${styles.primaryBtn} ${styles.errorBtn}`} disabled> Not Shared! Try Again {errorTimer}s</button>;
-  //        return <button className={`${styles.primaryBtn} ${styles.verifyBtn}`} onClick={handleVerify} disabled={isVerifying}>{isVerifying ? "Verifying..." : "Verify Share"}{!isVerifying && <ShieldCheck size={16} />}</button>;
-  //     }
-  //   }
-
-  //   return <button className={styles.primaryBtn} disabled>Completed <Lock size={16} /></button>;
-  // };
-
-
   const renderActionButton = () => {
-  // Blockchain confirmation track korar jonno condition
-  const isPendingConfirm = isTxConfirming || callsStatus?.status === 'pending';
-  const isLoading = isClaiming || isPendingConfirm;
-  
-  if (count === 0) {
-    return (
-      <button className={styles.primaryBtn} onClick={onClaim} disabled={isLoading || isFull}>
-        {isClaiming ? "Sending..." : isPendingConfirm ? "Confirming..." : isFull ? "Full" : "Claim Reward"}
-        {!isLoading && !isFull && <Zap size={16} fill="currentColor" />}
-      </button>
-    );
-  }
-
-  if (count === 1 && count < limit) {
-    if (_isMiniPay || isVerified) {
+    
+    if (count === 0) {
       return (
-        <button className={`${styles.primaryBtn} ${styles.bonusBtn}`} onClick={onClaim} disabled={isLoading || isFull}>
-          {isClaiming ? "Sending..." : isPendingConfirm ? "Confirming..." : isFull ? "Full" : "Claim Bonus"}
-          {!isLoading && !isFull && <Zap size={16} fill="currentColor" />}
+        <button className={styles.primaryBtn} onClick={onClaim} disabled={isClaiming || isFull}>
+          {isClaiming ? "Sending..." : isFull ? "Full" : "Claim Reward"}
+          {!isClaiming && !isFull && <Zap size={16} fill="currentColor" />}
         </button>
       );
     }
 
-    if (!hasShared && !isVerified) {
-      return <button className={`${styles.primaryBtn} ${styles.shareBtn}`} onClick={handleShare}>Share to Unlock Bonus <Share2 size={16} /></button>;
-    }
-    
-    if (hasShared && !isVerified) {
-       if (verifyError) return <button className={`${styles.primaryBtn} ${styles.errorBtn}`} disabled> Not Shared! Try Again {errorTimer}s</button>;
-       return <button className={`${styles.primaryBtn} ${styles.verifyBtn}`} onClick={handleVerify} disabled={isVerifying}>{isVerifying ? "Verifying..." : "Verify Share"}{!isVerifying && <ShieldCheck size={16} />}</button>;
-    }
-  }
+   
+    if (count === 1 && count < limit) {
+      
+      if (_isMiniPay || isVerified) {
+        return (
+          <button className={`${styles.primaryBtn} ${styles.bonusBtn}`} onClick={onClaim} disabled={isClaiming || isFull}>
+            {isClaiming ? "Sending..." : isFull ? "Full" : "Claim Bonus"}
+            {!isClaiming && !isFull && <Zap size={16} fill="currentColor" />}
+          </button>
+        );
+      }
 
-  return <button className={styles.primaryBtn} disabled>Completed <Lock size={16} /></button>;
-};
+      
+      if (!hasShared && !isVerified) {
+        return <button className={`${styles.primaryBtn} ${styles.shareBtn}`} onClick={handleShare}>Share to Unlock Bonus <Share2 size={16} /></button>;
+      }
+      
+      if (hasShared && !isVerified) {
+         if (verifyError) return <button className={`${styles.primaryBtn} ${styles.errorBtn}`} disabled> Not Shared! Try Again {errorTimer}s</button>;
+         return <button className={`${styles.primaryBtn} ${styles.verifyBtn}`} onClick={handleVerify} disabled={isVerifying}>{isVerifying ? "Verifying..." : "Verify Share"}{!isVerifying && <ShieldCheck size={16} />}</button>;
+      }
+    }
+
+    return <button className={styles.primaryBtn} disabled>Completed <Lock size={16} /></button>;
+  };
   
 
   return (
