@@ -227,7 +227,7 @@
   width: 100%;
   height: 100%;
   border-radius: 50% !important; /* Perfect Circular Image */
-  border: 2.5px solid #020408;
+  border: 2.5px solid #010203;
   object-fit: cover;
 }
 
