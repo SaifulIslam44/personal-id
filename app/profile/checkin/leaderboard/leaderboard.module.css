@@ -477,7 +477,7 @@
 }
 
 :global(.light-mode) .tier {
-  color: #666666; /* Clearly visible */
+  color: #757575; /* Clearly visible */
 }
 
 :global(.light-mode) .prize {
