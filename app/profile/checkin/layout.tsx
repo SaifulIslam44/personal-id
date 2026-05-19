@@ -62,7 +62,7 @@
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import styles from "./tabs.module.css";
-import { Gift, ListChecks, Users, Trophy, IdCard, ArrowUpDown } from "lucide-react";
+import { Gift, ListChecks, Trophy, IdCard, ArrowUpDown, BarChart3 } from "lucide-react";
 import Image from "next/image";
 
 export default function ProfileLayout({
@@ -80,6 +80,7 @@ export default function ProfileLayout({
     { label: "Task", path: "/profile/checkin/tasks", icon: ListChecks },
     { label: "Menus", path: "MENU_TRIGGER", icon: null },
     // { label: "Score", path: "/profile/checkin/score", icon: BarChart3 },
+    // { label: "Frens", path: "/profile/checkin/frens", icon: Users },
     { label: "Swap & Earn", path: "/profile/checkin/swap", icon: ArrowUpDown },
     // { label: "Info", path: "/profile/checkin/info", icon: Info },
     // { label: "Info", path: "#", icon: Info, disabled: true },
@@ -118,13 +119,13 @@ export default function ProfileLayout({
             {/* 2. CENTER ITEM: Score */}
             <div 
               className={`${styles.fanItem} ${styles.posCenter}`}
-              onClick={() => handleNavigation("/profile/checkin/frens")}
+              onClick={() => handleNavigation("/profile/checkin/score")}
             >
               {/* <div className={`${styles.fanCircle} ${styles.centerCircleStyle}`}> */}
               <div className={styles.fanCircle}>
-                <Users size={20} color="#4da3ff" />
+                <BarChart3 size={20} color="#4da3ff" />
               </div>
-              <span className={styles.fanLabel}>Frens</span>
+              <span className={styles.fanLabel}>Score</span>
             </div>
 
             {/* 3. RIGHT ITEM: Badges (Coming Soon) */}

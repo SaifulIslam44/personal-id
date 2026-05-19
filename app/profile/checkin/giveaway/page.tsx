@@ -2275,7 +2275,7 @@ useEffect(() => {
           )}
         </div>
 
-        {/* --- PREVIOUS HISTORY SECTION (Accordions) - HIDDEN IF ACTIVE --- */}
+        
         {/* !isActiveGiveaway &&  */}
         {previousHistoryIds.length > 0 && (
            <div style={{ marginTop: 10 }}>
