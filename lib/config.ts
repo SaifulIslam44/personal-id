@@ -1,20 +1,20 @@
-// import { createConfig, http } from "wagmi";
-// import { base, celo } from "wagmi/chains"; 
-// import { Attribution } from "ox/erc8021";
+import { createConfig, http } from "wagmi";
+import { base, celo } from "wagmi/chains"; 
+import { Attribution } from "ox/erc8021";
 
-// const DATA_SUFFIX = Attribution.toDataSuffix({
-//   codes: ["bc_bmhx0p43"], 
-// });
+const DATA_SUFFIX = Attribution.toDataSuffix({
+  codes: ["bc_bmhx0p43"], 
+});
 
-// export const config = createConfig({
-//   chains: [celo, base], 
-//   transports: {
-//     [celo.id]: http("https://celo-json-rpc.stakely.io"),
-//     [base.id]: http(process.env.NEXT_PUBLIC_BASE_RPC_URL),
+export const config = createConfig({
+  chains: [celo, base], 
+  transports: {
+    [celo.id]: http("https://celo-mainnet.g.alchemy.com/v2/XB1_Q_EYB8fsIP5eHxIqZ"),
+    [base.id]: http(process.env.NEXT_PUBLIC_BASE_RPC_URL),
     
-//   },
-//   dataSuffix: DATA_SUFFIX,
-// });
+  },
+  dataSuffix: DATA_SUFFIX,
+});
 
 
 
@@ -26,38 +26,38 @@
 
 
 
-// import { createConfig, http, _fallback } from "wagmi";
-import { createConfig, http } from "wagmi";
-import { base, celo } from "wagmi/chains";
-import { farcasterMiniApp } from "@farcaster/miniapp-wagmi-connector";
-import { Attribution } from "ox/erc8021";
+// // import { createConfig, http, _fallback } from "wagmi";
+// import { createConfig, http } from "wagmi";
+// import { base, celo } from "wagmi/chains";
+// import { farcasterMiniApp } from "@farcaster/miniapp-wagmi-connector";
+// import { Attribution } from "ox/erc8021";
 
-const DATA_SUFFIX = Attribution.toDataSuffix({
-  codes: ["bc_bmhx0p43"],
-});
+// const DATA_SUFFIX = Attribution.toDataSuffix({
+//   codes: ["bc_bmhx0p43"],
+// });
 
-export const config = createConfig({
-  chains: [celo, base],
+// export const config = createConfig({
+//   chains: [celo, base],
 
-  connectors: [
-    farcasterMiniApp(),
-  ],
+//   connectors: [
+//     farcasterMiniApp(),
+//   ],
 
-  transports: {
+//   transports: {
 
 
-    [celo.id]: http(
-      process.env.NEXT_PUBLIC_CELO_RPC_URL
-    ),
+//     [celo.id]: http(
+//       process.env.NEXT_PUBLIC_CELO_RPC_URL
+//     ),
 
-    [base.id]: http(
-      process.env.NEXT_PUBLIC_BASE_RPC_URL
-    ),
-  },
+//     [base.id]: http(
+//       process.env.NEXT_PUBLIC_BASE_RPC_URL
+//     ),
+//   },
 
-  dataSuffix: DATA_SUFFIX,
-  ssr: true,
-});
+//   dataSuffix: DATA_SUFFIX,
+//   ssr: true,
+// });
 
 
 

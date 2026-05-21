@@ -292,52 +292,6 @@
 
 
 
-// "use client";
-
-// import { ReactNode } from "react";
-// import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-// import { WagmiProvider } from "wagmi";
-// import { celo } from "wagmi/chains"; 
-// import { OnchainKitProvider } from "@coinbase/onchainkit";
-// import { config } from "@/lib/config";
-
-
-// const queryClient = new QueryClient();
-
-// export function Providers({ children }: { children: ReactNode }) {
-//   return (
-//     <WagmiProvider config={config}>
-//       <QueryClientProvider client={queryClient}>
-//         <OnchainKitProvider
-//           apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
-//           chain={celo}
-//           config={{
-//             appearance: { mode: "auto" },
-//             paymaster: "https://api.developer.coinbase.com/rpc/v1/base/QgLBDzBBarpt7Ob9FpVSjk24cbzDsDeF",
-//             wallet: {
-//               display: "modal",
-//               preference: "all",
-//             },
-//           }}
-//           miniKit={{
-//             enabled: true,
-//             autoConnect: true,
-//             notificationProxyUrl: undefined,
-//           }}
-//         >
-         
-//           {children}
-//         </OnchainKitProvider>
-//       </QueryClientProvider>
-//     </WagmiProvider>
-//   );
-// }
-
-
-
-
-
-
 "use client";
 
 import { ReactNode } from "react";
@@ -348,15 +302,7 @@ import { OnchainKitProvider } from "@coinbase/onchainkit";
 import { config } from "@/lib/config";
 
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 60 * 1000, 
-      refetchOnWindowFocus: false, 
-      retry: 2, 
-    },
-  },
-});
+const queryClient = new QueryClient();
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
@@ -379,12 +325,66 @@ export function Providers({ children }: { children: ReactNode }) {
             notificationProxyUrl: undefined,
           }}
         >
+         
           {children}
         </OnchainKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
   );
 }
+
+
+
+
+
+
+// "use client";
+
+// import { ReactNode } from "react";
+// import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+// import { WagmiProvider } from "wagmi";
+// import { celo } from "wagmi/chains"; 
+// import { OnchainKitProvider } from "@coinbase/onchainkit";
+// import { config } from "@/lib/config";
+
+
+// const queryClient = new QueryClient({
+//   defaultOptions: {
+//     queries: {
+//       staleTime: 60 * 1000, 
+//       refetchOnWindowFocus: false, 
+//       retry: 2, 
+//     },
+//   },
+// });
+
+// export function Providers({ children }: { children: ReactNode }) {
+//   return (
+//     <WagmiProvider config={config}>
+//       <QueryClientProvider client={queryClient}>
+//         <OnchainKitProvider
+//           apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
+//           chain={celo}
+//           config={{
+//             appearance: { mode: "auto" },
+//             paymaster: "https://api.developer.coinbase.com/rpc/v1/base/QgLBDzBBarpt7Ob9FpVSjk24cbzDsDeF",
+//             wallet: {
+//               display: "modal",
+//               preference: "all",
+//             },
+//           }}
+//           miniKit={{
+//             enabled: true,
+//             autoConnect: true,
+//             notificationProxyUrl: undefined,
+//           }}
+//         >
+//           {children}
+//         </OnchainKitProvider>
+//       </QueryClientProvider>
+//     </WagmiProvider>
+//   );
+// }
 
 
 
