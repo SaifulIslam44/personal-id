@@ -44,12 +44,16 @@ export const config = createConfig({
 
   transports: {
     // 🔴 এখানে fallback যোগ করা হলো
-    [celo.id]: fallback([
-      http(process.env.NEXT_PUBLIC_CELO_RPC_URL),
-      http("https://forno.celo.org"),            
-      http("https://rpc.ankr.com/celo"),         
-      http("https://celo-json-rpc.stakely.io"),  
-    ]),
+    // [celo.id]: fallback([
+    //   http(process.env.NEXT_PUBLIC_CELO_RPC_URL),
+    //   http("https://forno.celo.org"),            
+    //   http("https://rpc.ankr.com/celo"),         
+    //   http("https://celo-json-rpc.stakely.io"),  
+    // ]),
+
+    [celo.id]: http(
+      process.env.NEXT_PUBLIC_CELO_RPC_URL
+    ),
 
     [base.id]: http(
       process.env.NEXT_PUBLIC_BASE_RPC_URL

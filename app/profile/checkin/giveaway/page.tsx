@@ -1,13 +1,19 @@
 
-// // Base chain network
+
+// //celo mainent network
+
 
 // "use client";
 
 // import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 // // import { useReadContract, useSendCalls, useAccount, useConnect } from "wagmi";
-// import { useReadContract, useSendCalls, useAccount} from "wagmi";
+// //last farcaster used
+// // import { useReadContract, useSendCalls, useAccount, useSwitchChain, useConnect } from "wagmi"; 
+// //minipay
+// import { useReadContract, useSendCalls, useSendTransaction, useAccount, useSwitchChain, useConnect, usePublicClient } from "wagmi";
 // import { formatUnits } from "viem";
-// import { CONTRACT_ADDRESS, ABI } from "@/lib/contract";
+
+// import { CELO_CONTRACT_ADDRESS, ABI } from "@/lib/celo";
 // import styles from "./giveaway.module.css";
 // import Image from "next/image";
 // import { 
@@ -21,6 +27,33 @@
 // import { Attribution } from "ox/erc8021"; // বিল্ডার কোড তৈরির জন্য
 
 
+
+// const useMiniPayCompatibility = () => {
+//   const [isMiniPay, setIsMiniPay] = useState(false);
+
+//   useEffect(() => {
+//     let retry = 0;
+
+//     const detect = () => {
+//       if (typeof window === "undefined") return;
+
+//       const eth = (window as any).ethereum;
+
+//       const detected = eth?.isMiniPay === true;
+
+//       if (detected) {
+//         setIsMiniPay(true);
+//       } else if (retry < 10) {
+//         retry++;
+//         setTimeout(detect, 300); 
+//       }
+//     };
+
+//     detect();
+//   }, []);
+
+//   return isMiniPay;
+// };
 
 // // --- 🔵 CACHE HELPERS (Add this block) ---
 // const CACHE_KEY = "leaderboard_users_v1";
@@ -69,21 +102,22 @@
 //   // Ref to track fetched FIDs to avoid infinite loops and linter warnings
 //   const fetchedFidsRef = useRef<Set<number>>(new Set());
   
-//   const { data: details } = useReadContract({
-//     address: CONTRACT_ADDRESS as `0x${string}`,
+// const { data: details } = useReadContract({
+//     address: CELO_CONTRACT_ADDRESS as `0x${string}`, // 👈 Change here
 //     abi: ABI,
 //     functionName: "getGiveawayDetails",
 //     args: [BigInt(giveawayId)],
+//     chainId: 42220, // 👈 Must add this
 //   });
 
 //   const { data: currentWinnersFids } = useReadContract({
-//     address: CONTRACT_ADDRESS as `0x${string}`,
+//     address: CELO_CONTRACT_ADDRESS as `0x${string}`, // 👈 Change here
 //     abi: ABI,
 //     functionName: "getWinnersFIDs",
 //     args: [BigInt(giveawayId)],
+//     chainId: 42220, // 👈 Must add this
 //     query: { enabled: isOpen }
 //   });
-
 //   const [_tokenAddr, amount, _current, _max, endTime] = (details as any) || [];
   
 
@@ -94,26 +128,27 @@
 //   // 🔥🔥 Token Logic for History Items 🔥🔥
 //   const { decimals, tokenSymbol } = useMemo(() => {
 //     // 1. JESSE Token (Only for ID 4)
-//     if (giveawayId === 4) return { decimals: 18, tokenSymbol: "$JESSE" };
-//     if (giveawayId === 25) return { decimals: 18, tokenSymbol: "$BETR" };
-//             if ([26, 28].includes(giveawayId)) { 
-//         return { decimals: 18, tokenSymbol: "$TOSHI" };
-//     }
-
-//                 if ([32].includes(giveawayId)) { 
-//         return { decimals: 18, tokenSymbol: "$ETH" };
-//     }
-
-//     // if ([8, 10, 11, 12, 13, 14, 15, 16].includes(giveawayId)) { 
-//     //      return { decimals: 18, tokenSymbol: "$DEGEN" };
+//     // if (giveawayId === 4) return { decimals: 18, tokenSymbol: "$JESSE" };
+//     // if (giveawayId === 25) return { decimals: 18, tokenSymbol: "$BETR" };
+//     //         if ([26, 28].includes(giveawayId)) { 
+//     //     return { decimals: 18, tokenSymbol: "$TOSHI" };
 //     // }
 
-//         if ([1, 2, 3, 5, 6, 7, 9].includes(giveawayId)) { 
-//         return { decimals: 6, tokenSymbol: "$USDC" };
-//     }
+//     //             if ([32].includes(giveawayId)) { 
+//     //     return { decimals: 18, tokenSymbol: "$ETH" };
+//     // }
 
-//     return { decimals: 18, tokenSymbol: "$DEGEN" };
-//   }, [giveawayId]);
+//     // // if ([8, 10, 11, 12, 13, 14, 15, 16].includes(giveawayId)) { 
+//     // //      return { decimals: 18, tokenSymbol: "$DEGEN" };
+//     // // }
+
+//     //     if ([1, 2, 3, 5, 6, 7, 9].includes(giveawayId)) { 
+//     //     return { decimals: 6, tokenSymbol: "$USDC" };
+//     // }
+
+//     return { decimals: 18, tokenSymbol: "$CELO" };
+//   }, []);
+//   // [giveawayId]);
 
 
 
@@ -247,6 +282,7 @@
 
 // // --- MAIN PAGE COMPONENT ---
 // export default function GiveawayPage(props: any) { 
+//   const _isMiniPay = useMiniPayCompatibility();
 //   const passedId = props.giveawayId;
 //   const [activeGiveawayId, setActiveGiveawayId] = useState<number>(passedId || 0);
 //   const fetchedFidsRef = useRef<Set<number>>(new Set()); // ✅ নতুন লাইন
@@ -263,12 +299,15 @@
 
 
 //   // Fetch Latest ID
-//   const { data: latestId } = useReadContract({
-//     address: CONTRACT_ADDRESS as `0x${string}`,
+// const { data: latestId } = useReadContract({
+//     address: CELO_CONTRACT_ADDRESS as `0x${string}`, // 👈 Change here
 //     abi: ABI,
 //     functionName: "getLastGiveawayId", 
+//     chainId: 42220, // 👈 Must add this
 //     query: { enabled: activeGiveawayId === 0 }
 //   });
+
+
 
 //   useEffect(() => {
 //     if (typeof window !== "undefined") {
@@ -293,46 +332,63 @@
 //   const [winnersProfiles, setWinnersProfiles] = useState<Record<number, WinnerProfile>>({});
 
 //   // const { address } = useAccount();
-//     const { address } = useAccount(); // isConnected এখানে লাগবে
+//     // const { address } = useAccount(); // isConnected এখানে লাগবে
 //   // const { connectors, connect } = useConnect();
 //   // ফারকাস্টার ফ্রেমের কনটেক্সট থেকে অ্যাড্রেস নেওয়ার চেষ্টা করুন
 // // const address = context?.user?.address || context?.user?.custodyAddress;
 
+// const { address, chain, isConnected } = useAccount(); 
+//   const { switchChainAsync } = useSwitchChain();
+//   const { connect, connectors } = useConnect(); 
 
-// const { sendCallsAsync, isPending: isClaiming } = useSendCalls();
+// //last farcaster used
+// // const { sendCallsAsync, isPending: isClaiming } = useSendCalls();
+
+// //minipay
+// const { sendCallsAsync, isPending: isClaimingCalls } = useSendCalls();
+// const { sendTransactionAsync, isPending: isClaimingTx } = useSendTransaction();
+// const publicClient = usePublicClient(); // <-- Added for blockchain confirmation
+// const [isWaitingForTx, setIsWaitingForTx] = useState(false); // <-- Added state
+
+// // বাটন ডিজেবল করার জন্য দুটির যেকোনো একটি Pending থাকলেই লোডিং দেখাবে, এবং ট্রানজেকশন কনফার্ম হওয়ার জন্য ওয়েট করবে
+// const isClaiming = isClaimingCalls || isClaimingTx || isWaitingForTx;
 
 
 //   // Contract Reads (Active ID)
 //   const isValidId = activeGiveawayId > 0;
 //   const { data: details, refetch: refetchDetails } = useReadContract({
-//     address: CONTRACT_ADDRESS as `0x${string}`,
+//     address: CELO_CONTRACT_ADDRESS as `0x${string}`, // 👈 Change here
 //     abi: ABI,
 //     functionName: "getGiveawayDetails",
 //     args: [BigInt(activeGiveawayId)],
+//     chainId: 42220, // 👈 Must add this
 //     query: { enabled: isValidId }
 //   });
 
 //   const { data: userStats, refetch: refetchStats } = useReadContract({
-//     address: CONTRACT_ADDRESS as `0x${string}`,
+//     address: CELO_CONTRACT_ADDRESS as `0x${string}`, // 👈 Change here
 //     abi: ABI,
 //     functionName: "getUserStats",
 //     args: [BigInt(activeGiveawayId), address as `0x${string}`],
+//     chainId: 42220, // 👈 Must add this
 //     query: { enabled: isValidId && !!address } 
 //   });
 
 //   const { data: currentWinnersFids, refetch: refetchWinners } = useReadContract({
-//     address: CONTRACT_ADDRESS as `0x${string}`,
+//     address: CELO_CONTRACT_ADDRESS as `0x${string}`, // 👈 Change here
 //     abi: ABI,
 //     functionName: "getWinnersFIDs",
 //     args: [BigInt(activeGiveawayId)],
+//     chainId: 42220, // 👈 Must add this
 //     query: { enabled: isValidId }
 //   });
 
 //   // 🔥 NEW: Contract থেকে বর্তমান Claim Fee রিড করা
 //   const { data: claimFeeRaw } = useReadContract({
-//     address: CONTRACT_ADDRESS as `0x${string}`,
+//     address: CELO_CONTRACT_ADDRESS as `0x${string}`, // 👈 Change here
 //     abi: ABI,
 //     functionName: "getClaimFee",
+//     chainId: 42220, // 👈 Must add this
 //   });
   
 //   // Fee টাকে BigInt হিসেবে সেভ করে রাখা (যাতে 0 সেট থাকলেও কাজ করে)
@@ -342,7 +398,7 @@
 //   const [totalWon, claimCount, _currentLimit] = (userStats as any) || [0n, 0n, 2n]; 
 //   const realCount = Number(claimCount || 0);
 //   const count = optimisticCount !== null ? optimisticCount : realCount;
-//   // const limit = Number(currentLimit || 2);
+//   const limit = Number(_currentLimit || 2);   //share logic 1 to 2
 //   const isFull = Number(current || 0) >= Number(max || 0);
 //   const isActiveGiveaway = active && !isEnded && !isFull;
   
@@ -356,30 +412,36 @@
 //   // }, [isConnected, connectors, connect]);
 
 
-
+// // 🔴 Wagmi Auto Silent Connect for Warpcast
+//   useEffect(() => {
+//     if (!isConnected && connectors.length > 0) {
+//       const injectedConnector = connectors.find(c => c.id === 'injected') || connectors[0];
+//       connect({ connector: injectedConnector });
+//     }
+//   }, [isConnected, connectors, connect]);
 
 
 //   // 🔥🔥 FIX: Token Symbol & Decimals for MAIN Card 🔥🔥
-//   const { decimals, tokenSymbol } = useMemo(() => {
+// const { decimals, tokenSymbol } = useMemo(() => {
+//     // পুরোনো বেস নেটওয়ার্কের টোকেন লজিক কমেন্ট করে দেওয়া হলো
+//     /*
 //     if (activeGiveawayId === 4) return { decimals: 18, tokenSymbol: "$JESSE" };
 //     if (activeGiveawayId === 25) return { decimals: 18, tokenSymbol: "$BETR" };
 //     if ([26, 28].includes(activeGiveawayId)) { 
 //         return { decimals: 18, tokenSymbol: "$TOSHI" };
 //     }
-
 //     if ([32].includes(activeGiveawayId)) { 
 //         return { decimals: 18, tokenSymbol: "$ETH" };
 //     }
-//     // if ([8, 10, 11, 12, 13, 14, 15, 16].includes(activeGiveawayId)) {
-//     //    return { decimals: 18, tokenSymbol: "$DEGEN" };
-//     // }
-
-//         if ([1, 2, 3, 5, 6, 7, 9].includes(activeGiveawayId)) { 
+//     if ([1, 2, 3, 5, 6, 7, 9].includes(activeGiveawayId)) { 
 //         return { decimals: 6, tokenSymbol: "$USDC" };
 //     }
+//     */
 
-//     return { decimals: 18, tokenSymbol: "$DEGEN" };
-//   }, [activeGiveawayId]);
+//     // সেলো নেটওয়ার্কের ডিফল্ট টোকেন রিটার্ন
+//     return { decimals: 18, tokenSymbol: "$CELO" };
+//   }, []);
+//   // [activeGiveawayId]);
 
 
 
@@ -637,75 +699,146 @@
 //     try {
 //       const response = await fetch(`/api/verify-share?fid=${userData.fid}`);
 //       const data = await response.json();
-//       if (data.success) { setIsVerified(true); setIsVerifying(false); } else { setVerifyError(true); setErrorTimer(10); }
-//     } catch { setVerifyError(true); setErrorTimer(10); }
+//       if (data.success) { setIsVerified(true); setIsVerifying(false); } else { setVerifyError(true); setErrorTimer(5); }
+//     } catch { setVerifyError(true); setErrorTimer(5); }
 //   };
 
-//   // const onClaim = async () => {
-//   //  if (!isWarpcast || !isFarcasterUser) { setFarcasterError("Open in Warpcast App"); return; }
-//   //  setFarcasterError("");
-//   //  try {
-//   //    const signResponse = await fetch('/api/sign-claim', {
-//   //      method: 'POST',
-//   //      headers: { 'Content-Type': 'application/json' },
-//   //      body: JSON.stringify({ userWallet: address, fid: userData.fid, giveawayId: activeGiveawayId }),
-//   //    });
-//   //    const signData = await signResponse.json();
-//   //    if (!signResponse.ok || !signData.signature) throw new Error(signData.message || "Failed to get signature");
-
-//   //    const hash = await writeContractAsync({
-//   //      address: CONTRACT_ADDRESS as `0x${string}`,
-//   //      abi: ABI,
-//   //      functionName: "claimGiveaway",
-//   //      args: [ BigInt(activeGiveawayId), BigInt(userData.fid), signData.signature as `0x${string}` ],
-//   //    });
-//   //    if (hash) {
-//   //      setLastClaimedAmount(rewardAmountFormatted); 
-//   //      setShowSuccessModal(true);
-//   //      setTimeout(() => { refetchDetails(); refetchStats(); refetchWinners(); }, 2000);
-//   //    }
-//   //  } catch (error: any) {
-//   //    if (error.code === 4001 || error.message?.includes("User rejected") || error.name === 'UserRejectedRequestError') {
-//   //        setFarcasterError("Transaction cancelled by user");
-//   //    } else {
-//   //        console.error("Transaction Failed:", error);
-//   //        setFarcasterError(error.message || "Transaction failed. Try again.");
-//   //    }
-//   //    setTimeout(() => setFarcasterError(""), 3000);
-//   //  }
-//   // };
 
 
+// //last used for farcaster. 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// const onClaim = async () => {
-//       // if (!isWarpcast || !isFarcasterUser) { 
-//   //   setFarcasterError("Open in Warpcast App"); 
-//   //   return; 
-//   // }
+// // const onClaim = async () => {
+// //       // if (!isWarpcast || !isFarcasterUser) { 
+// //   //   setFarcasterError("Open in Warpcast App"); 
+// //   //   return; 
+// //   // }
   
-//   // setFarcasterError("");
+// //   // setFarcasterError("");
+
+  
+// //   try {
+// //     if (chain?.id !== 42220) {
+// //       await switchChainAsync({ chainId: 42220 });
+// //     }
+
+// //     const walletAddress = 
+// //       address || 
+// //       (userData as any)?.verified_addresses?.eth_addresses?.[0] || 
+// //       (userData as any)?.custody_address ||
+// //       (userData as any)?.address;
+
+// //     const userFid = userData?.fid;
+// //     const giveawayId = activeGiveawayId;
+
+// //     if (!walletAddress) {
+// //       setFarcasterError("Wallet not found. Please connect your wallet.");
+// //       return;
+// //     }
+
+// //     if (!userFid || !giveawayId) {
+// //       setFarcasterError("Missing user identity or Giveaway ID");
+// //       return;
+// //     }
+
+// //     // ১. ব্যাকএন্ড থেকে Signature এবং Nonce সংগ্রহ করা
+// //     const signResponse = await fetch('/api/sign-claim', {
+// //       method: 'POST',
+// //       headers: { 'Content-Type': 'application/json' },
+// //       body: JSON.stringify({ 
+// //         userWallet: walletAddress, 
+// //         fid: Number(userFid), 
+// //         giveawayId: Number(giveawayId), 
+// //         isMiniPay: _isMiniPay
+// //       }),
+// //     });
+
+// //     const signData = await signResponse.json();
+
+// //     if (!signResponse.ok || !signData.signature || signData.nonce === undefined) {
+// //       throw new Error(signData.message || "Failed to get signature/nonce");
+// //     }
+
+// //     // ২. 🔥 ফাংশন ডাটা এনকোড করা (নতুন আর্গুমেন্ট অর্ডারসহ) 🔥
+// //     // অর্ডার: _id, _fid, _nonce, _signature
+// //     const functionData = encodeFunctionData({
+// //       abi: ABI,
+// //       functionName: "claimGiveaway",
+// //       args: [ 
+// //         BigInt(giveawayId), 
+// //         BigInt(userFid), 
+// //         BigInt(signData.nonce), // 🔥 নতুন প্যারামিটার Nonce যোগ করা হয়েছে
+// //         signData.signature as `0x${string}` 
+// //       ],
+// //     });
+
+// //     // ৩. বিল্ডার কোড সাফিক্স তৈরি
+// //     const builderSuffix = Attribution.toDataSuffix({
+// //       codes: ["bc_bmhx0p43"], 
+// //     });
+
+// //     // ৪. ডাটা জোড়া লাগানো (Concatenation)
+// //     const finalData = concat([functionData, builderSuffix]);
+
+// //     // ৫. sendCallsAsync দিয়ে ট্রানজেকশন পাঠানো
+// //     const id = await sendCallsAsync({
+// //       calls: [
+// //         {
+// //           to: CELO_CONTRACT_ADDRESS as `0x${string}`, // 👈 Change here
+// //           data: finalData,
+// //           value: currentClaimFee,
+// //         },
+// //       ],
+// //       // chainId: 42220, 
+// //     });
+
+// //     // ৬. সাকসেস হ্যান্ডলিং
+// //     if (id) {
+// //       setOptimisticCount(realCount + 1);
+// //       setLastClaimedAmount(rewardAmountFormatted); 
+// //       setShowSuccessModal(true);
+// //       setTimeout(() => { 
+// //         refetchDetails(); 
+// //         refetchStats(); 
+// //         refetchWinners(); 
+// //       }, 5000);
+// //     }
+
+// //   } catch (error: any) {
+// //     console.error("Claim Error:", error);
+    
+// //     // নির্দিষ্ট এরর মেসেজ হ্যান্ডলিং (যেমন: Identity Check ফেইল করলে)
+// //     if (error.message?.includes("Personal ID Mint Required")) {
+// //         setFarcasterError("You must mint a Personal ID to claim this giveaway!");
+// //     } else if (error.code === 4001 || error.message?.includes("User rejected") || error.name === 'UserRejectedRequestError') {
+// //         setFarcasterError("Transaction cancelled by user");
+// //     } else {
+// //         setFarcasterError(error.message || "Transaction failed. Try again.");
+// //     }
+// //     setTimeout(() => setFarcasterError(""), 5000);
+// //   }
+// // };
+
+
+
+
+
+
+
+// //minipay:
+// const onClaim = async () => {
 //   try {
+//     if (chain?.id !== 42220) {
+//       await switchChainAsync({ chainId: 42220 });
+//     }
+
 //     const walletAddress = 
 //       address || 
 //       (userData as any)?.verified_addresses?.eth_addresses?.[0] || 
 //       (userData as any)?.custody_address ||
 //       (userData as any)?.address;
 
-//     const userFid = userData?.fid;
+//     // FID 0 ধরে নিব যদি না থাকে
+//     const userFid = userData?.fid || 0; 
 //     const giveawayId = activeGiveawayId;
 
 //     if (!walletAddress) {
@@ -713,7 +846,8 @@
 //       return;
 //     }
 
-//     if (!userFid || !giveawayId) {
+//     // 🔥 ফিক্স: যদি MiniPay না হয় এবং FID না থাকে, তবেই শুধু এরর দিবে
+//     if (!giveawayId || (!_isMiniPay && !userFid)) {
 //       setFarcasterError("Missing user identity or Giveaway ID");
 //       return;
 //     }
@@ -725,7 +859,8 @@
 //       body: JSON.stringify({ 
 //         userWallet: walletAddress, 
 //         fid: Number(userFid), 
-//         giveawayId: Number(giveawayId) 
+//         giveawayId: Number(giveawayId), 
+//         isMiniPay: _isMiniPay 
 //       }),
 //     });
 
@@ -735,54 +870,87 @@
 //       throw new Error(signData.message || "Failed to get signature/nonce");
 //     }
 
-//     // ২. 🔥 ফাংশন ডাটা এনকোড করা (নতুন আর্গুমেন্ট অর্ডারসহ) 🔥
-//     // অর্ডার: _id, _fid, _nonce, _signature
 //     const functionData = encodeFunctionData({
 //       abi: ABI,
 //       functionName: "claimGiveaway",
 //       args: [ 
 //         BigInt(giveawayId), 
 //         BigInt(userFid), 
-//         BigInt(signData.nonce), // 🔥 নতুন প্যারামিটার Nonce যোগ করা হয়েছে
+//         BigInt(signData.nonce), 
 //         signData.signature as `0x${string}` 
 //       ],
 //     });
 
-//     // ৩. বিল্ডার কোড সাফিক্স তৈরি
 //     const builderSuffix = Attribution.toDataSuffix({
 //       codes: ["bc_bmhx0p43"], 
 //     });
 
-//     // ৪. ডাটা জোড়া লাগানো (Concatenation)
 //     const finalData = concat([functionData, builderSuffix]);
 
-//     // ৫. sendCallsAsync দিয়ে ট্রানজেকশন পাঠানো
-//     const id = await sendCallsAsync({
-//       calls: [
-//         {
-//           to: CONTRACT_ADDRESS as `0x${string}`,
-//           data: finalData,
-//           value: currentClaimFee,
-//         },
-//       ],
-//     });
+//     let txId;
+    
+//     if (_isMiniPay) {
+//       // MiniPay-এর জন্য স্ট্যান্ডার্ড ট্রানজেকশন
+//       txId = await sendTransactionAsync({
+//         to: CELO_CONTRACT_ADDRESS as `0x${string}`,
+//         data: finalData,
+//         value: currentClaimFee,
+//       });
+//     } else {
+//       // Farcaster-এর জন্য Batched (SendCalls) ট্রানজেকশন
+//       txId = await sendCallsAsync({
+//         calls: [
+//           {
+//             to: CELO_CONTRACT_ADDRESS as `0x${string}`, 
+//             data: finalData,
+//             value: currentClaimFee,
+//           },
+//         ],
+//       });
+//     }
 
-//     // ৬. সাকসেস হ্যান্ডলিং
-//     if (id) {
-//       setOptimisticCount(realCount + 1);
-//       setLastClaimedAmount(rewardAmountFormatted); 
-//       setShowSuccessModal(true);
-//       setTimeout(() => { 
+//     // ৬. সাকসেস হ্যান্ডলিং (ট্রানজেকশন কনফার্ম হওয়ার জন্য অপেক্ষা করা)
+//     if (txId) {
+//       setIsWaitingForTx(true); // লোডিং "Sending..." চালু থাকবে
+//       let txSuccess = true;
+//       try {
+//         if (publicClient && typeof txId === 'string' && txId.startsWith('0x')) {
+//           const receipt = await publicClient.waitForTransactionReceipt({ 
+//             hash: txId as `0x${string}` 
+//           });
+//           if (receipt.status === 'reverted') {
+//             txSuccess = false;
+//             throw new Error("Transaction reverted on chain");
+//           }
+//         } else {
+//           // Farcaster sendCalls ID-এর জন্য ফলব্যাক ওয়েট
+//           await new Promise(resolve => setTimeout(resolve, 5000));
+//         }
+//       } catch (receiptError) {
+//         console.error("Receipt error:", receiptError);
+//         setIsWaitingForTx(false);
+//         throw receiptError; // Outer catch block will handle and show error
+//       }
+
+//       setIsWaitingForTx(false);
+
+//       if (txSuccess) {
+//         setOptimisticCount(realCount + 1);
+//         setLastClaimedAmount(rewardAmountFormatted); 
+        
+//         // ডেটা রিফেচ
 //         refetchDetails(); 
 //         refetchStats(); 
 //         refetchWinners(); 
-//       }, 2000);
+        
+//         // কনফার্ম হওয়ার পর পপআপ শো করবে
+//         setShowSuccessModal(true);
+//       }
 //     }
 
 //   } catch (error: any) {
 //     console.error("Claim Error:", error);
     
-//     // নির্দিষ্ট এরর মেসেজ হ্যান্ডলিং (যেমন: Identity Check ফেইল করলে)
 //     if (error.message?.includes("Personal ID Mint Required")) {
 //         setFarcasterError("You must mint a Personal ID to claim this giveaway!");
 //     } else if (error.code === 4001 || error.message?.includes("User rejected") || error.name === 'UserRejectedRequestError') {
@@ -840,28 +1008,99 @@
 
 
 
-  
+// //useable for farcaster
+//   // const renderActionButton = () => {
+//   //   // --- প্রথম ক্লেইমের আগে শেয়ার এবং ভেরিফাই ---
+//   //   if (count === 0) {
+//   //     if (!hasShared && !isVerified) {
+//   //       return <button className={`${styles.primaryBtn} ${styles.shareBtn}`} onClick={handleShare}>Share to Unlock Claim <Share2 size={16} /></button>;
+//   //     }
+//   //     if (hasShared && !isVerified) {
+//   //        if (verifyError) return <button className={`${styles.primaryBtn} ${styles.errorBtn}`} disabled> Not Shared! Try Again {errorTimer}s</button>;
+//   //        return <button className={`${styles.primaryBtn} ${styles.verifyBtn}`} onClick={handleVerify} disabled={isVerifying}>{isVerifying ? "Verifying..." : "Verify Share"}{!isVerifying && <ShieldCheck size={16} />}</button>;
+//   //     }
+//   //     if (isVerified) {
+//   //       return (
+//   //         <button className={styles.primaryBtn} onClick={onClaim} disabled={isClaiming || isFull}>
+//   //           {isClaiming ? "Sending..." : isFull ? "Full" : "Claim Reward"}
+//   //           {!isClaiming && !isFull && <Zap size={16} fill="currentColor" />}
+//   //         </button>
+//   //       );
+//   //     }
+//   //   }
+
+//   //   // --- ১ বার ক্লেইম হয়ে গেলেই সরাসরি Completed দেখাবে ---
+//   //   return <button className={styles.primaryBtn} disabled>Completed <Lock size={16} /></button>;
+//   // };
+
+
+
+// // last used minipay
+//   // const renderActionButton = () => {
+//   //   // --- প্রথম ক্লেইমের আগে শেয়ার এবং ভেরিফাই ---
+//   //   if (count === 0) {
+      
+//   //     // 🔥 MiniPay ইউজারদের জন্য ডিরেক্ট Claim (Share Bypass)
+//   //     // অথবা যদি ফারকাস্টার ইউজার ইতিমধ্যে ভেরিফাই করে থাকে
+//   //     if (_isMiniPay || isVerified) {
+//   //       return (
+//   //         <button className={styles.primaryBtn} onClick={onClaim} disabled={isClaiming || isFull}>
+//   //           {isClaiming ? "Sending..." : isFull ? "Full" : "Claim Reward"}
+//   //           {!isClaiming && !isFull && <Zap size={16} fill="currentColor" />}
+//   //         </button>
+//   //       );
+//   //     }
+
+//   //     // 🔥 ফারকাস্টার ইউজারদের জন্য Share Logic
+//   //     if (!hasShared && !isVerified) {
+//   //       return <button className={`${styles.primaryBtn} ${styles.shareBtn}`} onClick={handleShare}>Share to Unlock Claim <Share2 size={16} /></button>;
+//   //     }
+      
+//   //     if (hasShared && !isVerified) {
+//   //        if (verifyError) return <button className={`${styles.primaryBtn} ${styles.errorBtn}`} disabled> Not Shared! Try Again {errorTimer}s</button>;
+//   //        return <button className={`${styles.primaryBtn} ${styles.verifyBtn}`} onClick={handleVerify} disabled={isVerifying}>{isVerifying ? "Verifying..." : "Verify Share"}{!isVerifying && <ShieldCheck size={16} />}</button>;
+//   //     }
+//   //   }
+
+//   //   // --- ১ বার ক্লেইম হয়ে গেলেই সরাসরি Completed দেখাবে ---
+//   //   return <button className={styles.primaryBtn} disabled>Completed <Lock size={16} /></button>;
+//   // };
+
+
 //   const renderActionButton = () => {
-//     // --- প্রথম ক্লেইমের আগে শেয়ার এবং ভেরিফাই ---
+    
 //     if (count === 0) {
-//       if (!hasShared && !isVerified) {
-//         return <button className={`${styles.primaryBtn} ${styles.shareBtn}`} onClick={handleShare}>Share to Unlock Claim <Share2 size={16} /></button>;
-//       }
-//       if (hasShared && !isVerified) {
-//          if (verifyError) return <button className={`${styles.primaryBtn} ${styles.errorBtn}`} disabled> Not Shared! Try Again {errorTimer}s</button>;
-//          return <button className={`${styles.primaryBtn} ${styles.verifyBtn}`} onClick={handleVerify} disabled={isVerifying}>{isVerifying ? "Verifying..." : "Verify Share"}{!isVerifying && <ShieldCheck size={16} />}</button>;
-//       }
-//       if (isVerified) {
+//       return (
+//         <button className={styles.primaryBtn} onClick={onClaim} disabled={isClaiming || isFull}>
+//           {isClaiming ? "Sending..." : isFull ? "Full" : "Claim Reward"}
+//           {!isClaiming && !isFull && <Zap size={16} fill="currentColor" />}
+//         </button>
+//       );
+//     }
+
+   
+//     if (count === 1 && count < limit) {
+      
+//       if (_isMiniPay || isVerified) {
 //         return (
-//           <button className={styles.primaryBtn} onClick={onClaim} disabled={isClaiming || isFull}>
-//             {isClaiming ? "Sending..." : isFull ? "Full" : "Claim Reward"}
+//           <button className={`${styles.primaryBtn} ${styles.bonusBtn}`} onClick={onClaim} disabled={isClaiming || isFull}>
+//             {isClaiming ? "Sending..." : isFull ? "Full" : "Claim Bonus"}
 //             {!isClaiming && !isFull && <Zap size={16} fill="currentColor" />}
 //           </button>
 //         );
 //       }
+
+      
+//       if (!hasShared && !isVerified) {
+//         return <button className={`${styles.primaryBtn} ${styles.shareBtn}`} onClick={handleShare}>Share to Unlock Bonus <Share2 size={16} /></button>;
+//       }
+      
+//       if (hasShared && !isVerified) {
+//          if (verifyError) return <button className={`${styles.primaryBtn} ${styles.errorBtn}`} disabled> Not Shared! Try Again {errorTimer}s</button>;
+//          return <button className={`${styles.primaryBtn} ${styles.verifyBtn}`} onClick={handleVerify} disabled={isVerifying}>{isVerifying ? "Verifying..." : "Verify Share"}{!isVerifying && <ShieldCheck size={16} />}</button>;
+//       }
 //     }
 
-//     // --- ১ বার ক্লেইম হয়ে গেলেই সরাসরি Completed দেখাবে ---
 //     return <button className={styles.primaryBtn} disabled>Completed <Lock size={16} /></button>;
 //   };
   
@@ -920,20 +1159,22 @@
 //                 <span className={styles.totalLabel}>Total Earnings</span>
 //                 <span className={styles.statValue}>{totalWonFormatted} {tokenSymbol}</span>
 //               </div>
-//               {/* <div className={styles.progressTrack}>
+
+          
+//               <div className={styles.progressTrack}>
 //                  <div className={`${styles.step} ${count > 0 ? styles.stepActive : ''}`}>1</div>
 //                  <div className={`${styles.trackLine} ${count > 0 ? styles.lineActive : ''}`}></div>
-//                  <div className={`${styles.step} ${count > 1 ? styles.stepActive : ''}`}>1</div>
-//               </div> */}
+//                  <div className={`${styles.step} ${count > 1 ? styles.stepActive : ''}`}>2</div>
+//               </div>
 
 
-//               <div className={styles.progressTrack}>
+//               {/* <div className={styles.progressTrack}>
 //    <div className={`${styles.step} ${styles.stepActive}`}>1</div>
 //    <div className={`${styles.trackLine} ${count > 0 ? styles.lineActive : ''}`}></div>
 //    <div className={`${styles.step} ${count > 0 ? styles.stepActive : ''}`}>
 //       {count > 0 ? <Check size={16} /> : <Lock size={16} />}
 //    </div>
-// </div>
+// </div> */}
 //               <div className={styles.btnWrapper}>{renderActionButton()}</div>
 //               {farcasterError && <p className={styles.errorText}><AlertCircle size={12} style={{marginRight:4}}/> {farcasterError}</p>}
 //             </div>
@@ -986,7 +1227,7 @@
 //           )}
 //         </div>
 
-//         {/* --- PREVIOUS HISTORY SECTION (Accordions) - HIDDEN IF ACTIVE --- */}
+        
 //         {/* !isActiveGiveaway &&  */}
 //         {previousHistoryIds.length > 0 && (
 //            <div style={{ marginTop: 10 }}>
@@ -1005,6 +1246,7 @@
 //             <h3 className={styles.modalTitle}>Success!</h3>
 //             <p className={styles.modalText}>You received <span className={styles.gradientText}>{lastClaimedAmount} {tokenSymbol}</span></p>
 //             {/* {count === 1 && !isVerified && <button className={styles.modalShareBtn} onClick={handleShare}>Share to Unlock Bonus <Share2 size={16}/></button>} */}
+//             {count === 1 && !isVerified && <button className={styles.modalShareBtn} onClick={handleShare}>Share to Unlock Bonus <Share2 size={16}/></button>}
 //           </div>
 //         </div>
 //       )}
@@ -1012,11 +1254,7 @@
 //   );
 // }
 
-
-
-
-
-
+// //id: 201254
 
 
 
@@ -1051,6 +1289,10 @@
 //celo mainent network
 
 
+
+
+
+
 "use client";
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
@@ -1058,7 +1300,7 @@ import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 //last farcaster used
 // import { useReadContract, useSendCalls, useAccount, useSwitchChain, useConnect } from "wagmi"; 
 //minipay
-import { useReadContract, useSendCalls, useSendTransaction, useAccount, useSwitchChain, useConnect, usePublicClient } from "wagmi";
+import { useReadContract, useSendCalls, useSendTransaction, useAccount, useSwitchChain, useConnect } from "wagmi";
 import { formatUnits } from "viem";
 
 import { CELO_CONTRACT_ADDRESS, ABI } from "@/lib/celo";
@@ -1395,11 +1637,9 @@ const { address, chain, isConnected } = useAccount();
 //minipay
 const { sendCallsAsync, isPending: isClaimingCalls } = useSendCalls();
 const { sendTransactionAsync, isPending: isClaimingTx } = useSendTransaction();
-const publicClient = usePublicClient(); // <-- Added for blockchain confirmation
-const [isWaitingForTx, setIsWaitingForTx] = useState(false); // <-- Added state
 
-// বাটন ডিজেবল করার জন্য দুটির যেকোনো একটি Pending থাকলেই লোডিং দেখাবে, এবং ট্রানজেকশন কনফার্ম হওয়ার জন্য ওয়েট করবে
-const isClaiming = isClaimingCalls || isClaimingTx || isWaitingForTx;
+// বাটন ডিজেবল করার জন্য দুটির যেকোনো একটি Pending থাকলেই লোডিং দেখাবে
+const isClaiming = isClaimingCalls || isClaimingTx;
 
 
   // Contract Reads (Active ID)
@@ -1957,43 +2197,16 @@ const onClaim = async () => {
       });
     }
 
-    // ৬. সাকসেস হ্যান্ডলিং (ট্রানজেকশন কনফার্ম হওয়ার জন্য অপেক্ষা করা)
+    // ৬. সাকসেস হ্যান্ডলিং
     if (txId) {
-      setIsWaitingForTx(true); // লোডিং "Sending..." চালু থাকবে
-      let txSuccess = true;
-      try {
-        if (publicClient && typeof txId === 'string' && txId.startsWith('0x')) {
-          const receipt = await publicClient.waitForTransactionReceipt({ 
-            hash: txId as `0x${string}` 
-          });
-          if (receipt.status === 'reverted') {
-            txSuccess = false;
-            throw new Error("Transaction reverted on chain");
-          }
-        } else {
-          // Farcaster sendCalls ID-এর জন্য ফলব্যাক ওয়েট
-          await new Promise(resolve => setTimeout(resolve, 5000));
-        }
-      } catch (receiptError) {
-        console.error("Receipt error:", receiptError);
-        setIsWaitingForTx(false);
-        throw receiptError; // Outer catch block will handle and show error
-      }
-
-      setIsWaitingForTx(false);
-
-      if (txSuccess) {
-        setOptimisticCount(realCount + 1);
-        setLastClaimedAmount(rewardAmountFormatted); 
-        
-        // ডেটা রিফেচ
+      setOptimisticCount(realCount + 1);
+      setLastClaimedAmount(rewardAmountFormatted); 
+      setShowSuccessModal(true);
+      setTimeout(() => { 
         refetchDetails(); 
         refetchStats(); 
         refetchWinners(); 
-        
-        // কনফার্ম হওয়ার পর পপআপ শো করবে
-        setShowSuccessModal(true);
-      }
+      }, 5000);
     }
 
   } catch (error: any) {
@@ -2275,7 +2488,7 @@ useEffect(() => {
           )}
         </div>
 
-        
+        {/* --- PREVIOUS HISTORY SECTION (Accordions) - HIDDEN IF ACTIVE --- */}
         {/* !isActiveGiveaway &&  */}
         {previousHistoryIds.length > 0 && (
            <div style={{ marginTop: 10 }}>
@@ -2301,5 +2514,7 @@ useEffect(() => {
     </div>
   );
 }
+
+
 
 //id: 201254
