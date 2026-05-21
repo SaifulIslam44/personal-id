@@ -26,7 +26,8 @@
 
 
 
-import { createConfig, http, fallback } from "wagmi";
+// import { createConfig, http, _fallback } from "wagmi";
+import { createConfig, http } from "wagmi";
 import { base, celo } from "wagmi/chains";
 import { farcasterMiniApp } from "@farcaster/miniapp-wagmi-connector";
 import { Attribution } from "ox/erc8021";
@@ -43,13 +44,7 @@ export const config = createConfig({
   ],
 
   transports: {
-    // 🔴 এখানে fallback যোগ করা হলো
-    // [celo.id]: fallback([
-    //   http(process.env.NEXT_PUBLIC_CELO_RPC_URL),
-    //   http("https://forno.celo.org"),            
-    //   http("https://rpc.ankr.com/celo"),         
-    //   http("https://celo-json-rpc.stakely.io"),  
-    // ]),
+
 
     [celo.id]: http(
       process.env.NEXT_PUBLIC_CELO_RPC_URL
@@ -63,3 +58,23 @@ export const config = createConfig({
   dataSuffix: DATA_SUFFIX,
   ssr: true,
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // 🔴 এখানে fallback যোগ করা হলো
+    // [celo.id]: fallback([
+    //   http(process.env.NEXT_PUBLIC_CELO_RPC_URL),
+    //   http("https://forno.celo.org"),            
+    //   http("https://rpc.ankr.com/celo"),         
+    //   http("https://celo-json-rpc.stakely.io"),  
+    // ]),
